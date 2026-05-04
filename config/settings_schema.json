@@ -1,0 +1,119 @@
+[
+    {
+        "name": "theme_info",
+        "theme_name": "Strix Owl Nest Theme",
+        "theme_version": "1.0.0",
+        "theme_author": "Strix",
+        "theme_documentation_url": "https://github.com/webweit-gmbh/owls-nest-starter",
+        "theme_support_url": "https://www.strix.net/en"
+    },
+    {
+        "name": "Social media",
+        "settings": [
+            {
+                "type": "header",
+                "content": "Social accounts"
+            },
+            {
+                "type": "text",
+                "id": "social_facebook_link",
+                "label": "Facebook",
+                "placeholder": "https://facebook.com/shopify"
+            },
+            {
+                "type": "text",
+                "id": "social_instagram_link",
+                "label": "Instagram",
+                "placeholder": "http://instagram.com/shopify"
+            },
+            {
+                "type": "text",
+                "id": "social_youtube_link",
+                "label": "YouTube",
+                "placeholder": "https://www.youtube.com/shopify"
+            },
+            {
+                "type": "text",
+                "id": "social_tiktok_link",
+                "label": "TikTok",
+                "placeholder": "https://tiktok.com/@shopify"
+            },
+            {
+                "type": "text",
+                "id": "social_twitter_link",
+                "label": "Twitter",
+                "placeholder": "https://twitter.com/shopify"
+            },
+            {
+                "type": "text",
+                "id": "social_snapchat_link",
+                "label": "Snapchat",
+                "placeholder": "https://www.snapchat.com/add/shopify"
+            },
+            {
+                "type": "text",
+                "id": "social_pinterest_link",
+                "label": "Pinterest",
+                "placeholder": "https://pinterest.com/shopify"
+            },
+            {
+                "type": "text",
+                "id": "social_tumblr_link",
+                "label": "Tumblr",
+                "placeholder": "https://shopify.tumblr.com"
+            },
+            {
+                "type": "text",
+                "id": "social_vimeo_link",
+                "label": "Vimeo",
+                "placeholder": "https://vimeo.com/shopify"
+            },
+            {
+                "type": "text",
+                "id": "social_linkedin_link",
+                "label": "LinkedIn",
+                "placeholder": "https://linkedin.com/shopify"
+            },
+            {
+                "type": "checkbox",
+                "id": "social_open_new_tab",
+                "label": "Open links in new tab",
+                "default": false
+            }
+        ]
+    },
+    {
+        "name": "Favicon",
+        "settings": [
+            {
+                "type": "image_picker",
+                "id": "favicon",
+                "label": "favicon",
+                "info": "The favicon is the small icon that appears in the browser tab"
+            }
+        ]
+    },
+    {
+        "name": "Selection Color",
+        "settings": [
+            {
+                "type": "color",
+                "id": "selection_color",
+                "label": "Selection Color",
+                "default": "#B19E5E"
+            }
+        ]
+    },
+    {
+        "name": "Product cards",
+        "settings": [
+            {
+                "type": "checkbox",
+                "id": "show_awards_on_card",
+                "label": "Show awards on product cards",
+                "info": "Overlays product awards (from custom.awards metafield) on the product card image, matching the PDP.",
+                "default": true
+            }
+        ]
+    }
+]

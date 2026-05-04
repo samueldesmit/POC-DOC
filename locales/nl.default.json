@@ -1,0 +1,366 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin language editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+/*
+ * ------------------------------------------------------------
+ * BELANGRIJK: De inhoud van dit bestand wordt automatisch gegenereerd.
+ *
+ * Dit bestand kan worden bijgewerkt door de Shopify admin-taaleditor
+ * of gerelateerde systemen. Wees voorzichtig, want wijzigingen in
+ * dit bestand kunnen worden overschreven.
+ * ------------------------------------------------------------
+ */
+{
+    "accessibility": {
+        "close_cart": "Sluit winkelwagen",
+        "header_main_navigation": "Hoofdnavigatie",
+        "open_mobile_menu": "Open mobiel menu",
+        "open_search": "Open zoeken",
+        "go_to_homepage": "Ga naar homepage",
+        "open_support": "Open support",
+        "open_user_account": "Open gebruikersaccount",
+        "open_cart": "Open winkelwagen",
+        "header_menu_navigation": "Menunavigatie",
+        "decrease_quantity": "Aantal verlagen",
+        "increase_quantity": "Aantal verhogen",
+        "quantity_label": "Aantal",
+        "quantity_input": "Aantal invoer",
+        "quantity_input_placeholder": "Voer aantal in",
+        "close": "Sluiten"
+    },
+    "sections": {
+        "faq": {
+            "dropdown_label": "FAQ",
+            "contact_form": {
+                "name": "Naam",
+                "email": "E-mailadres",
+                "subject": "Onderwerp",
+                "phone": "Telefoon",
+                "optional": "optioneel",
+                "message": "Bericht",
+                "send": "Verstuur",
+                "success": "Bedankt voor je bericht. We nemen zo snel mogelijk contact met je op."
+            }
+        },
+        "header": {
+            "offcanvas_navigation": {
+                "my_account": "Account"
+            }
+        },
+        "wine_subscription": {
+            "all_wines": "Alle Wijnen",
+            "minimum_bottles": "Minimum: {{ count }} flessen",
+            "increment_bottles": "Bestelbaar per {{ count }} flessen",
+            "back": "Terug",
+            "continue": "Doorgaan",
+            "select_at_least_one": "Selecteer minimaal één wijn om door te gaan",
+            "no_subscription": "Selecteer een abonnement in de sectie-instellingen.",
+            "already_customer": "Al klant bij The Wine List? Log in op je klantaccount.",
+            "log_in": "Log in",
+            "log_in_link": "Log in op je klantaccount.",
+            "not_customer": "Nog geen klant bij The Wine List?",
+            "create_account_link": "Maak een nieuw klantaccount aan.",
+            "logged_in_as": "Je bent ingelogd als",
+            "new_customer": "Nieuwe klant? Vul hieronder je gegevens in.",
+            "first_name": "Voornaam",
+            "last_name": "Achternaam",
+            "full_name": "Volledige naam",
+            "email_address": "E-mailadres",
+            "password": "Wachtwoord",
+            "phone": "Telefoon (optioneel)",
+            "phone_number": "Telefoonnummer",
+            "country": "Land",
+            "city": "Stad",
+            "address": "Adres",
+            "postcode": "Postcode",
+            "error_name": "Voer je volledige naam in",
+            "error_email": "Voer een geldig e-mailadres in",
+            "error_register": "Vul alle verplichte velden in",
+            "error_login_required": "Log in of maak een account aan om door te gaan",
+            "selected_wines": "Geselecteerde wijnen:",
+            "customer_info": "Klantinformatie:",
+            "confirm": "Bevestig Abonnement",
+            "success_title": "Bedankt!",
+            "success_message": "Je abonnement is bevestigd. We nemen binnenkort contact met je op met verdere details.",
+            "sign_in_with_account": "Inloggen met account",
+            "error_submit": "Er is een fout opgetreden bij het verzenden van je abonnement. Probeer het opnieuw."
+        },
+        "product_highlight": {
+            "more_details": "Meer details"
+        },
+        "main_blog": {
+            "Filter_by": "Filteren op",
+            "clear_all": "Alles wissen",
+            "search_winery": "Zoek wijnhuis",
+            "filters": "Filters",
+            "filter_winery": "Wijnhuis",
+            "filter_country": "Land",
+            "filter_region": "Regio",
+            "filter_category": "Categorie",
+            "search_placeholder": "Zoek wijnhuis...",
+            "search_placeholder_country": "Zoek land...",
+            "search_placeholder_region": "Zoek regio...",
+            "search_placeholder_category": "Zoek categorie...",
+            "no_results": "Geen resultaten gevonden"
+        },
+        "text_image": {
+            "more_about": "Meer over {{ winery_title }}"
+        },
+        "countdown_banner": {
+            "days": "Dagen",
+            "day": "Dag",
+            "hours": "Uren",
+            "hour": "Uur",
+            "minutes": "Minuten",
+            "minute": "Minuut",
+            "seconds": "Seconden",
+            "second": "Seconde",
+            "placeholder_text": "Voeg een geldige einddatum toe om de countdown te starten.",
+            "countdown_label": "Aftellen"
+        },
+        "winery_selection": {
+            "view_winery": "Bekijk {{ title }}",
+            "view_all": "Alles bekijken"
+        }
+    },
+    "general": {
+        "accessibility": {
+            "skip_to_content": "Ga naar inhoud",
+            "opens_new_window": "opent in een nieuw venster"
+        },
+        "search": {
+            "reset": "Zoekterm wissen",
+            "search": "Zoeken",
+            "submit": "Zoeken",
+            "placeholder_text": "Wijn, bourgogne, champagne, enz.",
+            "submit_search": "Zoeken",
+            "collections": "Collecties",
+            "pages": "Pagina’s",
+            "articles": "Artikelen",
+            "suggestions": "Suggesties",
+            "read_more": "Lees meer",
+            "no_results": "Geen resultaten gevonden",
+            "no_results_description": "We konden geen resultaten vinden voor \"*search_term\". Probeer het opnieuw.",
+            "pagination_no_results": "Geen resultaten gevonden voor '{{query}}'",
+            "intial_search": "Zoek naar wijn, bourgogne, champagne, enz.",
+            "view_all_products": "Bekijk alle producten"
+        },
+        "search_page": {
+            "no_results": "Geen resultaten gevonden voor '{{query}}'",
+            "search": "Zoeken",
+            "results_for": "Zoekresultaten voor: \"{{ terms }}\""
+        },
+        "password": {
+            "submit": "Verzenden",
+            "placeholder": "Wachtwoord"
+        },
+        "breadcrumbs": {
+            "home": "Home",
+            "cart": "Winkelwagen",
+            "products": "Producten"
+        },
+        "pagination": {
+            "label": "Paginering",
+            "next": "Volgende",
+            "previous": "Vorige",
+            "page": "Pagina"
+        }
+    },
+    "cart": {
+        "drawer": {
+            "title": "Je winkelwagen:",
+            "item_count": {
+                "zero": "0 items",
+                "one": "{{ count }} item",
+                "other": "{{ count }} items"
+            },
+            "pay_on_invoice": "Betaal op factuur",
+            "pay_on_invoice_success": "Factuur aangemaakt",
+            "pay_on_invoice_email_message": "We sturen je een factuur per e-mail.",
+            "empty": "Je winkelwagen is leeg.",
+            "continue_shopping": "Verder winkelen",
+            "view_cart": "Bekijk winkelwagen",
+            "subtotal": "Subtotaal",
+            "checkout": "Doorgaan naar afrekenen",
+            "free_shipping_message_html": "Je bent nog <strong>{{ amount }}</strong> verwijderd van gratis verzending",
+            "free_shipping_achieved": "Je hebt gratis verzending bereikt!",
+            "shipping_label": "Verzending:",
+            "shipping_tbc": "N.t.b.",
+            "shipping_free": "Gratis",
+            "order_total": "Totaal bestelling:",
+            "login_prompt": "om sneller af te rekenen en persoonlijke service te krijgen",
+            "login_link": "Inloggen",
+            "free_shipping_progress": "Voortgang gratis verzending"
+        },
+        "main-cart": {
+            "title": "Winkelwagen",
+            "empty": "Je winkelwagen is leeg",
+            "continue_shopping": "Verder winkelen",
+            "checkout": "Afrekenen",
+            "remove": "Verwijderen",
+            "subtotal": "Subtotaal",
+            "product": "Product",
+            "quantity": "Aantal",
+            "price": "Prijs",
+            "total": "Totaal",
+            "order_summary": "Besteloverzicht",
+            "order_total": "Totaal bestelling"
+        },
+        "discount": "Korting",
+        "discount_code": "Kortingscode",
+        "apply": "Toepassen",
+        "discount_code_error": "De kortingscode '{{code}}' is niet geldig",
+        "shipping_discount_error": "Verzendkortingen worden getoond bij het afrekenen nadat een adres is toegevoegd",
+        "remove_discount": "Verwijder kortingscode {{code}}",
+        "accessibility": {
+            "discount": "Invoer kortingscode",
+            "discount_applied": "Kortingscode {{code}} toegepast"
+        }
+    },
+    "collection": {
+        "filters": {
+            "off_canvas_filters_header_title": "Filters",
+            "filters": "Filters",
+            "filter": "Filter",
+            "filter_by_label": "Filter:",
+            "search_type_placeholder": "Zoek type...",
+            "products_count": "{{ count }} producten",
+            "clear_all": "wissen",
+            "clear": "Wissen",
+            "remove_all": "Alles verwijderen",
+            "apply": "Toepassen",
+            "active_filters": "Actieve filters",
+            "product_count_simple": {
+                "one": "{{ count }} product",
+                "other": "{{ count }} producten"
+            },
+            "product_count": {
+                "one": "{{ product_count }} van {{ count }} product",
+                "other": "{{ product_count }} van {{ count }} producten"
+            },
+            "sort_by_label": "Sorteren op:"
+        },
+        "sorting": {
+            "sort_by": "Sorteren op"
+        },
+        "pagination": {
+            "one_result": "1 resultaat",
+            "other_results": "{{count}} resultaten",
+            "one_product": "1 product",
+            "other_products": "{{count}} producten",
+            "one_product_of_count": "1 product van {{total}}",
+            "other_products_of_count": "{{count}} producten van {{total}}",
+            "load_previous": "Vorige laden",
+            "load_more": "Meer laden",
+            "viewed_of": "Je hebt {{ viewed }} van {{ total }} producten bekeken"
+        }
+    },
+    "main_product": {
+        "winery": "Wijnhuis",
+        "country": "Land",
+        "region": "Regio",
+        "grape": "Druif",
+        "Storage": "Opslag",
+        "alcohol": "Alcohol",
+        "temperature": "Temperatuur",
+        "storage": "Opslag",
+        "storage_potential": "Bewaarpotentieel",
+        "wine_and_food_pairing": "Wijn & spijs",
+        "closure": "Sluiting",
+        "taste": "Smaak",
+        "year": "Jaar",
+        "delivery_message": "Bestel voor 11:00 uur, morgen bezorgd*",
+        "year_selection": "Jaar selectie",
+        "form": {
+            "add_to_cart": "Nu kopen",
+            "sold_out": "Uitverkocht"
+        }
+    },
+    "products": {
+        "product": {
+            "add_to_cart": "Toevoegen aan winkelwagen",
+            "form": {
+                "add_to_cart": "Toevoegen aan winkelwagen",
+                "sold_out": "Uitverkocht"
+            },
+            "gallery": {
+                "prev_slide": "Vorige slide",
+                "next_slide": "Volgende slide",
+                "open_zoom_in_popup": "Zoom openen",
+                "close_zoom_in_popup": "Zoom sluiten"
+            },
+            "out_of_stock_form": {
+                "title": "Houd mij op de hoogte",
+                "subtitle": "We sturen je een e-mail zodra dit product weer op voorraad is.",
+                "placeholder": "Voer je e-mailadres in"
+            },
+            "about_the_product": "Over het product",
+            "washing_instructions": "Wasinstructies",
+            "product_details": "Productdetails",
+            "product_sku": "SKU",
+            "product_barcode": "Barcode",
+            "from_age_months": "Vanaf leeftijd",
+            "max_age_months": "Maximale leeftijd",
+            "tog_value": "TOG-waarde",
+            "product_height": "Hoogte",
+            "product_width": "Breedte",
+            "product_length": "Lengte",
+            "material": "Materiaal"
+        },
+        "facets": {
+            "from": "Vanaf"
+        }
+    },
+    "blogs": {
+        "no_results": "Geen resultaten gevonden",
+        "article": {
+            "read_more": "Lees meer"
+        },
+        "pagination": {
+            "load_more": "Meer laden",
+            "load_previous": "Vorige laden",
+            "viewed_of": "Je hebt {{ viewed }} van {{ total }} artikelen bekeken"
+        }
+    },
+    "newsletter": {
+        "label": "E-mailadres",
+        "button_label": "Inschrijven",
+        "success": "Bedankt voor je inschrijving!"
+    },
+    "privacy": {
+        "label": "Ik ga akkoord met het privacybeleid"
+    },
+    "shopify": {
+        "checkout": {
+            "payment": {
+                "store_credit": {
+                    "apply_label": "Tonnetjes gebruiken"
+                }
+            }
+        }
+    },
+    "customer_accounts": {
+        "payment_methods": {
+            "store_credit": {
+                "label": "Tonnetjes",
+                "accesibility_label": "Tonnetjes - {{formattedBalance}}"
+            }
+        },
+        "payment_method_brands": {
+            "storecredit": "Tonnetjes"
+        }
+    },
+    "comparison": {
+        "labels": {
+            "image": "Afbeelding",
+            "price": "Prijs",
+            "product_name": "Productnaam"
+        }
+    }
+}

@@ -1,0 +1,357 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin language editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+    "accessibility": {
+        "close_cart": "Close cart",
+        "header_main_navigation": "Main navigation",
+        "open_mobile_menu": "Open mobile menu",
+        "open_search": "Open search",
+        "go_to_homepage": "Go to homepage",
+        "open_support": "Open support",
+        "open_user_account": "Open user account",
+        "open_cart": "Open cart",
+        "header_menu_navigation": "Menu navigation",
+        "decrease_quantity": "Decrease quantity",
+        "increase_quantity": "Increase quantity",
+        "quantity_label": "Quantity",
+        "quantity_input": "Quantity input",
+        "quantity_input_placeholder": "Enter quantity",
+        "close": "Close"
+    },
+    "sections": {
+        "faq": {
+            "dropdown_label": "FAQ",
+            "contact_form": {
+                "name": "Name",
+                "email": "Email",
+                "subject": "Subject",
+                "phone": "Phone",
+                "optional": "optional",
+                "message": "Message",
+                "send": "Send",
+                "success": "Thank you for your message. We will get back to you as soon as possible."
+            }
+        },
+        "header": {
+            "offcanvas_navigation": {
+                "my_account": "Account"
+            }
+        },
+        "wine_subscription": {
+            "all_wines": "All Wines",
+            "minimum_bottles": "Minimum: {{ count }} bottles",
+            "increment_bottles": "Orderable per {{ count }} bottles",
+            "back": "Back",
+            "continue": "Continue",
+            "select_at_least_one": "Please select at least one wine to continue",
+            "no_subscription": "Please select a subscription in the section settings.",
+            "already_customer": "Already a customer at The Wine List? Please log in to your account.",
+            "log_in": "Log in",
+            "log_in_link": "Log in to your customer account.",
+            "not_customer": "Not yet a customer of The Wine List?",
+            "create_account_link": "Create a new customer account.",
+            "logged_in_as": "You are logged in as",
+            "new_customer": "New customer? Enter your details below.",
+            "first_name": "First name",
+            "last_name": "Last Name",
+            "full_name": "Full name",
+            "email_address": "Email address",
+            "password": "Password",
+            "phone": "Phone (optional)",
+            "phone_number": "Phone Number",
+            "country": "Country",
+            "city": "City",
+            "address": "Address",
+            "postcode": "Postcode",
+            "error_name": "Please enter your full name",
+            "error_email": "Please enter a valid email address",
+            "error_register": "Please fill in all required fields",
+            "error_login_required": "Please log in or create an account to continue",
+            "selected_wines": "Selected wines:",
+            "customer_info": "Customer information:",
+            "confirm": "Confirm Subscription",
+            "success_title": "Thank you!",
+            "success_message": "Your subscription has been confirmed. We will contact you shortly with further details.",
+            "sign_in_with_account": "Sign in with account",
+            "error_submit": "There was an error submitting your subscription. Please try again."
+        },
+        "product_highlight": {
+            "more_details": "More details"
+        },
+        "main_blog": {
+            "Filter_by": "Filter by",
+            "clear_all": "Clear all",
+            "search_winery": "Search winery",
+            "filters": "Filters",
+            "filter_winery": "Winery",
+            "filter_country": "Country",
+            "filter_region": "Region",
+            "filter_category": "Category",
+            "search_placeholder": "Search winery...",
+            "search_placeholder_country": "Search country...",
+            "search_placeholder_region": "Search region...",
+            "search_placeholder_category": "Search category...",
+            "no_results": "No results found"
+        },
+        "text_image": {
+            "more_about": "More about {{ winery_title }}"
+        },
+        "countdown_banner": {
+            "days": "Days",
+            "day": "Day",
+            "hours": "Hours",
+            "hour": "Hour",
+            "minutes": "Minutes",
+            "minute": "Minute",
+            "seconds": "Seconds",
+            "second": "Second",
+            "placeholder_text": "Add a valid end date to start the countdown timer.",
+            "countdown_label": "Countdown"
+        },
+        "winery_selection": {
+            "view_winery": "View {{ title }}",
+            "view_all": "View all"
+        }
+    },
+    "general": {
+        "accessibility": {
+            "skip_to_content": "Skip to content",
+            "opens_new_window": "opens in a new window"
+        },
+        "search": {
+            "reset": "Clear search term",
+            "search": "Search",
+            "submit": "Search",
+            "placeholder_text": "Wine, burgundy, champagne, etc.",
+            "submit_search": "Search",
+            "collections": "Collections",
+            "pages": "Pages",
+            "articles": "Articles",
+            "suggestions": "Suggestions",
+            "read_more": "Read more",
+            "no_results": "No results found",
+            "no_results_description": "We couldn't find any results for \"*search_term\". Please try again.",
+            "pagination_no_results": "No results found for '{{query}}'",
+            "intial_search": "Search for wine, burgundy, champagne, etc.",
+            "view_all_products": "View all products"
+        },
+        "search_page": {
+            "no_results": "No results found for '{{query}}'",
+            "search": "Search",
+            "results_for": "Search results for: \"{{ terms }}\""
+        },
+        "password": {
+            "submit": "Submit",
+            "placeholder": "Password"
+        },
+        "breadcrumbs": {
+            "home": "Home",
+            "cart": "Cart",
+            "products": "Products"
+        },
+        "pagination": {
+            "label": "Pagination",
+            "next": "Next",
+            "previous": "Previous",
+            "page": "Page"
+        }
+    },
+    "cart": {
+        "drawer": {
+            "title": "Your cart:",
+            "item_count": {
+                "zero": "0 item",
+                "one": "{{ count }} item",
+                "other": "{{ count }} items"
+            },
+            "pay_on_invoice": "Pay on invoice",
+            "pay_on_invoice_success": "Invoice created",
+            "pay_on_invoice_email_message": "We'll send you an invoice by email.",
+            "empty": "Your shopping cart is empty.",
+            "continue_shopping": "Continue Shopping",
+            "view_cart": "View Shopping Cart",
+            "subtotal": "Subtotal",
+            "checkout": "Proceed to Checkout",
+            "free_shipping_message_html": "You are <strong>{{ amount }}</strong> away from free shipping",
+            "free_shipping_achieved": "You've reached free shipping threshold!",
+            "shipping_label": "Shipping:",
+            "shipping_tbc": "TBC",
+            "shipping_free": "Free",
+            "order_total": "Order Total:",
+            "login_prompt": "to enjoy a faster checkout and personalized service",
+            "login_link": "Log in",
+            "free_shipping_progress": "Free shipping progress"
+        },
+        "main-cart": {
+            "title": "Cart",
+            "empty": "Your cart is empty",
+            "continue_shopping": "Continue shopping",
+            "checkout": "Checkout",
+            "remove": "Remove",
+            "subtotal": "Subtotal",
+            "product": "Product",
+            "quantity": "Quantity",
+            "price": "Price",
+            "total": "Total",
+            "order_summary": "Order Summary",
+            "order_total": "Order Total"
+        },
+        "discount": "Discount",
+        "discount_code": "Discount code",
+        "apply": "Apply",
+        "discount_code_error": "The discount code '{{code}}' is not valid",
+        "shipping_discount_error": "Shipping discounts are shown at checkout after adding an address",
+        "remove_discount": "Remove discount code {{code}}",
+        "accessibility": {
+            "discount": "Discount code input",
+            "discount_applied": "Discount code {{code}} applied"
+        }
+    },
+    "collection": {
+        "filters": {
+            "off_canvas_filters_header_title": "Filters",
+            "filters": "Filters",
+            "filter": "Filter",
+            "filter_by_label": "Filter:",
+            "search_type_placeholder": "Search type...",
+            "products_count": "{{ count }} products",
+            "clear_all": "clear",
+            "clear": "Clear",
+            "remove_all": "Remove all",
+            "apply": "Apply",
+            "active_filters": "Active filters",
+            "product_count_simple": {
+                "one": "{{ count }} product",
+                "other": "{{ count }} products"
+            },
+            "product_count": {
+                "one": "{{ product_count }} of {{ count }} product",
+                "other": "{{ product_count }} of {{ count }} products"
+            },
+            "sort_by_label": "Sort by:"
+        },
+        "sorting": {
+            "sort_by": "Sort By"
+        },
+        "pagination": {
+            "one_result": "1 result",
+            "other_results": "{{count}} results",
+            "one_product": "1 product",
+            "other_products": "{{count}} products",
+            "one_product_of_count": "1 product of {{total}}",
+            "other_products_of_count": "{{count}} products of {{total}}",
+            "load_previous": "Load previous",
+            "load_more": "Load More",
+            "viewed_of": "You've viewed {{ viewed }} of {{ total }} products"
+        }
+    },
+    "main_product": {
+        "winery": "Winery",
+        "country": "Country",
+        "region": "Region",
+        "grape": "Grape",
+        "Storage": "Storage",
+        "alcohol": "Alcohol",
+        "temperature": "Temperature",
+        "storage": "Storage",
+        "storage_potential": "Storage potential",
+        "wine_and_food_pairing": "Wine & food",
+        "closure": "Closure",
+        "taste": "Taste",
+        "year": "Year",
+        "delivery_message": "Order before 11:00 today, delivered tomorrow*",
+        "year_selection": "Year selection",
+        "form": {
+            "add_to_cart": "Buy it now",
+            "sold_out": "Sold out"
+        }
+    },
+    "products": {
+        "product": {
+            "add_to_cart": "Add to cart",
+            "form": {
+                "add_to_cart": "Add to cart",
+                "sold_out": "Sold out"
+            },
+            "gallery": {
+                "prev_slide": "Previous slide",
+                "next_slide": "Next slide",
+                "open_zoom_in_popup": "Open zoom in popup",
+                "close_zoom_in_popup": "Close zoom in popup"
+            },
+            "out_of_stock_form": {
+                "title": "Notify me when available",
+                "subtitle": "We'll send you an email when this product is back in stock.",
+                "placeholder": "Enter your email address"
+            },
+            "about_the_product": "About the product",
+            "washing_instructions": "Washing instructions",
+            "product_details": "Product details",
+            "product_sku": "SKU",
+            "product_barcode": "Barcode",
+            "from_age_months": "From age",
+            "max_age_months": "Max age",
+            "tog_value": "TOG value",
+            "product_height": "Height",
+            "product_width": "Width",
+            "product_length": "Length",
+            "material": "Material"
+        },
+        "facets": {
+            "from": "From"
+        }
+    },
+    "blogs": {
+        "no_results": "No results found",
+        "article": {
+            "read_more": "Read more"
+        },
+        "pagination": {
+            "load_more": "Load more",
+            "load_previous": "Load previous",
+            "viewed_of": "You have viewed {{ viewed }} of {{ total }} articles"
+        }
+    },
+    "newsletter": {
+        "label": "Email address",
+        "button_label": "Subscribe",
+        "success": "Thanks for subscribing!"
+    },
+    "privacy": {
+        "label": "I agree to the privacy policy"
+    },
+    "shopify": {
+        "checkout": {
+            "payment": {
+                "store_credit": {
+                    "apply_label": "Use Tonnetjes"
+                }
+            }
+        }
+    },
+    "customer_accounts": {
+        "payment_methods": {
+            "store_credit": {
+                "label": "Tonnetjes",
+                "accesibility_label": "Tonnetjes - {{formattedBalance}}"
+            }
+        },
+        "payment_method_brands": {
+            "storecredit": "Tonnetjes"
+        }
+    },
+    "comparison": {
+        "labels": {
+            "image": "Image",
+            "price": "Price",
+            "product_name": "Product name"
+        }
+    }
+}

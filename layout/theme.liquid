@@ -1,0 +1,109 @@
+<!doctype html>
+<html
+    lang="{{ request.locale.iso_code }}"
+    {% if customer %}
+        data-customer-email="{{ customer.email }}"
+    {% endif %}
+>
+    <head>
+        <meta charset="UTF-8">
+        <meta
+            name="viewport"
+            content="width=device-width, initial-scale=1.0"
+        >
+        <meta
+            name="theme-color"
+            content="#06061C"
+        >
+        <link
+            rel="canonical"
+            href="{{ canonical_url }}"
+        >
+
+        {%- if settings.favicon != blank -%}
+            <link
+                rel="icon"
+                type="image/png"
+                href="{{ settings.favicon | image_url: width: 32, height: 32 }}"
+            >
+        {%- endif -%}
+
+        <title>
+            {{ page_title }}
+            {%- if current_tags %}
+                &ndash; tagged "{{ current_tags | join: ', ' }}"
+            {%- endif -%}
+            {%- if current_page != 1 %}
+                &ndash; Page {{ current_page -}}
+            {%- endif -%}
+            {%- unless page_title contains shop.name %}
+                &ndash; {{ shop.name -}}
+            {%- endunless -%}
+        </title>
+
+        {% if page_description %}
+            <meta
+                name="description"
+                content="{{ page_description | escape }}"
+            >
+        {% endif %}
+
+        {{ content_for_header }}
+
+        {%- render 'theme.meta-tags' -%}
+
+        {%- render 'theme.assets' -%}
+
+        {%- render 'theme.fonts' -%}
+
+        {%- render 'preload-media' -%}
+    </head>
+    <body class="bg-white">
+        {% style %}
+            body::selection {
+                background-color: {{ settings.selection_color }};
+                color: white;
+            }
+
+            @media (prefers-reduced-motion: reduce) {
+                *, *::before, *::after {
+                    animation-duration: 0.01ms !important;
+                    animation-iteration-count: 1 !important;
+                    transition-duration: 0.01ms !important;
+                    scroll-behavior: auto !important;
+                }
+            }
+        {% endstyle %}
+        {%- if theme.role == 'development' or request.design_mode -%}
+            {% style %}
+                #shopify-pc__banner {
+                    display: none !important;
+                }
+            {% endstyle %}
+        {%- endif -%}
+        {%- # Skip link for better keyboard navigation -%}
+        <a
+            class="pointer-events-none fixed z-50 m-8 translate-y-4 bg-white p-4 opacity-0 shadow-xl transition-all duration-300 focus:pointer-events-auto focus:translate-y-0 focus:opacity-100"
+            href="#MainContent"
+        >
+            {{ 'general.accessibility.skip_to_content' | t }}
+        </a>
+
+        {% sections 'header-group' %}
+
+        <main
+            id="MainContent"
+            class="content-for-layout focus-none outline-none"
+            role="main"
+            tabindex="-1"
+        >
+            {{ content_for_layout }}
+        </main>
+
+        {% sections 'footer-group' %}
+
+        {% section 'cart-drawer' %}
+
+        {%- render 'theme.scripts' -%}
+    </body>
+</html>
