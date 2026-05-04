@@ -84,7 +84,7 @@
             "primary_button_text_color": "#282828",
             "secondary_button_color": "#000000",
             "secondary_button_text_color": "#ffffff",
-            "image": "{{ metaobject.hero_image.value }}",
+            "image": "",
             "enable_overlay": false,
             "overlay_type": "gradient",
             "mobile_gradient": "linear-gradient(180deg, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.3) 100%)",
