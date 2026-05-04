@@ -1,0 +1,11 @@
+<div
+    class="{{ classes }}"
+    data-prices
+>
+    {%- render 'component.price',
+        current_variant: current_variant,
+        class: 'flex-row-reverse justify-end items-center gap-x-3',
+        price_class: ' text-xl leading-[1.5em] tracking-[-0.022em] ',
+        compare_at_price_class: 'text-secondary'
+    -%}
+</div>

@@ -1,0 +1,41 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "name": "Footer group",
+  "type": "footer",
+  "sections": {
+    "main": {
+      "type": "footer",
+      "settings": {
+        "contact_heading": "Contact",
+        "contact_address": "Zonnenberg 8 2716 PG, Zoetermeer",
+        "contact_address_url": "",
+        "contact_email": "info@winelist.nl",
+        "contact_phone": "088 712 0100",
+        "contact_phone_hours": "working days until 6 p.m.",
+        "social_heading": "Follow us",
+        "footer_menu": "footer",
+        "section_styling": true,
+        "mobile_padding": "pt-6",
+        "desktop_padding": "lg:pt-6",
+        "bottom_bar_text": "© 2026 Wine List, All rights reserved.",
+        "bottom_bar_image": "shopify://shop_images/Nix18_CMYK_1_fce9d771-86f5-4239-9850-3c860890d263.png",
+        "background": "#ffffff",
+        "primary_text_color": "#000000",
+        "border_color": "#a08735",
+        "secondary_text_color": "#ffffff",
+        "secondary_button_text_color": "#a08735"
+      }
+    }
+  },
+  "order": [
+    "main"
+  ]
+}

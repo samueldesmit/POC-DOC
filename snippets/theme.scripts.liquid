@@ -1,0 +1,36 @@
+<script>
+    window.routes = {
+        cart_add_url: '{{ routes.cart_add_url }}',
+        cart_url: '{{ routes.cart_url }}',
+        cart_clear_url: '{{ routes.cart_clear_url }}',
+        cart_change_url: '{{ routes.cart_change_url }}',
+    };
+
+    window.Shopify = {
+        ...Shopify,
+        moneyFormat: '{{ shop.money_format }}',
+        moneyWithCurrencyFormat: '{{ shop.money_with_currency_format }}',
+    };
+
+    window.translations = {
+        products: {
+            facets: {
+                from: '{{ 'products.facets.from' | t }}',
+            },
+        },
+        comparison: {
+            labels: {
+                image: '{{ 'comparison.labels.image' | t }}',
+                price: '{{ 'comparison.labels.price' | t }}',
+                productName: '{{ 'comparison.labels.product_name' | t }}'
+            }
+        },
+        blogs: {
+            no_results: '{{ 'sections.main_blog.no_results' | t }}'
+        }
+    };
+
+    {% if shop.metaobjects.product_badges.values != blank %}
+        window.badges = {{ shop.metaobjects.product_badges.values | json  }}
+    {% endif %}
+</script>

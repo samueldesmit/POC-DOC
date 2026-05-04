@@ -1,0 +1,535 @@
+{% liquid
+    assign s = section.settings
+    assign section_id = 'section-' | append: section.id
+
+    assign show_section = true
+
+    if s.visibility_audience == 'premium_only'
+        assign show_section = false
+        if customer
+            if customer.tags contains 'premium-club'
+                assign show_section = true
+            endif
+        endif
+    elsif s.visibility_audience == 'non_premium_only'
+        if customer
+            if customer.tags contains 'premium-club'
+                assign show_section = false
+            endif
+        endif
+    endif
+%}
+
+{% if show_section %}
+<div
+    id="{{ section_id }}"
+    class="{{ s.mobile_margin }} {{ s.desktop_margin }} bg-background overflow-hidden"
+>
+    {% render 'section-colors', current_section: section %}
+    <div
+        class="{{ s.mobile_padding }} {{ s.desktop_padding }} container text-primary overflow-visible"
+    >
+        {% if s.title != blank or s.handle != blank %}
+            <div class="flex flex-col-reverse lg:flex-row items-center justify-between mb-6 lg:mb-15 gap-3">
+                {% if s.title != blank %}
+                    <h3 class="font-cormorant-garamond text-[30px] lg:text-[40px] font-semibold">
+                        {{ s.title }}
+                    </h3>
+                {% endif %}
+
+                {% if s.handle != blank %}
+                    <a
+                        href="{{ s.link }}"
+                        {% if s.open_in_new_tab %}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                        {% endif %}
+                        class="uppercase flex items-center gap-2 group"
+                    >
+                        {% render 'component.icon',
+                            type: 'instagram',
+                            class: 'w-[22px] h-[22px]'
+                        %}
+                        <span class="link-animation group-hover:after:origin-bottom-left group-hover:after:scale-x-100 font-inter font-normal leading-[150%] tracking-[0.05em] uppercase text-[15px] lg:text-[17px]">
+                            {{ s.handle }}
+                        </span>
+                    </a>
+                {% endif %}
+            </div>
+        {% endif %}
+        {% liquid
+            if s.autoplay != false
+                assign slider_type = 'loop'
+            else
+                assign slider_type = 'slide'
+            endif
+        %}
+
+        {% if s.animation_style != blank and s.animation_style != 'none' -%}
+            <gsap-section data-animation="{{ s.animation_style }}">
+        {%- endif %}
+        <splide-section
+            class="instagram-slider-container overflow-visible"
+            data-splide-type="{{ slider_type }}"
+            data-splide-per-page-desktop="{{ s.per_page_desktop }}"
+            data-splide-per-page-mobile="{{ s.per_page_mobile }}"
+            data-splide-autoplay="{{ s.autoplay }}"
+            data-splide-interval="{{ s.interval | times: 1000 }}"
+            data-splide-gap-desktop="{{ s.gap_desktop }}px"
+            data-splide-gap-mobile="{{ s.gap_mobile }}px"
+        >
+            <div class="splide overflow-visible">
+                <div class="splide__track overflow-visible!">
+                    <ul class="splide__list overflow-visible">
+                        {% for block in section.blocks %}
+                            {% assign b = block.settings %}
+                            <li class="splide__slide {{ s.aspect_ratio }}">
+                                {% if b.caption != blank %}
+                                    <a
+                                        href="{{ b.link }}"
+                                        {% if b.open_in_new_tab %}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                        {% endif %}
+                                        class="{{ s.aspect_ratio }} absolute inset-0 z-10 w-full h-full text-center  flex items-center justify-center bg-black/50 text-white opacity-0 hover:opacity-100 p-5 overflow-hidden transition-opacity duration-300"
+                                    >
+                                        {{ b.caption }}
+                                    </a>
+                                {% endif %}
+                                <a
+                                    href="{{ b.link }}"
+                                    {% if b.open_in_new_tab %}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                    {% endif %}
+                                    class="block w-full h-full"
+                                    aria-label="{{ b.caption | default: b.image.alt | default: 'Instagram post' | escape }}"
+                                >
+                                    {% if b.image != blank %}
+                                        <responsive-media
+                                            class="{{ s.aspect_ratio }} block w-full h-full"
+                                            data-visible
+                                        >
+                                            {{
+                                                b.image
+                                                | image_url: width: 1440
+                                                | image_tag:
+                                                    class: 'object-cover w-full h-full'
+                                            -}}
+                                        </responsive-media>
+                                    {% else %}
+                                        <div class="{{ s.aspect_ratio }}">
+                                            {{
+                                                'image'
+                                                | placeholder_svg_tag: 'placeholder-svg w-full h-full bg-gray-100 text-white'
+                                            }}
+                                        </div>
+                                    {% endif %}
+                                </a>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </splide-section>
+        {% if s.animation_style != blank and s.animation_style != 'none' -%}
+            </gsap-section>
+        {%- endif %}
+    </div>
+</div>
+{% endif %}
+
+{% schema %}
+{
+    "name": "Instagram Slider",
+    "tag": "section",
+    "class": "instagram-slider",
+    "settings": [
+        {
+            "type": "header",
+            "content": "Visibility"
+        },
+        {
+            "type": "select",
+            "id": "visibility_audience",
+            "label": "Visibility (audience)",
+            "options": [
+                {
+                    "value": "everyone",
+                    "label": "Everyone"
+                },
+                {
+                    "value": "premium_only",
+                    "label": "Only premium-club customers"
+                },
+                {
+                    "value": "non_premium_only",
+                    "label": "Only non premium-club customers"
+                }
+            ],
+            "default": "everyone"
+        },
+        {
+            "type": "header",
+            "content": "Documentation for this section",
+            "info": "Click [here](https://strix-net.atlassian.net/wiki/spaces/TWL/pages/3733520387/Section+Instagram+Slider) for more information."
+        },
+        {
+            "type": "header",
+            "content": "Section Styling"
+        },
+        {
+            "type": "checkbox",
+            "id": "section_styling",
+            "label": "Add styling to section",
+            "info": "If enabled this shows the settings to set the color scheme, spacing, and margin for the section.",
+            "default": false
+        },
+        {
+            "type": "header",
+            "content": "Section Color Scheme",
+            "visible_if": "{{ section.settings.section_styling == true }}"
+        },
+        {
+            "type": "header",
+            "content": "Section Spacing",
+            "visible_if": "{{ section.settings.section_styling == true }}"
+        },
+        {
+            "type": "select",
+            "id": "mobile_padding",
+            "label": "Mobile padding",
+            "visible_if": "{{ section.settings.section_styling == true }}",
+            "options": [
+                {
+                    "value": "py-0",
+                    "label": "None"
+                },
+                {
+                    "value": "py-2",
+                    "label": "S - 8px"
+                },
+                {
+                    "value": "py-4",
+                    "label": "M - 16px"
+                },
+                {
+                    "value": "py-6",
+                    "label": "L - 24px"
+                },
+                {
+                    "value": "py-8",
+                    "label": "XL - 32px"
+                },
+                {
+                    "value": "py-10",
+                    "label": "2XL - 40px"
+                },
+                {
+                    "value": "py-12",
+                    "label": "3XL - 48px"
+                },
+                {
+                    "value": "py-16",
+                    "label": "4XL - 64px"
+                }
+            ],
+            "default": "py-0"
+        },
+        {
+            "type": "select",
+            "id": "desktop_padding",
+            "label": "Desktop padding",
+            "visible_if": "{{ section.settings.section_styling == true }}",
+            "options": [
+                {
+                    "value": "lg:py-0",
+                    "label": "None"
+                },
+                {
+                    "value": "lg:py-2",
+                    "label": "S - 8px"
+                },
+                {
+                    "value": "lg:py-4",
+                    "label": "M - 16px"
+                },
+                {
+                    "value": "lg:py-6",
+                    "label": "L - 24px"
+                },
+                {
+                    "value": "lg:py-8",
+                    "label": "XL - 32px"
+                },
+                {
+                    "value": "lg:py-10",
+                    "label": "2XL - 40px"
+                },
+                {
+                    "value": "lg:py-12",
+                    "label": "3XL - 48px"
+                },
+                {
+                    "value": "lg:py-16",
+                    "label": "4XL - 64px"
+                }
+            ],
+            "default": "lg:py-0"
+        },
+        {
+            "type": "header",
+            "content": "Section Margin",
+            "visible_if": "{{ section.settings.section_styling == true }}"
+        },
+        {
+            "type": "select",
+            "id": "mobile_margin",
+            "label": "Mobile Section margin",
+            "visible_if": "{{ section.settings.section_styling == true }}",
+            "options": [
+                {
+                    "value": "mb-0",
+                    "label": "None"
+                },
+                {
+                    "value": "mb-4",
+                    "label": "Small - 16px"
+                },
+                {
+                    "value": "mb-8",
+                    "label": "Medium - 32px"
+                },
+                {
+                    "value": "mb-12",
+                    "label": "Large - 48px"
+                }
+            ],
+            "default": "mb-0"
+        },
+        {
+            "type": "select",
+            "id": "desktop_margin",
+            "label": "Desktop Section margin",
+            "visible_if": "{{ section.settings.section_styling == true }}",
+            "options": [
+                {
+                    "value": "lg:mb-0",
+                    "label": "None"
+                },
+                {
+                    "value": "lg:mb-8",
+                    "label": "Small - 32px"
+                },
+                {
+                    "value": "lg:mb-12",
+                    "label": "Medium - 48px"
+                },
+                {
+                    "value": "lg:mb-16",
+                    "label": "Large - 64px"
+                }
+            ],
+            "default": "lg:mb-0"
+        },
+        {
+            "type": "header",
+            "content": "Colors",
+            "visible_if": "{{ section.settings.section_styling == true }}"
+        },
+        {
+            "type": "color",
+            "id": "background",
+            "label": "Section background color",
+            "default": "#FFFFFF",
+            "visible_if": "{{ section.settings.section_styling == true }}"
+        },
+        {
+            "type": "color",
+            "id": "primary_text_color",
+            "label": "Primary text color",
+            "default": "#000000",
+            "visible_if": "{{ section.settings.section_styling == true }}"
+        },
+        {
+            "type": "text",
+            "id": "title",
+            "label": "Title",
+            "default": "Wine is better when shared"
+        },
+        {
+            "type": "text",
+            "id": "handle",
+            "label": "Handle",
+            "default": "thewinelistnl"
+        },
+        {
+            "type": "url",
+            "id": "link",
+            "label": "Link"
+        },
+        {
+            "type": "select",
+            "id": "aspect_ratio",
+            "label": "Aspect ratio",
+            "options": [
+                {
+                    "value": "aspect-square",
+                    "label": "Square"
+                },
+                {
+                    "value": "aspect-video",
+                    "label": "Horizontal"
+                },
+                {
+                    "value": "aspect-[267/334]",
+                    "label": "Vertical"
+                }
+            ],
+            "default": "aspect-[267/334]"
+        },
+        {
+            "type": "header",
+            "content": "Splider settings"
+        },
+        {
+            "type": "checkbox",
+            "id": "autoplay",
+            "label": "Autoplay",
+            "default": true
+        },
+        {
+            "type": "range",
+            "id": "interval",
+            "label": "Interval (seconds)",
+            "default": 5,
+            "min": 1,
+            "max": 20,
+            "step": 1
+        },
+        {
+            "type": "range",
+            "id": "gap_mobile",
+            "label": "Gap between slides on mobile (px)",
+            "default": 8,
+            "min": 0,
+            "max": 40,
+            "step": 2,
+            "unit": "px"
+        },
+        {
+            "type": "range",
+            "id": "gap_desktop",
+            "label": "Gap between slides on desktop (px)",
+            "default": 12,
+            "min": 0,
+            "max": 40,
+            "step": 2,
+            "unit": "px"
+        },
+        {
+            "type": "range",
+            "id": "per_page_desktop",
+            "label": "Slides per page on desktop",
+            "default": 5,
+            "min": 1,
+            "max": 5,
+            "step": 0.1
+        },
+        {
+            "type": "range",
+            "id": "per_page_mobile",
+            "label": "Slides per page on mobile",
+            "default": 2.2,
+            "min": 1,
+            "max": 5,
+            "step": 0.1
+        },
+        {
+            "type": "header",
+            "content": "Animation"
+        },
+        {
+            "type": "select",
+            "id": "animation_style",
+            "label": "Scroll animation",
+            "info": "Adds a subtle entrance animation when the section scrolls into view.",
+            "options": [
+                { "value": "none", "label": "None" },
+                { "value": "fade-up", "label": "Fade up" },
+                { "value": "fade-in", "label": "Fade in" },
+                { "value": "stagger-up", "label": "Stagger up" },
+                { "value": "slide-in-left", "label": "Slide in from left" },
+                { "value": "slide-in-right", "label": "Slide in from right" }
+            ],
+            "default": "none"
+        }
+    ],
+    "blocks": [
+        {
+            "type": "instagram_slide",
+            "name": "Instagram Slide",
+            "settings": [
+                {
+                    "type": "image_picker",
+                    "id": "image",
+                    "label": "Image"
+                },
+                {
+                    "type": "text",
+                    "id": "caption",
+                    "label": "Caption"
+                },
+                {
+                    "type": "url",
+                    "id": "link",
+                    "label": "Link"
+                },
+                {
+                    "type": "checkbox",
+                    "id": "open_in_new_tab",
+                    "label": "Open in new tab",
+                    "default": true
+                }
+            ]
+        }
+    ],
+    "presets": [
+        {
+            "name": "Instagram Slider",
+            "blocks": [
+                {
+                    "type": "instagram_slide",
+                    "settings": {
+                        "caption": "Message from the winelist"
+                    }
+                },
+                {
+                    "type": "instagram_slide",
+                    "settings": {
+                        "caption": "Message from the winelist"
+                    }
+                },
+                {
+                    "type": "instagram_slide",
+                    "settings": {
+                        "caption": "Message from the winelist"
+                    }
+                },
+                {
+                    "type": "instagram_slide",
+                    "settings": {
+                        "caption": "Message from the winelist"
+                    }
+                },
+                {
+                    "type": "instagram_slide",
+                    "settings": {
+                        "caption": "Message from the winelist"
+                    }
+                }
+            ]
+        }
+    ]
+}
+{% endschema %}

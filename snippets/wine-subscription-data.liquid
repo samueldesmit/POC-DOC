@@ -1,0 +1,28 @@
+{%- doc -%}
+  Expected behaviour: Iterates through wine subscription metaobjects and renders content.
+  About: Data layer snippet for accessing wine subscription hierarchy from metaobjects.
+         Provides subscription → wine_entry structure for consumption.
+         Wine entries are grouped in the content snippets by their `category` field.
+  Accepts:
+    - {string} subscription_handle: Optional. Filter to specific subscription by handle.
+    - {string} content_for: Required. Name of snippet to render for each subscription.
+  Usage:
+    {% render 'wine-subscription-data', content_for: 'wine-subscription-display-content' %}
+    {% render 'wine-subscription-data', subscription_handle: 'clos-apalta', content_for: 'wine-subscription-display-content' %}
+
+  @param {string} [subscription_handle] - Filter to a specific subscription by handle
+  @param {string} [content_for] - Name of the snippet to render for each subscription
+{%- enddoc -%}
+
+{%- liquid
+  for subscription in shop.metaobjects.subscription.values
+    if subscription_handle != blank and subscription.handle != subscription_handle
+      continue
+    endif
+
+    assign subscription_name = subscription.subscription_name
+    assign wine_entries = subscription.subscription_wines.value
+
+    render content_for, subscription: subscription, subscription_name: subscription_name, wine_entries: wine_entries
+  endfor
+-%}

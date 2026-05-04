@@ -1,0 +1,48 @@
+{% liquid
+    assign current_variant = product.selected_or_first_available_variant
+    assign atc_form_id = 'main-product-atc-form-' | append: section.id
+
+    assign add_to_cart_label = 'main_product.form.add_to_cart' | t
+    assign sold_out_label = 'main_product.form.sold_out' | t
+    assign add_to_cart_attributes = 'data-atc-button' | append: ' data-label="' | append: add_to_cart_label | append: '"' | append: ' data-label-sold-out="' | append: sold_out_label | append: '"'
+
+    if current_variant.available == false
+        assign add_to_cart_attributes = add_to_cart_attributes | append: ' disabled'
+        assign add_to_cart_label = sold_out_label
+    endif
+%}
+
+<div class="add-to-cart-box flex-1 flex flex-wrap gap-x-2">
+    {%- form 'product', product, id: atc_form_id, class: 'flex-1' -%}
+        <input
+            type="hidden"
+            name="id"
+            value="{{ current_variant.id}}"
+        >
+        <add-to-cart
+            productId="{{ current_variant.id }}"
+            class="flex gap-x-3"
+        >
+            {% render 'add-to-cart-pdp', current_variant: current_variant %}
+            {% if current_variant.available == false %}
+                {% render 'component.button',
+                    style: 'primary',
+                    label: sold_out_label,
+                    class: 'button disabled:opacity-50 w-full flex items-center justify-center',
+                    attributes: add_to_cart_attributes
+                %}
+            {% else %}
+                {% render 'component.button',
+                    style: 'primary',
+                    label: add_to_cart_label,
+                    class: 'button disabled:opacity-50 w-full flex items-center justify-center',
+                    attributes: add_to_cart_attributes
+                %}
+            {% endif %}
+        </add-to-cart>
+    {%- endform -%}
+    <div
+        class="add-to-cart-error-container w-full text-sm py-2 text-secondary"
+        hidden
+    ></div>
+</div>

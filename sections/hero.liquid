@@ -1,0 +1,648 @@
+{%- liquid
+    assign s = section.settings
+    assign total_blocks_size = section.blocks.size
+
+    assign show_section = true
+
+    if s.visibility_audience == 'premium_only'
+        assign show_section = false
+        if customer
+            if customer.tags contains 'premium-club'
+                assign show_section = true
+            endif
+        endif
+    elsif s.visibility_audience == 'non_premium_only'
+        if customer
+            if customer.tags contains 'premium-club'
+                assign show_section = false
+            endif
+        endif
+    endif
+-%}
+
+{% if show_section %}
+    <div
+        id="section-{{ section.id }}"
+        class="{{ s.mobile_margin }} {{ s.desktop_margin }} relative{% unless s.full_width_mobile %} max-lg:container{% endunless %}{% unless s.full_width_desktop %} lg:container{% endunless %}"
+    >
+        {% if s.animation_style != blank and s.animation_style != 'none' -%}
+            <gsap-section data-animation="{{ s.animation_style }}" class="w-full h-full">
+        {%- endif %}
+
+        {% if total_blocks_size > 1 %}
+            <splide-section
+                aria-label="Hero carousel"
+                aria-roledescription="carousel"
+                data-splide-type="loop"
+                data-splide-arrows="true"
+                data-splide-per-page-desktop="1"
+                data-splide-per-page-mobile="1"
+                {% if s.enable_autoplay %}
+                    data-splide-autoplay="true"
+                    data-splide-interval="{{ s.autoplay_interval }}"
+                {% endif %}
+                class="flex items-center justify-between"
+            >
+                <div class="w-full mx-auto splide">
+                    <div class="w-full h-full overflow-hidden splide__track">
+                        <ul class="flex w-full splide__list">
+        {% endif %}
+
+                            {%- for block in section.blocks -%}
+                                {% liquid
+                                    assign b = block.settings
+                                    assign block_id = 'section-' | append: block.id
+                                    assign loading = 'lazy'
+                                    assign fetchpriority = 'low'
+                                    if forloop.first and section.index0 == 0
+                                        assign loading = 'eager'
+                                        assign fetchpriority = 'high'
+                                    endif
+                                    assign has_mobile_media = false
+                                    if b.mobile_image != blank or b.mobile_video != blank
+                                        assign has_mobile_media = true
+                                    endif
+                                %}
+                                {% assign image_zoom_class = 'object-cover w-full h-full' %}
+                                {% render 'section-colors',
+                                    current_section: block
+                                %}
+                                {% if total_blocks_size > 1 %}
+                                    <li class="relative splide__slide">
+                                {% else %}
+                                    <div class="relative">
+                                {% endif %}
+                                    <responsive-media
+                                        class="h-full w-full {{ s.aspect_ratio_mobile }} {{ s.aspect_ratio_desktop }} max-h-[92dvh]"
+                                        data-visible
+                                    >
+                                        {% if has_mobile_media %}
+                                            <div
+                                                class="hidden lg:block h-full w-full"
+                                            >
+                                        {% endif %}
+
+                                        {% if b.image != blank %}
+                                            {{
+                                                b.image
+                                                | image_url: width: 1920
+                                                | image_tag:
+                                                    class: image_zoom_class,
+                                                    loading: loading,
+                                                    fetchpriority: fetchpriority,
+                                                    widths: '375,750,1100,1440,1920',
+                                                    sizes: '100vw'
+                                            -}}
+                                        {% elsif b.video != blank %}
+                                            {{
+                                                b.video
+                                                | video_tag:
+                                                    class: 'object-cover w-full h-full',
+                                                    autoplay: true,
+                                                    muted: true,
+                                                    loop: true,
+                                                    playsinline: true,
+                                                    loading: loading,
+                                                    fetchpriority: fetchpriority
+                                            -}}
+                                        {% else %}
+                                            <div class="h-full w-full flex items-center justify-center text-white">
+                                                {{
+                                                    'image'
+                                                    | placeholder_svg_tag: 'placeholder-svg w-full h-full bg-gray-100 text-white'
+                                                }}
+                                            </div>
+                                        {% endif %}
+
+                                        {% if has_mobile_media %}
+                                            </div>
+                                            <div class="lg:hidden h-full w-full">
+                                                {% if b.mobile_image != blank %}
+                                                    {{
+                                                        b.mobile_image
+                                                        | image_url: width: 750
+                                                        | image_tag:
+                                                            class: image_zoom_class,
+                                                            loading: loading,
+                                                            fetchpriority: fetchpriority,
+                                                            widths: '375,750',
+                                                            sizes: '100vw'
+                                                    -}}
+                                                {% elsif b.mobile_video != blank
+                                                %}
+                                                    {{
+                                                        b.mobile_video
+                                                        | video_tag:
+                                                            class: 'object-cover w-full h-full',
+                                                            autoplay: true,
+                                                            muted: true,
+                                                            loop: true,
+                                                            playsinline: true,
+                                                            loading: loading,
+                                                            fetchpriority: fetchpriority
+                                                    -}}
+                                                {% endif %}
+                                            </div>
+                                        {% endif %}
+
+                                        {% if b.enable_overlay %}
+                                            {% if b.overlay_type == 'color' %}
+                                                <div class="absolute inset-0 bg-black" style="opacity: {{ b.overlay_opacity | divided_by: 100.0 }};"></div>
+                                            {% elsif b.mobile_gradient != blank
+                                                and b.desktop_gradient != blank
+                                            %}
+                                                {% render 'component.gradient',
+                                                    mobile_bg: b.mobile_gradient,
+                                                    desktop_bg: b.desktop_gradient,
+                                                    mobile_visible: true,
+                                                    desktop_visible: true
+                                                %}
+                                            {% endif %}
+                                        {% endif %}
+                                    </responsive-media>
+                                    <div
+                                        class="absolute inset-0 h-full flex items-end pb-20 lg:pb-24"
+                                        id="{{ block_id }}"
+                                    >
+                                        <div class="container">
+                                            <div class="flex flex-col items-start text-left w-full max-w-[298px] lg:max-w-[464px] space-y-4 font-light">
+                                                {% if b.title != blank %}
+                                                    <div class="text-primary text-[30px] lg:text-[55px] leading-[120%] line-clamp-2 lg:line-clamp-5 break-keep font-cormorant-garamond font-bold lg:font-semibold">
+                                                        {{ b.title }}
+                                                    </div>
+                                                {% endif %}
+                                                {% if b.text != blank %}
+                                                    <p class="font-normal text-secondary text-[16px] lg:text-[18px] break-keep tracking-[-0.022em] lg:tracking-normal leading-[150%]">
+                                                        {{ b.text }}
+                                                    </p>
+                                                {% endif %}
+
+                                                {% if b.button_url != blank
+                                                    and b.button_text != blank
+                                                %}
+                                                    {% render 'component.button',
+                                                        label: b.button_text,
+                                                        title: b.button_text,
+                                                        href: b.button_url,
+                                                        class: 'px-[50px]',
+                                                        id: b.button_text,
+                                                        attributes: '',
+                                                        type: 'button',
+                                                        name: b.button_text,
+                                                        aria_label: b.button_text,
+                                                        aria_describedby: b.button_text,
+                                                        style: b.button_style,
+                                                        size: 'medium',
+                                                        icon: '',
+                                                        icon_position: '',
+                                                        icon_class: '',
+                                                        css_variables: '',
+                                                        disabled: false,
+                                                        loading: false,
+                                                        translate: false
+                                                    %}
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% if total_blocks_size > 1 %}
+                                    </li>
+                                {% else %}
+                                    </div>
+                                {% endif %}
+                            {% endfor %}
+
+        {% if total_blocks_size > 1 %}
+                        </ul>
+                    </div>
+                    <div class="absolute inset-x-0 bottom-5 lg:bottom-12">
+                        <div class="container text-white">
+                            {% render 'component.splide-arrows',
+                                container_class: 'flex items-center gap-2 font-inter',
+                                style: 'custom',
+                                button_base_class: 'cursor-pointer splide__arrow',
+                                show_pagination: true,
+                                pagination_total: total_blocks_size
+                            %}
+                        </div>
+                    </div>
+                </div>
+            </splide-section>
+        {% endif %}
+
+        {% if s.animation_style != blank and s.animation_style != 'none' -%}
+            </gsap-section>
+        {%- endif %}
+    </div>
+{% endif %}
+
+{% schema %}
+{
+    "name": "Hero",
+    "tag": "section",
+    "class": "section_hero",
+    "disabled_on": {
+        "groups": ["header", "footer"]
+    },
+    "settings": [
+        {
+            "type": "header",
+            "content": "Documentation for this section",
+            "info": "Click [here](https://strix-net.atlassian.net/wiki/spaces/TWL/pages/3717398529/Hero+banner) for more information."
+        },
+        {
+            "type": "select",
+            "id": "visibility_audience",
+            "label": "Visibility (audience)",
+            "options": [
+                {
+                    "value": "everyone",
+                    "label": "Everyone"
+                },
+                {
+                    "value": "premium_only",
+                    "label": "Only premium-club customers"
+                },
+                {
+                    "value": "non_premium_only",
+                    "label": "Only non premium-club customers"
+                }
+            ],
+            "default": "everyone"
+        },
+        {
+            "type": "header",
+            "content": "Section Styling"
+        },
+        {
+            "type": "checkbox",
+            "id": "section_styling",
+            "label": "Add styling to section",
+            "info": "If enabled this shows the settings to set the color scheme, spacing, and margin for the section.",
+            "default": false
+        },
+        {
+            "type": "header",
+            "content": "Section Margin",
+            "visible_if": "{{ section.settings.section_styling == true }}"
+        },
+        {
+            "type": "select",
+            "id": "mobile_margin",
+            "label": "Mobile Section margin",
+            "visible_if": "{{ section.settings.section_styling == true }}",
+            "options": [
+                {
+                    "value": "mb-0",
+                    "label": "None"
+                },
+                {
+                    "value": "mb-4",
+                    "label": "Small - 16px"
+                },
+                {
+                    "value": "mb-8",
+                    "label": "Medium - 32px"
+                },
+                {
+                    "value": "mb-12",
+                    "label": "Large - 48px"
+                }
+            ],
+            "default": "mb-0"
+        },
+        {
+            "type": "select",
+            "id": "desktop_margin",
+            "label": "Desktop Section margin",
+            "visible_if": "{{ section.settings.section_styling == true }}",
+            "options": [
+                {
+                    "value": "lg:mb-0",
+                    "label": "None"
+                },
+                {
+                    "value": "lg:mb-8",
+                    "label": "Small - 32px"
+                },
+                {
+                    "value": "lg:mb-12",
+                    "label": "Medium - 48px"
+                },
+                {
+                    "value": "lg:mb-16",
+                    "label": "Large - 64px"
+                }
+            ],
+            "default": "lg:mb-0"
+        },
+        {
+            "type": "checkbox",
+            "id": "full_width_mobile",
+            "label": "Full width (mobile)",
+            "info": "When disabled, the hero will be contained within the website width on mobile.",
+            "default": true
+        },
+        {
+            "type": "checkbox",
+            "id": "full_width_desktop",
+            "label": "Full width (desktop)",
+            "info": "When disabled, the hero will be contained within the website width on desktop.",
+            "default": true
+        },
+        {
+            "type": "header",
+            "content": "Hero Size"
+        },
+        {
+            "type": "select",
+            "id": "aspect_ratio_desktop",
+            "label": "Aspect ratio desktop",
+            "options": [
+                {
+                    "value": "lg:aspect-[1440/839]",
+                    "label": "Large (Full hero)"
+                },
+                {
+                    "value": "lg:aspect-[1440/600]",
+                    "label": "Medium"
+                },
+                {
+                    "value": "lg:aspect-[1440/450]",
+                    "label": "Small"
+                }
+            ],
+            "default": "lg:aspect-[1440/839]"
+        },
+        {
+            "type": "select",
+            "id": "aspect_ratio_mobile",
+            "label": "Aspect ratio mobile",
+            "options": [
+                {
+                    "value": "aspect-[375/650]",
+                    "label": "Large (Full hero)"
+                },
+                {
+                    "value": "aspect-[375/500]",
+                    "label": "Medium"
+                },
+                {
+                    "value": "aspect-[375/350]",
+                    "label": "Small"
+                }
+            ],
+            "default": "aspect-[375/650]"
+        },
+        {
+            "type": "checkbox",
+            "id": "enable_autoplay",
+            "label": "Enable autoplay",
+            "default": true
+        },
+        {
+            "type": "number",
+            "id": "autoplay_interval",
+            "label": "Autoplay interval",
+            "default": 5000,
+            "info": "The interval in milliseconds between slides"
+        },
+        {
+            "type": "header",
+            "content": "Animation"
+        },
+        {
+            "type": "select",
+            "id": "animation_style",
+            "label": "Scroll animation",
+            "info": "Adds a subtle entrance animation when the section scrolls into view.",
+            "options": [
+                { "value": "none", "label": "None" },
+                { "value": "fade-up", "label": "Fade up" },
+                { "value": "fade-in", "label": "Fade in" },
+                { "value": "slide-in-left", "label": "Slide in from left" },
+                { "value": "slide-in-right", "label": "Slide in from right" },
+                { "value": "image-zoom", "label": "Image zoom" }
+            ],
+            "default": "none"
+        }
+    ],
+    "blocks": [
+        {
+            "type": "hero_slide",
+            "name": "Hero Slide",
+            "settings": [
+                {
+                    "type": "checkbox",
+                    "id": "block_styling",
+                    "label": "Add styling to block",
+                    "info": "If enabled this shows the settings to set the color scheme for the block.",
+                    "default": false
+                },
+                {
+                    "type": "header",
+                    "content": "Block Colors",
+                    "visible_if": "{{ block.settings.block_styling == true }}"
+                },
+                {
+                    "type": "color",
+                    "id": "primary_text_color",
+                    "label": "Primary text color",
+                    "default": "#282828",
+                    "visible_if": "{{ block.settings.block_styling == true }}"
+                },
+                {
+                    "type": "color",
+                    "id": "secondary_text_color",
+                    "label": "Secondary text color",
+                    "default": "#282828",
+                    "visible_if": "{{ block.settings.block_styling == true }}"
+                },
+                {
+                    "type": "color",
+                    "id": "primary_button_color",
+                    "label": "Primary button background color",
+                    "default": "#FFFFFF",
+                    "visible_if": "{{ block.settings.block_styling == true }}"
+                },
+                {
+                    "type": "color",
+                    "id": "primary_button_text_color",
+                    "label": "Primary button text color",
+                    "default": "#282828",
+                    "visible_if": "{{ block.settings.block_styling == true }}"
+                },
+                {
+                    "type": "color",
+                    "id": "secondary_button_color",
+                    "label": "Secondary button background color",
+                    "default": "#000000",
+                    "visible_if": "{{ block.settings.block_styling == true }}"
+                },
+                {
+                    "type": "color",
+                    "id": "secondary_button_text_color",
+                    "label": "Secondary button text color",
+                    "default": "#FFFFFF",
+                    "visible_if": "{{ block.settings.block_styling == true }}"
+                },
+                {
+                    "type": "header",
+                    "content": "Block Content"
+                },
+                {
+                    "id": "image",
+                    "type": "image_picker",
+                    "label": "image",
+                    "info": "Keep empty if using video"
+                },
+                {
+                    "type": "video",
+                    "id": "video",
+                    "label": "Video",
+                    "info": "This video will be shown if the main image is not set"
+                },
+                {
+                    "type": "header",
+                    "content": "Mobile Media"
+                },
+                {
+                    "id": "mobile_image",
+                    "type": "image_picker",
+                    "label": "Mobile image",
+                    "info": "Optional: upload a different image for mobile. Falls back to desktop image if empty."
+                },
+                {
+                    "type": "video",
+                    "id": "mobile_video",
+                    "label": "Mobile video",
+                    "info": "Optional: upload a different video for mobile. Falls back to desktop video if empty."
+                },
+                {
+                    "type": "checkbox",
+                    "id": "enable_overlay",
+                    "default": false,
+                    "label": "Enable overlay"
+                },
+                {
+                    "type": "select",
+                    "id": "overlay_type",
+                    "label": "Overlay type",
+                    "options": [
+                        {
+                            "value": "gradient",
+                            "label": "Gradient"
+                        },
+                        {
+                            "value": "color",
+                            "label": "Color overlay"
+                        }
+                    ],
+                    "default": "gradient",
+                    "visible_if": "{{ block.settings.enable_overlay == true }}"
+                },
+                {
+                    "type": "color_background",
+                    "id": "mobile_gradient",
+                    "label": "Gradient [Mobile]",
+                    "info": "Click on color-picker to adjust gradient colors, direction and opacity",
+                    "default": "linear-gradient(180deg, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.3) 100%)",
+                    "visible_if": "{{ block.settings.enable_overlay == true and block.settings.overlay_type == 'gradient' }}"
+                },
+                {
+                    "type": "color_background",
+                    "id": "desktop_gradient",
+                    "label": "Gradient [Desktop]",
+                    "info": "Click on color-picker to adjust gradient colors, direction and opacity",
+                    "default": "linear-gradient(180deg, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.3) 100%)",
+                    "visible_if": "{{ block.settings.enable_overlay == true and block.settings.overlay_type == 'gradient' }}"
+                },
+                {
+                    "type": "range",
+                    "id": "overlay_opacity",
+                    "label": "Overlay opacity",
+                    "min": 0,
+                    "max": 100,
+                    "step": 5,
+                    "unit": "%",
+                    "default": 30,
+                    "visible_if": "{{ block.settings.enable_overlay == true and block.settings.overlay_type == 'color' }}"
+                },
+                {
+                    "type": "text",
+                    "id": "text",
+                    "label": "Subtitle",
+                    "default": "A handpicked selection of vintage wines with rich heritage. Crafted by tradition, chosen by you."
+                },
+                {
+                    "type": "richtext",
+                    "id": "title",
+                    "label": "Title",
+                    "default": "<h1>Crafted by history. Chosen by you.</h1>"
+                },
+                {
+                    "type": "text",
+                    "id": "button_text",
+                    "label": "Button text",
+                    "default": "Button Text"
+                },
+                {
+                    "type": "url",
+                    "id": "button_url",
+                    "label": "Button url"
+                },
+                {
+                    "type": "select",
+                    "id": "button_style",
+                    "label": "Button style",
+                    "options": [
+                        {
+                            "value": "primary",
+                            "label": "Primary"
+                        },
+                        {
+                            "value": "secondary",
+                            "label": "Secondary"
+                        }
+                    ],
+                    "default": "primary"
+                }
+            ]
+        }
+    ],
+    "presets": [
+        {
+            "name": "Hero",
+            "blocks": [
+                {
+                    "type": "hero_slide",
+                    "settings": {
+                        "title": "<h1>Vintage wines with rich heritage</h1>",
+                        "text": "A handpicked selection of vintage wines with rich heritage. Crafted by tradition, chosen by you.",
+                        "button_text": "Shop Now",
+                        "button_url": "/home"
+                    }
+                },
+                {
+                    "type": "hero_slide",
+                    "settings": {
+                        "title": "<h2>Crafted by history. Chosen by you.</h2>",
+                        "text": "A handpicked selection of vintage wines with rich heritage. Crafted by tradition, chosen by you.",
+                        "button_text": "Shop Now",
+                        "button_url": "/home"
+                    }
+                },
+                {
+                    "type": "hero_slide",
+                    "settings": {
+                        "title": "<h2>Our products are made with care and attention to detail</h2>",
+                        "text": "Our products are made with care and attention to detail",
+                        "button_text": "Shop Now",
+                        "button_url": "/home"
+                    }
+                }
+            ]
+        }
+    ]
+}
+{% endschema %}

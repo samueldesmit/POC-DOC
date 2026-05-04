@@ -1,0 +1,27 @@
+{%- doc -%}
+    Expected behaviour:
+      Renders text
+
+    About:
+      Render a block of text with default richtext styling
+
+    Accepts:
+      - content: {String} Text to render
+
+      OPTIONAL
+      - class: {String} Class to add to the picture element
+
+    Usage:
+      {%- render 'richtext',
+        content: content
+      -%}
+
+    @param {string} [content] - Text/HTML to render
+    @param {string} [class] - Additional classes to add to the wrapping element
+{%- enddoc -%}
+
+<div
+    class="marker:[&_ol]:text-h-4 [&_h1]:text-display [&_h2]:text-display [&_h3]:text-display [&_h4]:text-heading [&_h5]:text-heading [&_h6]:text-heading [&_li]:text-body [&_p]:text-body [&>*:first-child]:mt-0 [&>*:first-child]:pt-0 [&>*:last-child]:mb-0 [&>*:last-child]:pb-0 [&_a:has(img)]:after:hidden [&_a]:inline [&_a]:!text-red [&_a]:underline lg:hover:[&_a]:opacity-100 [&_b]:font-bold [&_b]:text-green-dark [&_h1]:mb-3 [&_h1]:text-4xl [&_h1]:text-green-dark [&_h2]:mb-3 [&_h2]:text-3xl [&_h2]:text-green-dark [&_h3]:mb-3 [&_h3]:text-2xl [&_h3]:text-green-dark [&_h4]:mb-3 [&_h4]:text-2xl [&_h4]:text-green-dark [&_h5]:mb-3 [&_h5]:text-[1rem] [&_h5]:text-green-dark [&_h6]:mb-3 [&_h6]:text-sm [&_h6]:text-green-dark [&_iframe]:aspect-video [&_iframe]:w-full [&_img]:mb-4 [&_img]:w-full [&_img]:overflow-hidden [&_img]:rounded-lg [&_img]:border-[8px] [&_img]:border-white [&_ol]:list-decimal [&_ol]:py-[1em] [&_ol]:pl-[1em] [&_ol]:text-green-dark/70 [&_p:empty]:hidden [&_p]:mb-4 [&_p]:text-green-dark/70 [&_strong]:font-bold [&_ul]:list-disc [&_ul]:py-[1em] [&_ul]:pl-[1em] [&_ul]:text-green-dark/70 {{ class -}}"
+>
+    {{- content | remove: 'font-family: ' -}}
+</div>

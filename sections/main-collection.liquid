@@ -1,0 +1,55 @@
+{%- liquid
+    assign s = section.settings
+    assign promo_cards = collection.metafields.custom.promo_cards.value
+    assign promo_positions = collection.metafields.custom.promo_card_positions.value
+-%}
+
+<div class="container pt-4">
+    <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between lg:gap-[3rem]">
+        <h1 class="font-cormorant-garamond text-[40px] lg:text-[52px] font-medium leading-tight shrink-0">
+            {{- collection.title -}}
+        </h1>
+
+        {%- if collection.description != blank -%}
+            <div
+                class="w-full h-px lg:w-px lg:h-[5rem] bg-brand-400 opacity-50 shrink-0 my-[1.25rem] lg:my-0"
+            ></div>
+            <div class="w-full font-inter text-[16px] leading-tight lg:pr-[3rem] max-w-[50rem]">
+                {%- if collection.description != blank -%}
+                    {{- collection.description -}}
+                {%- endif -%}
+            </div>
+        {%- endif -%}
+    </div>
+</div>
+
+<div class="container mt-8 lg:mt-16">
+    {%- render 'products-listing-grid',
+        products_per_page: s.products_per_page,
+        collection_description: s.collection_description,
+        promo_cards: promo_cards,
+        promo_positions: promo_positions,
+        show_quick_add: s.show_quick_add
+    -%}
+</div>
+
+{% schema %}
+{
+    "name": "Main Collection",
+    "settings": [
+        {
+            "type": "number",
+            "id": "products_per_page",
+            "label": "Products per page limit",
+            "default": 15
+        },
+        {
+            "type": "checkbox",
+            "id": "show_quick_add",
+            "label": "Show quick add to cart",
+            "default": false
+        }
+    ],
+    "blocks": []
+}
+{% endschema %}

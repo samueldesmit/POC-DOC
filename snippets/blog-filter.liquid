@@ -1,0 +1,402 @@
+{%- liquid
+    assign countries_string = ''
+    assign countries_handles_string = ''
+    assign countries_normalized = '|'
+    assign wineries_titles_string = ''
+    assign wineries_urls_string = ''
+-%}
+
+{%- paginate blog.articles by 250 -%}
+{%- liquid
+    for article in blog.articles
+        assign article_is_restricted = false
+        if article.metafields.custom.premium_club_exclusive.value == true
+            assign article_is_restricted = true
+            if customer and customer.tags contains 'premium-club'
+                assign article_is_restricted = false
+            endif
+        endif
+        if article_is_restricted
+            continue
+        endif
+        if wineries_titles_string == blank
+            assign wineries_titles_string = article.title
+            assign wineries_urls_string = article.url
+        else
+            assign wineries_titles_string = wineries_titles_string | append: '|||' | append: article.title
+            assign wineries_urls_string = wineries_urls_string | append: '|||' | append: article.url
+        endif
+        assign country = article.metafields.custom.country.value.country | strip
+        assign country_handle = article.metafields.custom.country.value.tag | strip
+        if country != blank
+            assign country_normalized = country | handleize
+            assign country_check = '|' | append: country_normalized | append: '|'
+            unless countries_normalized contains country_check
+                if countries_string == blank
+                    assign countries_string = country
+                    assign countries_handles_string = country_handle
+                else
+                    assign countries_string = countries_string | append: '|' | append: country
+                    assign countries_handles_string = countries_handles_string | append: '|' | append: country_handle
+                endif
+                assign countries_normalized = countries_normalized | append: country_normalized | append: '|'
+            endunless
+        endif
+    endfor
+
+    assign countries_list = countries_string | split: '|'
+    assign countries_handles_list = countries_handles_string | split: '|'
+
+    assign regions_string = ''
+    assign regions_handles_string = ''
+    assign regions_normalized = '|'
+
+    for article in blog.articles
+        assign article_is_restricted = false
+        if article.metafields.custom.premium_club_exclusive.value == true
+            assign article_is_restricted = true
+            if customer and customer.tags contains 'premium-club'
+                assign article_is_restricted = false
+            endif
+        endif
+        if article_is_restricted
+            continue
+        endif
+        assign region = article.metafields.custom.region.value.region | strip
+        assign region_handle = article.metafields.custom.region.value.tag | strip
+        if region != blank
+            assign region_normalized = region | handleize
+            assign region_check = '|' | append: region_normalized | append: '|'
+            unless regions_normalized contains region_check
+                if regions_string == blank
+                    assign regions_string = region
+                    assign regions_handles_string = region_handle
+                else
+                    assign regions_string = regions_string | append: '|' | append: region
+                    assign regions_handles_string = regions_handles_string | append: '|' | append: region_handle
+                endif
+                assign regions_normalized = regions_normalized | append: region_normalized | append: '|'
+            endunless
+        endif
+    endfor
+
+    assign regions_list = regions_string | split: '|'
+    assign regions_handles_list = regions_handles_string | split: '|'
+
+    assign categories_string = ''
+    assign categories_handles_string = ''
+    assign categories_normalized = '|'
+
+    for article in blog.articles
+        assign article_is_restricted = false
+        if article.metafields.custom.premium_club_exclusive.value == true
+            assign article_is_restricted = true
+            if customer and customer.tags contains 'premium-club'
+                assign article_is_restricted = false
+            endif
+        endif
+        if article_is_restricted
+            continue
+        endif
+        assign category_metafield = article.metafields.custom.category
+        if category_metafield != blank
+            if category_metafield.value.category != blank
+                assign category = category_metafield.value.category | strip
+                assign category_handle = category_metafield.value.tag | strip
+            elsif category_metafield.value != blank
+                assign category = category_metafield.value | strip
+                assign category_handle = category | handleize
+            else
+                assign category = category_metafield | strip
+                assign category_handle = category | handleize
+            endif
+            if category != blank
+                assign category_normalized = category | handleize
+                assign category_check = '|' | append: category_normalized | append: '|'
+                unless categories_normalized contains category_check
+                    if categories_string == blank
+                        assign categories_string = category
+                        assign categories_handles_string = category_handle
+                    else
+                        assign categories_string = categories_string | append: '|' | append: category
+                        assign categories_handles_string = categories_handles_string | append: '|' | append: category_handle
+                    endif
+                    assign categories_normalized = categories_normalized | append: category_normalized | append: '|'
+                endunless
+            endif
+        endif
+    endfor
+
+    assign categories_list = categories_string | split: '|'
+    assign categories_handles_list = categories_handles_string | split: '|'
+
+    assign has_active_filters = false
+    assign active_filter_name = ''
+
+    if request.path contains '/tagged/'
+        assign has_active_filters = true
+        assign path_parts = request.path | split: '/tagged/'
+        if path_parts.size > 1
+            assign active_tag_handle = path_parts[1] | split: '/' | first | strip
+
+            for handle in countries_handles_list
+                if handle == active_tag_handle
+                    assign handle_index = forloop.index0
+                    assign active_filter_name = countries_list[handle_index]
+                    break
+                endif
+            endfor
+
+            if active_filter_name == blank
+                for handle in regions_handles_list
+                    if handle == active_tag_handle
+                        assign handle_index = forloop.index0
+                        assign active_filter_name = regions_list[handle_index]
+                        break
+                    endif
+                endfor
+            endif
+
+            if active_filter_name == blank
+                for handle in categories_handles_list
+                    if handle == active_tag_handle
+                        assign handle_index = forloop.index0
+                        assign active_filter_name = categories_list[handle_index]
+                        break
+                    endif
+                endfor
+            endif
+
+            if active_filter_name == blank
+                for article in blog.articles
+                    assign article_is_restricted = false
+                    if article.metafields.custom.premium_club_exclusive.value == true
+                        assign article_is_restricted = true
+                        if customer and customer.tags contains 'premium-club'
+                            assign article_is_restricted = false
+                        endif
+                    endif
+                    if article_is_restricted
+                        continue
+                    endif
+                    assign article_handle = article.handle
+                    if article_handle == active_tag_handle
+                        assign active_filter_name = article.title
+                        break
+                    endif
+                endfor
+            endif
+        endif
+    endif
+-%}
+{%- endpaginate -%}
+{%- liquid
+    assign wineries_titles_list = wineries_titles_string | split: '|||'
+    assign wineries_urls_list = wineries_urls_string | split: '|||'
+-%}
+
+{% capture blog_filters_content %}
+    <div class="flex h-full flex-col relative">
+        <header class="px-7 py-5 border-b border-b-surface-200 flex justify-center items-center relative">
+            <span class="flex flex-col justify-center items-center space-y-1">
+                <span class="text-lg font-normal">
+                    {{- 'sections.main_blog.Filter_by' | t -}}
+                </span>
+            </span>
+            <modal-toggle
+                target="blog-filters-modal"
+                aria-hidden="true"
+                class="absolute right-1 top-1/2 -translate-y-1/2 pr-2"
+            >
+                {% render 'component.icon',
+                    type: 'close',
+                    class: 'size-4 text-black'
+                %}
+            </modal-toggle>
+        </header>
+
+        <div class="p-6 flex-1 overflow-hidden">
+            <div class="overflow-y-auto h-full">
+                <div class="flex flex-col gap-5">
+                    {%- if show_filter_winery -%}
+                        {% render 'component.blog-filter-accordion',
+                            filter_label: 'sections.main_blog.filter_winery',
+                            search_placeholder: 'sections.main_blog.search_placeholder',
+                            items: wineries_titles_list,
+                            item_handles: wineries_urls_list,
+                            blog_url: blog.url,
+                            filter_type: 'winery'
+                        %}
+                    {%- endif -%}
+                    {%- if show_filter_country -%}
+                        {% render 'component.blog-filter-accordion',
+                            filter_label: 'sections.main_blog.filter_country',
+                            search_placeholder: 'sections.main_blog.search_placeholder_country',
+                            items: countries_list,
+                            item_handles: countries_handles_list,
+                            blog_url: blog.url,
+                            filter_type: 'country'
+                        %}
+                    {%- endif -%}
+                    {%- if show_filter_region -%}
+                        {% render 'component.blog-filter-accordion',
+                            filter_label: 'sections.main_blog.filter_region',
+                            search_placeholder: 'sections.main_blog.search_placeholder_region',
+                            items: regions_list,
+                            item_handles: regions_handles_list,
+                            blog_url: blog.url,
+                            filter_type: 'region'
+                        %}
+                    {%- endif -%}
+                    {%- if show_filter_category -%}
+                        {% render 'component.blog-filter-accordion',
+                            filter_label: 'sections.main_blog.filter_category',
+                            search_placeholder: 'sections.main_blog.search_placeholder_category',
+                            items: categories_list,
+                            item_handles: categories_handles_list,
+                            blog_url: blog.url,
+                            filter_type: 'category'
+                        %}
+                    {%- endif -%}
+                </div>
+            </div>
+        </div>
+        {%- if has_active_filters -%}
+            <footer class="grid grid-cols-1 w-full border-t border-t-surface-200 p-5">
+                <a
+                    href="{{ blog.url }}"
+                    class="w-full flex items-center justify-center gap-2 text-primary py-3 px-8"
+                    data-blog-clear-filter
+                >
+                    {%- if active_filter_name != blank -%}
+                        <span>{{ active_filter_name }}</span>
+                        {% render 'component.icon',
+                            type: 'close',
+                            class: 'size-4'
+                        %}
+                    {%- else -%}
+                        {{ 'collection.filters.clear_all' | t }}
+                    {%- endif -%}
+                </a>
+            </footer>
+        {%- endif -%}
+    </div>
+{% endcapture %}
+
+<div class="lg:hidden mb-10">
+    <div class="w-full px-5 py-3 border border-surface-200">
+        <modal-toggle
+            target="blog-filters-modal"
+        >
+            <button
+                type="button"
+                aria-label="{{ 'sections.main_blog.filters' | t }}"
+                class="flex justify-center gap-x-3 text-surface-500 w-full"
+            >
+                {% render 'component.icon',
+                    type: 'filter_mobile_icon',
+                    class: 'size-6'
+                %}
+                <span>{{ 'sections.main_blog.filters' | t }}</span>
+            </button>
+        </modal-toggle>
+    </div>
+</div>
+
+<modal-dialog
+    data-id="blog-filters-modal"
+    class="fixed inset-0 isolate z-90 hidden place-items-start [--leave-duration:75] data-[leave]:pointer-events-none data-[visible]:grid w-full"
+>
+    <modal-toggle
+        target="blog-filters-modal"
+        aria-hidden="true"
+        class="absolute inset-0 -z-10 bg-surface-200/30 opacity-0 data-[open]:opacity-100 data-[leave]:duration-75 data-[open]:duration-150"
+    ></modal-toggle>
+    <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="blog-filters-modal-title"
+        data-target="modal-dialog.content"
+        class="h-full w-full -translate-x-full data-[open]:translate-x-0 data-[leave]:duration-300 duration-300 ease-out pointer-events-auto bg-white overflow-hidden w-[87%]"
+    >
+        {{ blog_filters_content }}
+    </div>
+</modal-dialog>
+
+<div class="hidden lg:flex gap-5 mb-10 items-center w-full justify-between">
+    <div class="flex gap-5 items-center">
+        <span class="text-[17px] font-cormorant-garamond">
+            {{- 'sections.main_blog.Filter_by' | t | append: ':' -}}
+        </span>
+
+        {%- if show_filter_country -%}
+            {% render 'component.blog-filter-accordion',
+                filter_label: 'sections.main_blog.filter_country',
+                search_placeholder: 'sections.main_blog.search_placeholder_country',
+                items: countries_list,
+                item_handles: countries_handles_list,
+                blog_url: blog.url,
+                filter_type: 'country',
+                wrapper_class: 'relative z-10 has-[button[aria-expanded=true]]:z-20 min-w-60'
+            %}
+        {%- endif -%}
+
+        {%- if show_filter_region -%}
+            {% render 'component.blog-filter-accordion',
+                filter_label: 'sections.main_blog.filter_region',
+                search_placeholder: 'sections.main_blog.search_placeholder_region',
+                items: regions_list,
+                item_handles: regions_handles_list,
+                blog_url: blog.url,
+                filter_type: 'region',
+                wrapper_class: 'relative z-10 has-[button[aria-expanded=true]]:z-20 min-w-60'
+            %}
+        {%- endif -%}
+        {%- if show_filter_category -%}
+            {% render 'component.blog-filter-accordion',
+                filter_label: 'sections.main_blog.filter_category',
+                search_placeholder: 'sections.main_blog.search_placeholder_category',
+                items: categories_list,
+                item_handles: categories_handles_list,
+                blog_url: blog.url,
+                filter_type: 'category',
+                wrapper_class: 'relative z-10 has-[button[aria-expanded=true]]:z-20 min-w-60'
+            %}
+        {%- endif -%}
+        {%- if has_active_filters -%}
+            <div class="hidden lg:flex">
+                <a
+                    href="{{ blog.url }}"
+                    class="flex items-center gap-2 border-b border-current bg-transparent cursor-pointer p-0 px-4 py-2"
+                    data-blog-clear-filter
+                >
+                    {%- if active_filter_name != blank -%}
+                        <span>{{ active_filter_name }}</span>
+                        {% render 'component.icon',
+                            type: 'close',
+                            class: 'size-4'
+                        %}
+                    {%- else -%}
+                        {{ 'collection.filters.clear_all' | t }}
+                    {%- endif -%}
+                </a>
+            </div>
+        {%- endif -%}
+    </div>
+    {%- if show_filter_winery -%}
+        <div class="flex items-center gap-5">
+            <span class="text-[17px] font-cormorant-garamond">
+                {{- 'sections.main_blog.search_winery' | t | append: ':' -}}
+            </span>
+            {% render 'component.blog-filter-accordion',
+                filter_label: 'sections.main_blog.filter_winery',
+                search_placeholder: 'sections.main_blog.search_placeholder',
+                items: wineries_titles_list,
+                item_handles: wineries_urls_list,
+                blog_url: blog.url,
+                filter_type: 'winery',
+                wrapper_class: 'relative z-10 has-[button[aria-expanded=true]]:z-20 min-w-60'
+            %}
+        </div>
+    {%- endif -%}
+</div>

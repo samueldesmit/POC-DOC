@@ -1,0 +1,315 @@
+{%- liquid
+    assign s = section.settings
+
+    assign show_section = true
+
+    if s.visibility_audience == 'premium_only'
+        assign show_section = false
+        if customer
+            if customer.tags contains 'premium-club'
+                assign show_section = true
+            endif
+        endif
+    elsif s.visibility_audience == 'non_premium_only'
+        if customer
+            if customer.tags contains 'premium-club'
+                assign show_section = false
+            endif
+        endif
+    endif
+-%}
+
+{% if show_section %}
+    <div
+        id="section-{{ section.id }}"
+        class="{{ s.mobile_margin }} {{ s.desktop_margin }} bg-background"
+    >
+        {% render 'section-colors', current_section: section %}
+        {% if s.animation_style != blank and s.animation_style != 'none' -%}
+            <gsap-section data-animation="{{ s.animation_style }}">
+        {%- endif %}
+            <div class="{{ s.mobile_padding }} {{ s.desktop_padding }} container text-primary">
+                <div class="grid grid-cols-1 lg:grid-cols-[1fr_auto] gap-6">
+                    <div class="border border-secondary p-6 lg:p-10 grid grid-cols-1 lg:grid-cols-[1fr_auto] gap-6 items-center">
+                        <div>
+                            <h2 class="font-cormorant-garamond text-[30px] lg:text-[40px] font-semibold leading-[1.3] mb-4">
+                                {{ s.welcome_text }}
+                                {{ customer.first_name }},
+                            </h2>
+                            <p class="font-inter text-[14px] lg:text-[16px] leading-relaxed">
+                                {{ s.description }}
+                            </p>
+                        </div>
+                        {% if s.logo != blank %}
+                            <div class="flex items-center justify-center">
+                                {{
+                                    s.logo
+                                    | image_url: width: 240
+                                    | image_tag:
+                                        class: 'w-[160px] lg:w-[200px] h-auto'
+                                }}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="border border-secondary p-6 lg:p-10 flex flex-col justify-center min-w-[260px] lg:min-w-[300px]">
+                        <h3 class="font-cormorant-garamond text-[30px] lg:text-[40px] font-semibold leading-[1.3] mb-3">
+                            {{ s.store_credit_title }}
+                        </h3>
+                        <p class="font-inter text-[18px] lg:text-[22px] font-bold mb-3">
+                            {{
+                                customer.store_credit_account.balance
+                                | money_with_currency
+                            }}
+                        </p>
+                        <a
+                            href="{{ routes.account_url }}/profile"
+                            class="font-inter text-[13px] lg:text-[14px] underline"
+                        >
+                            {{ s.store_credit_link_text }}
+                        </a>
+                    </div>
+                </div>
+            </div>
+        {% if s.animation_style != blank and s.animation_style != 'none' -%}
+            </gsap-section>
+        {%- endif %}
+    </div>
+{% elsif customer == null %}
+    <div
+        id="section-{{ section.id }}"
+        class="{{ s.mobile_margin }} {{ s.desktop_margin }} bg-background"
+    >
+        {% render 'section-colors', current_section: section %}
+        <div class="{{ s.mobile_padding }} {{ s.desktop_padding }} container text-primary">
+            <div class="border border-secondary p-6 lg:p-10 text-center">
+                <p class="font-cormorant-garamond text-[30px] lg:text-[40px] font-semibold">
+                    {{ s.login_text }}
+                </p>
+                <a
+                    href="{{ routes.account_login_url }}"
+                    class="inline-block mt-4 font-inter text-[14px] underline"
+                >
+                    {{ s.login_button_text }}
+                </a>
+            </div>
+        </div>
+    </div>
+{% endif %}
+
+{% schema %}
+{
+    "name": "Premium Club",
+    "tag": "section",
+    "class": "premium-club",
+    "settings": [
+        {
+            "type": "header",
+            "content": "Visibility"
+        },
+        {
+            "type": "select",
+            "id": "visibility_audience",
+            "label": "Visibility (audience)",
+            "options": [
+                {
+                    "value": "everyone",
+                    "label": "Everyone"
+                },
+                {
+                    "value": "premium_only",
+                    "label": "Only premium-club customers"
+                },
+                {
+                    "value": "non_premium_only",
+                    "label": "Only non premium-club customers"
+                }
+            ],
+            "default": "premium_only"
+        },
+        {
+            "type": "header",
+            "content": "Section Styling"
+        },
+        {
+            "type": "checkbox",
+            "id": "section_styling",
+            "label": "Add styling to section",
+            "info": "If enabled this shows the settings to set the color scheme, spacing, and margin for the section.",
+            "default": false
+        },
+        {
+            "type": "header",
+            "content": "Section Spacing",
+            "visible_if": "{{ section.settings.section_styling == true }}"
+        },
+        {
+            "type": "select",
+            "id": "mobile_padding",
+            "label": "Mobile padding",
+            "visible_if": "{{ section.settings.section_styling == true }}",
+            "options": [
+                { "value": "py-0", "label": "None" },
+                { "value": "py-2", "label": "S - 8px" },
+                { "value": "py-4", "label": "M - 16px" },
+                { "value": "py-6", "label": "L - 24px" },
+                { "value": "py-8", "label": "XL - 32px" },
+                { "value": "py-10", "label": "2XL - 40px" },
+                { "value": "py-12", "label": "3XL - 48px" },
+                { "value": "py-16", "label": "4XL - 64px" }
+            ],
+            "default": "py-4"
+        },
+        {
+            "type": "select",
+            "id": "desktop_padding",
+            "label": "Desktop padding",
+            "visible_if": "{{ section.settings.section_styling == true }}",
+            "options": [
+                { "value": "lg:py-0", "label": "None" },
+                { "value": "lg:py-2", "label": "S - 8px" },
+                { "value": "lg:py-4", "label": "M - 16px" },
+                { "value": "lg:py-6", "label": "L - 24px" },
+                { "value": "lg:py-8", "label": "XL - 32px" },
+                { "value": "lg:py-10", "label": "2XL - 40px" },
+                { "value": "lg:py-12", "label": "3XL - 48px" },
+                { "value": "lg:py-16", "label": "4XL - 64px" }
+            ],
+            "default": "lg:py-8"
+        },
+        {
+            "type": "header",
+            "content": "Section Margin",
+            "visible_if": "{{ section.settings.section_styling == true }}"
+        },
+        {
+            "type": "select",
+            "id": "mobile_margin",
+            "label": "Mobile Section margin",
+            "visible_if": "{{ section.settings.section_styling == true }}",
+            "options": [
+                { "value": "mb-0", "label": "None" },
+                { "value": "mb-4", "label": "Small - 16px" },
+                { "value": "mb-8", "label": "Medium - 32px" },
+                { "value": "mb-12", "label": "Large - 48px" }
+            ],
+            "default": "mb-0"
+        },
+        {
+            "type": "select",
+            "id": "desktop_margin",
+            "label": "Desktop Section margin",
+            "visible_if": "{{ section.settings.section_styling == true }}",
+            "options": [
+                { "value": "lg:mb-0", "label": "None" },
+                { "value": "lg:mb-8", "label": "Small - 32px" },
+                { "value": "lg:mb-12", "label": "Medium - 48px" },
+                { "value": "lg:mb-16", "label": "Large - 64px" }
+            ],
+            "default": "lg:mb-0"
+        },
+        {
+            "type": "header",
+            "content": "Colors",
+            "visible_if": "{{ section.settings.section_styling == true }}"
+        },
+        {
+            "type": "color",
+            "id": "background",
+            "label": "Section background color",
+            "default": "#FFFFFF",
+            "visible_if": "{{ section.settings.section_styling == true }}"
+        },
+        {
+            "type": "color",
+            "id": "primary_text_color",
+            "label": "Primary text color",
+            "default": "#000000",
+            "visible_if": "{{ section.settings.section_styling == true }}"
+        },
+        {
+            "type": "color",
+            "id": "secondary_text_color",
+            "label": "Border color",
+            "default": "#A08735",
+            "visible_if": "{{ section.settings.section_styling == true }}"
+        },
+        {
+            "type": "header",
+            "content": "Welcome box"
+        },
+        {
+            "type": "text",
+            "id": "welcome_text",
+            "label": "Welcome text",
+            "default": "Welkom"
+        },
+        {
+            "type": "textarea",
+            "id": "description",
+            "label": "Description",
+            "default": "Welkom in uw Premium Club Member account. Hier vind u een verzicht van de Premium Club Events, de release data van icoon wijnen, exclusieve intekeningen."
+        },
+        {
+            "type": "image_picker",
+            "id": "logo",
+            "label": "Premium Club logo"
+        },
+        {
+            "type": "header",
+            "content": "Store credit box"
+        },
+        {
+            "type": "text",
+            "id": "store_credit_title",
+            "label": "Store credit title",
+            "default": "Uw shoptegoed"
+        },
+        {
+            "type": "text",
+            "id": "store_credit_link_text",
+            "label": "Store credit link text",
+            "default": "Bekijk uw account"
+        },
+        {
+            "type": "header",
+            "content": "Login prompt"
+        },
+        {
+            "type": "text",
+            "id": "login_text",
+            "label": "Login prompt text",
+            "default": "Log in om uw Premium Club account te bekijken"
+        },
+        {
+            "type": "text",
+            "id": "login_button_text",
+            "label": "Login button text",
+            "default": "Inloggen"
+        },
+        {
+            "type": "header",
+            "content": "Animation"
+        },
+        {
+            "type": "select",
+            "id": "animation_style",
+            "label": "Scroll animation",
+            "info": "Adds a subtle entrance animation when the section scrolls into view.",
+            "options": [
+                { "value": "none", "label": "None" },
+                { "value": "fade-up", "label": "Fade up" },
+                { "value": "fade-in", "label": "Fade in" },
+                { "value": "slide-in-left", "label": "Slide in from left" },
+                { "value": "slide-in-right", "label": "Slide in from right" }
+            ],
+            "default": "none"
+        }
+    ],
+    "presets": [
+        {
+            "name": "Premium Club"
+        }
+    ]
+}
+{% endschema %}

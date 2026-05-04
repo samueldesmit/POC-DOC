@@ -1,0 +1,86 @@
+{%- liquid
+    assign container_class = container_class | default: 'max-w-screen-5xl splide__arrows--ltr absolute inset-0 flex items-center justify-between pointer-events-none z-10'
+    assign show_pagination = show_pagination | default: false, allow_false: true
+    assign pagination_total = pagination_total | default: 0
+    assign pagination_class = pagination_class | default: 'text-white text-sm'
+
+    if style == 'custom'
+        assign icon_class = icon_class
+    else
+        capture arrow_style
+            case style
+                when 'primary'
+                    echo 'flex rounded-full bg-primary-background text-primary-foreground items-center justify-center p-2 cursor-pointer disabled:cursor-not-allowed disabled:opacity-0 disabled:pointer-events-none splide__arrow pointer-events-auto'
+                when 'secondary'
+                    echo 'flex rounded-full bg-primary-foreground text-primary-background items-center justify-center p-2 cursor-pointer disabled:cursor-not-allowed disabled:opacity-0 disabled:pointer-events-none splide__arrow pointer-events-auto'
+                else
+                    echo 'flex text-white opacity-50 items-center justify-center p-2 rounded-full cursor-pointer disabled:cursor-not-allowed disabled:opacity-0 disabled:pointer-events-none splide__arrow pointer-events-auto'
+            endcase
+        endcapture
+    endif
+
+    assign button_base_class = button_base_class | default: arrow_style
+    assign prev_button_class = prev_button_class | default: button_base_class | append: ' rotate-180 splide__arrow--prev'
+    assign next_button_class = next_button_class | default: button_base_class | append: ' splide__arrow--next'
+    assign icon_class = icon_class | default: 'w-5 h-5'
+    assign prev_icon = prev_icon | default: 'full_long_arrow'
+    assign next_icon = next_icon | default: 'full_long_arrow'
+    assign prev_aria_label = prev_aria_label | default: 'Previous slide'
+    assign next_aria_label = next_aria_label | default: 'Next slide'
+-%}
+
+<div class="splide__arrows {{ container_class }}">
+    {%- render 'component.button',
+        label: '',
+        title: prev_aria_label,
+        href: '',
+        class: prev_button_class,
+        id: '',
+        attributes: '',
+        type: 'button',
+        name: '',
+        aria_label: prev_aria_label,
+        aria_describedby: '',
+        style: 'custom',
+        size: '',
+        icon: prev_icon,
+        icon_position: '',
+        icon_class: icon_class,
+        css_variables: '',
+        disabled: false,
+        loading: false,
+        translate: false
+    %}
+    {%- if show_pagination and pagination_total > 0 -%}
+        <span
+            class="splide-pagination-text {{ pagination_class }}"
+            data-total="{{ pagination_total }}"
+        >
+            <span class="splide-current-page text-base mr-2">1</span>
+            <span class="text-base">
+                {{- pagination_total | prepend: '/&nbsp;&nbsp;&nbsp;' -}}
+            </span>
+        </span>
+    {%- endif -%}
+    {%- render 'component.button',
+        label: '',
+        title: next_aria_label,
+        href: '',
+        class: next_button_class,
+        id: '',
+        attributes: '',
+        type: 'button',
+        name: '',
+        aria_label: next_aria_label,
+        aria_describedby: '',
+        style: 'custom',
+        size: '',
+        icon: next_icon,
+        icon_position: '',
+        icon_class: icon_class,
+        css_variables: '',
+        disabled: false,
+        loading: false,
+        translate: false
+    -%}
+</div>

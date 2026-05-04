@@ -1,0 +1,27 @@
+{% if awards_metafield != blank %}
+    {% assign awards = awards_metafield | split: ' | ' %}
+    {% assign class = class | default: 'flex flex-col gap-5' %}
+    <div class="text-surface-200 {{ class }}">
+        {% for award in awards %}
+            {% assign parts = award | split: ' - ' %}
+            {% assign source = parts | first | strip %}
+            {% assign score_raw = parts | last | strip %}
+            {% assign score = score_raw | split: ' ' | first %}
+            <div class="award w-full h-[50px] lg:h-[75px] flex flex-col justify-start items-center max-w-[50px] lg:max-w-[70px] uppercase px-2">
+                <span class="text-[14px] lg:text-[24px] font-bold font-cormorant-garamond {{ class_score }}">
+                    {{- score -}}
+                </span>
+                <span class="text-[7px] lg:text-[9px] text-break text-center font-inter {{ class_source }}">
+                    {{- source -}}
+                </span>
+            </div>
+        {% endfor %}
+    </div>
+
+    <style>
+        .award {
+            background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100.28 107.5'%3E%3Cg data-name='Layer 2'%3E%3Cpath d='M100.28 107.5L50.14 94.68 0 107.5V0h100.28zM50.14 93.65l49.14 12.56V1H1v105.21z' fill='%23c3a84a' data-name='Layer 1'/%3E%3C/g%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+        }
+    </style>
+{% endif %}

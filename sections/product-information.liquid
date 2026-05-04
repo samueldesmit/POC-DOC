@@ -1,0 +1,385 @@
+{%- liquid
+    assign s = section.settings
+    assign section_id = 'section-' | append: section.id
+
+    assign show_section = true
+
+    if s.visibility_audience == 'premium_only'
+        assign show_section = false
+        if customer
+            if customer.tags contains 'premium-club'
+                assign show_section = true
+            endif
+        endif
+    elsif s.visibility_audience == 'non_premium_only'
+        if customer
+            if customer.tags contains 'premium-club'
+                assign show_section = false
+            endif
+        endif
+    endif
+-%}
+
+{% if show_section %}
+    <div
+        class="{{ s.mobile_margin }} {{ s.desktop_margin }}"
+        id="{{ section_id }}"
+    >
+        {% render 'section-colors', current_section: section %}
+        <div
+            class="{{ s.mobile_padding }} {{ s.desktop_padding }} container px-0 lg:px-12"
+        >
+            <gsap-elements>
+                <div class="bg-background p-5 lg:px-15 lg:pt-15 pb-0 lg:pb-9 ext-primary gsap-element-scroll-opacity">
+                    {% capture product_information %}
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-x-50 ">
+                        {% assign class_key = "font-inter font-medium text-[14px] lg:text-[16px] leading-[150%] tracking-[-0.022em]" %}
+                        {% assign class_value = "font-inter font-normal text-[14px] lg:text-[16px] leading-[150%] tracking-[-0.022em] " %}
+                        <ul class="flex flex-col gap-y-3">
+                        {% if product.metafields.custom.winery.value.title != blank %}
+                        <li class="grid grid-cols-2 ">
+                            <span class="{{ class_key }}">{{ 'main_product.winery' | t }}</span>
+                            <a href="{{ product.metafields.custom.winery.value.url }}" class="={{ class_value }} underline underline-offset-2">  {{ product.metafields.custom.winery.value.title }}
+                            </a>
+                        </li>
+                        {% endif %}
+                        {% if product.metafields.custom.country != blank %}
+                        <li class="grid grid-cols-2">
+                            <span class="{{ class_key }}">{{ 'main_product.country' | t }}</span>
+                            {% assign country_filter_base = product.collections.first.url | default: '/collections/all' %}
+                            <a href="{{ country_filter_base }}?filter.p.m.custom.country={{ product.metafields.custom.country | url_param_escape }}" class="{{ class_value }} underline underline-offset-2" >{{ product.metafields.custom.country }}</a>
+                         </li>
+                        {% endif %}
+                        {% if product.metafields.custom.region != blank %}      
+                        <li class="grid grid-cols-2">
+                            <span class="{{ class_key }}">{{ 'main_product.region' | t }}</span>
+                            {% assign region_filter_base = product.collections.first.url | default: '/collections/all' %}
+                            <a href="{{ region_filter_base }}?filter.p.m.custom.region={{ product.metafields.custom.region | url_param_escape }}" class="{{ class_value }} underline underline-offset-2" >{{ product.metafields.custom.region }}</a>
+                        </li>
+                        {% endif %}
+                        {% if product.metafields.custom.grape != blank %}
+                        <li class="grid grid-cols-2">
+                             <span class="{{ class_key }}">{{ 'main_product.grape' | t }}</span>
+                            {% assign grape_filter_base = product.collections.first.url | default: '/collections/all' %}
+                            <a href="{{ grape_filter_base }}?filter.p.m.custom.grape={{ product.metafields.custom.grape | url_param_escape }}" class="{{ class_value }} underline underline-offset-2" >{{ product.metafields.custom.grape }}</a>
+                         </li>
+                        {% endif %}
+                        {% if product.metafields.custom.storage != blank %}
+                         <li class="grid grid-cols-2 ">
+                             <span class="{{ class_key }}">{{ 'main_product.storage' | t }}</span>
+                               <span class="{{ class_value }}"> {{ product.metafields.custom.storage }} </span>
+                           </li>
+                       {% endif %}
+                       {% if product.metafields.custom.temperature != blank %}
+                            <li class="grid grid-cols-2">
+                               <span class="{{ class_key }}">{{ 'main_product.temperature' | t }}</span>
+                               <span class="{{ class_value }}"> {{ product.metafields.custom.temperature }} </span>
+                           </li>
+                        {% endif %}
+                        </ul>
+                        <ul class="flex flex-col gap-y-3">
+                            {% if product.metafields.custom.storage_potential != blank %}
+                                <li class="grid grid-cols-2">
+                                    <span class="{{ class_key }}">{{ 'main_product.storage_potential' | t }}</span>
+                                    <span class="{{ class_value }}"> {{ product.metafields.custom.storage_potential }} </span>
+                                </li>
+                                {% endif %}
+                                {% if product.metafields.custom.food_paring != blank %}
+                                <li class="grid grid-cols-2">
+                                    <span class="{{ class_key }}">{{ 'main_product.wine_and_food_pairing' | t }}</span>
+                                    <span class="{{ class_value }}"> {{ product.metafields.custom.food_paring }} </span>
+                                </li>
+                                {% endif %}
+                                {% if product.metafields.custom.closure != blank %}
+                                <li class="grid grid-cols-2">
+                                    <span class="{{ class_key }}">{{ 'main_product.closure' | t }}</span>
+                                    <span class="{{ class_value }}"> {{ product.metafields.custom.closure }} </span>
+                                </li>
+                                {% endif %}
+                                {% if product.metafields.custom.taste != blank %}
+                                <li class="grid grid-cols-2">
+                                    <span class="{{ class_key }}">{{ 'main_product.taste' | t }}</span>
+                                    <span class="{{ class_value }}"> {{ product.metafields.custom.taste }} </span>
+                                </li>
+                                {% endif %}
+                                {% if product.metafields.custom.year != blank %}
+                                <li class="grid grid-cols-2">
+                                    <span class="{{ class_key }}">{{ 'main_product.year' | t }}</span>
+                                    <span class="{{ class_value }}"> {{ product.metafields.custom.year }} </span>
+                                </li>
+                                {% endif %}
+                                {% if product.metafields.custom.alcohol != blank %}
+                                <li class="grid grid-cols-2">
+                                    <span class="{{ class_key }}">{{ 'main_product.alcohol' | t }}</span>
+                                    {{ product.metafields.custom.alcohol }}%
+                                </li>
+                                {% endif %}
+                        </ul>    
+                    </div>
+                {% endcapture %}
+                    {% capture the_wine_information %}
+                    {{ product.metafields.custom.extra_long_description | strip_html }}
+                {% endcapture %}
+                    {%- assign product_info_title = s.title | default: 'Product Information' -%}
+                    {% render 'component.accordion',
+                        title: product_info_title,
+                        content: product_information,
+                        header_class: 'pb-6 ',
+                        title_class: 'text-[20px] lg:text-[30px] font-normal font-cormorant-garamond w-full pr-2 leading-[130%]',
+                        active: true
+                    %}
+                    {% if product.metafields.custom.extra_long_description
+                            != blank
+                    %}
+                        {%- assign wine_info_title = s.title_2 | default: 'Product Information' -%}
+                        {% render 'component.accordion',
+                            title: wine_info_title,
+                            content: the_wine_information,
+                            header_class: 'pb-6 ',
+                            title_class: 'text-[20px] lg:text-[30px] font-normal font-cormorant-garamond border-t border-secondary/50 pt-6 w-full pb-0 mr-0 pr-2 leading-[130%]',
+                            active: false,
+                            content_class: 'font-light font-inter'
+                        %}
+                    {% endif %}
+                </div>
+            </gsap-elements>
+        </div>
+    </div>
+{% endif %}
+
+{% schema %}
+{
+    "name": "Product Information",
+    "tag": "section",
+    "class": "product-information",
+    "settings": [
+        {
+            "type": "header",
+            "content": "Visibility"
+        },
+        {
+            "type": "select",
+            "id": "visibility_audience",
+            "label": "Visibility (audience)",
+            "options": [
+                {
+                    "value": "everyone",
+                    "label": "Everyone"
+                },
+                {
+                    "value": "premium_only",
+                    "label": "Only premium-club customers"
+                },
+                {
+                    "value": "non_premium_only",
+                    "label": "Only non premium-club customers"
+                }
+            ],
+            "default": "everyone"
+        },
+        {
+            "type": "header",
+            "content": "Section Styling"
+        },
+        {
+            "type": "checkbox",
+            "id": "section_styling",
+            "label": "Add styling to section",
+            "info": "If enabled this shows the settings to set the color scheme, spacing, and margin for the section.",
+            "default": false
+        },
+        {
+            "type": "header",
+            "content": "Section Color Scheme",
+            "visible_if": "{{ section.settings.section_styling == true }}"
+        },
+        {
+            "type": "header",
+            "content": "Section Spacing",
+            "visible_if": "{{ section.settings.section_styling == true }}"
+        },
+        {
+            "type": "select",
+            "id": "mobile_padding",
+            "label": "Mobile padding",
+            "visible_if": "{{ section.settings.section_styling == true }}",
+            "options": [
+                {
+                    "value": "py-0",
+                    "label": "None"
+                },
+                {
+                    "value": "py-2",
+                    "label": "S - 8px"
+                },
+                {
+                    "value": "py-4",
+                    "label": "M - 16px"
+                },
+                {
+                    "value": "py-6",
+                    "label": "L - 24px"
+                },
+                {
+                    "value": "py-8",
+                    "label": "XL - 32px"
+                },
+                {
+                    "value": "py-10",
+                    "label": "2XL - 40px"
+                },
+                {
+                    "value": "py-12",
+                    "label": "3XL - 48px"
+                },
+                {
+                    "value": "py-16",
+                    "label": "4XL - 64px"
+                }
+            ],
+            "default": "py-0"
+        },
+        {
+            "type": "select",
+            "id": "desktop_padding",
+            "label": "Desktop padding",
+            "visible_if": "{{ section.settings.section_styling == true }}",
+            "options": [
+                {
+                    "value": "lg:py-0",
+                    "label": "None"
+                },
+                {
+                    "value": "lg:py-2",
+                    "label": "S - 8px"
+                },
+                {
+                    "value": "lg:py-4",
+                    "label": "M - 16px"
+                },
+                {
+                    "value": "lg:py-6",
+                    "label": "L - 24px"
+                },
+                {
+                    "value": "lg:py-8",
+                    "label": "XL - 32px"
+                },
+                {
+                    "value": "lg:py-10",
+                    "label": "2XL - 40px"
+                },
+                {
+                    "value": "lg:py-12",
+                    "label": "3XL - 48px"
+                },
+                {
+                    "value": "lg:py-16",
+                    "label": "4XL - 64px"
+                }
+            ],
+            "default": "lg:py-0"
+        },
+        {
+            "type": "header",
+            "content": "Section Margin",
+            "visible_if": "{{ section.settings.section_styling == true }}"
+        },
+        {
+            "type": "select",
+            "id": "mobile_margin",
+            "label": "Mobile Section margin",
+            "visible_if": "{{ section.settings.section_styling == true }}",
+            "options": [
+                {
+                    "value": "mb-0",
+                    "label": "None"
+                },
+                {
+                    "value": "mb-4",
+                    "label": "Small - 16px"
+                },
+                {
+                    "value": "mb-8",
+                    "label": "Medium - 32px"
+                },
+                {
+                    "value": "mb-12",
+                    "label": "Large - 48px"
+                }
+            ],
+            "default": "mb-0"
+        },
+        {
+            "type": "select",
+            "id": "desktop_margin",
+            "label": "Desktop Section margin",
+            "visible_if": "{{ section.settings.section_styling == true }}",
+            "options": [
+                {
+                    "value": "lg:mb-0",
+                    "label": "None"
+                },
+                {
+                    "value": "lg:mb-8",
+                    "label": "Small - 32px"
+                },
+                {
+                    "value": "lg:mb-12",
+                    "label": "Medium - 48px"
+                },
+                {
+                    "value": "lg:mb-16",
+                    "label": "Large - 64px"
+                }
+            ],
+            "default": "lg:mb-0"
+        },
+        {
+            "type": "header",
+            "content": "Colors",
+            "visible_if": "{{ section.settings.section_styling == true }}"
+        },
+        {
+            "type": "color",
+            "id": "background",
+            "label": "Section background color",
+            "default": "#F8F6F1",
+            "visible_if": "{{ section.settings.section_styling == true }}"
+        },
+        {
+            "type": "color",
+            "id": "secondary_text_color",
+            "label": "Border color",
+            "default": "#A08735",
+            "visible_if": "{{ section.settings.section_styling == true }}"
+        },
+        {
+            "type": "color",
+            "id": "primary_text_color",
+            "label": "Primary text color",
+            "default": "#06061C",
+            "visible_if": "{{ section.settings.section_styling == true }}"
+        },
+        {
+            "type": "text",
+            "id": "title",
+            "label": "Tab one title",
+            "default": "Product Information"
+        },
+        {
+            "type": "text",
+            "id": "title_2",
+            "label": "Tab two title",
+            "default": "The Wine"
+        }
+    ],
+    "blocks": [],
+    "presets": [
+        {
+            "category": "Product page",
+            "name": "Product Information"
+        }
+    ]
+}
+{% endschema %}

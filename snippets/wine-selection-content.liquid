@@ -1,0 +1,49 @@
+{%- doc -%}
+  Expected behaviour: Renders subscription content with wines grouped by category for selection.
+  About: Content snippet called by wine-subscription-data for each subscription.
+         Groups wine entries by their `category` field and renders selection-ready cards.
+  Accepts:
+    - {object} subscription: The full subscription metaobject
+    - {string} subscription_name: The subscription name field
+    - {array} wine_entries: Array of subscription_subcategory_wine metaobjects
+  Usage: Used internally by wine-subscription-data snippet via content_for parameter
+
+  @param {string} [subscription_name] - The subscription name field
+  @param {object} [wine_entries] - Array of subscription_subcategory_wine metaobjects
+{%- enddoc -%}
+
+{%- liquid
+  assign category_names = wine_entries | map: 'category' | uniq
+-%}
+
+<!-- Subscription: {{ subscription_name | default: 'Unknown Subscription' }} -->
+<div class="wine-selection-subscription mb-8">
+  <h2 class="text-2xl font-semibold text-primary mb-6 text-center font-cormorant-garamond">
+    {{ subscription_name | default: 'Wine Subscription' }}
+  </h2>
+
+  {%- for category_name in category_names -%}
+    {%- liquid
+      assign wines_in_category = wine_entries | where: 'category', category_name
+    -%}
+
+    <!-- Category: {{ category_name }} -->
+    <div class="wine-selection-subcategory mb-8">
+      <h3 class="text-lg font-medium text-gray-700 mb-4 uppercase tracking-wide">
+        {{ category_name | default: 'Category' }}
+      </h3>
+
+      {%- if wines_in_category.size > 0 -%}
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-6">
+          {%- for wine_entry in wines_in_category -%}
+            {% render 'wine-card-selection', wine_entry: wine_entry %}
+          {%- endfor -%}
+        </div>
+      {%- else -%}
+        <p class="text-gray-500 text-sm">No wines in this category</p>
+      {%- endif -%}
+    </div>
+    <!-- End Category: {{ category_name }} -->
+  {%- endfor -%}
+</div>
+<!-- End Subscription: {{ subscription_name }} -->

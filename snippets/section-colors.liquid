@@ -1,0 +1,63 @@
+{% doc %}
+    The snippet is used to set the colors for the section. Render it after the first div in the section.
+    Each section need to have a unique id as id="{{ section_id }}"
+
+    @param {object} current_section - The section where the snippet is used
+
+    @example
+    {% render 'section-colors', current_section: section %}
+{% enddoc %}
+
+{% style %}
+    #section-{{ current_section.id }} {
+      {% if current_section.settings.background %}
+        --color-background: {{ current_section.settings.background }};
+      {% endif %}
+
+      {% if current_section.settings.primary_text_color %}
+        --color-primary: {{ current_section.settings.primary_text_color }};
+      {% endif %}
+
+      {% if current_section.settings.secondary_text_color %}
+        --color-secondary: {{ current_section.settings.secondary_text_color }};
+      {% endif %}
+
+      {% if current_section.settings.primary_button_color %}
+        --color-primary-background: {{ current_section.settings.primary_button_color }};
+      {% endif %}
+
+      {% if current_section.settings.primary_button_text_color %}
+        --color-primary-foreground: {{ current_section.settings.primary_button_text_color }};
+        {% assign primary_fg = current_section.settings.primary_button_text_color | downcase %}
+        {% if primary_fg == '#ffffff' or primary_fg == '#fff' %}
+          --color-primary-border: color-mix(in srgb, {{ current_section.settings.primary_button_text_color }} 50%, transparent);
+        {% else %}
+          --color-primary-border: color-mix(in srgb, {{ current_section.settings.primary_button_text_color }} 15%, transparent);
+        {% endif %}
+      {% endif %}
+
+      {% if current_section.settings.secondary_button_color %}
+        --color-secondary-background: {{ current_section.settings.secondary_button_color }};
+      {% endif %}
+
+      {% if current_section.settings.secondary_button_text_color %}
+        --color-secondary-foreground: {{ current_section.settings.secondary_button_text_color }};
+        {% assign secondary_fg = current_section.settings.secondary_button_text_color | downcase %}
+        {% if secondary_fg == '#ffffff' or secondary_fg == '#fff' %}
+          --color-secondary-border: color-mix(in srgb, {{ current_section.settings.secondary_button_text_color }} 50%, transparent);
+        {% else %}
+          --color-secondary-border: color-mix(in srgb, {{ current_section.settings.secondary_button_text_color }} 15%, transparent);
+        {% endif %}
+      {% endif %}
+
+      {% if current_section.settings.border_color %}
+        --border-color: {{ current_section.settings.border_color }};
+      {% endif %}
+
+      {% if current_section.settings.arrow_border_color != blank %}
+        --product-highlight-arrow-border-color: {{ current_section.settings.arrow_border_color }};
+      {% elsif current_section.settings.arrow_border_color == '' %}
+        --product-highlight-arrow-border-color: #A08735;
+      {% endif %}
+    }
+{% endstyle %}

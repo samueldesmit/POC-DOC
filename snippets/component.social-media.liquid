@@ -1,0 +1,109 @@
+{%- doc -%}
+    Expected behaviour:
+      Renders enabled social icons
+
+    About:
+      Renders all the enabled social icons set in the theme settings
+
+    Accepts:
+      OPTIONAL
+      - container_class: {String} The classes applied to the container
+      - icon_class: {String} The width tailwind class applied to the icons
+      - list_item_class: {String} The classes applied to the list items
+
+    Usage:
+      {%-
+        render: 'component.social-media'
+      -%}
+
+    @param {string} [container_class] - Classes applied to the container
+    @param {string} [icon_class] - Tailwind classes applied to the icons (default: 'size-6 text-primary')
+    @param {string} [list_item_class] - Classes applied to the list items
+{%- enddoc -%}
+
+{%- liquid
+    assign icon_class = icon_class | default: 'size-6 text-primary'
+    assign list_item_class = 'relative hover:opacity-70 transition-opacity duration-300'
+    assign container_class = container_class | append: ' flex items-center justify-end'
+-%}
+
+{%- capture links -%}
+    {% if shop.brand.metafields.social_links.facebook.value -%}
+      <li class="{{- list_item_class -}}">
+        <a href="{{ shop.brand.metafields.social_links.facebook.value }}" target="_blank" rel="noopener noreferrer" aria-label="Facebook ({{ 'general.accessibility.opens_new_window' | t | default: 'opens in a new window' }})">
+            {% render 'component.icon', type: 'facebook', class: icon_class %}
+        </a>
+      </li>
+    {%- endif %}
+    {% if shop.brand.metafields.social_links.twitter.value -%}
+      <li class="{{- list_item_class -}}">
+        <a href="{{ shop.brand.metafields.social_links.twitter.value }}" target="_blank" rel="noopener noreferrer" aria-label="Twitter ({{ 'general.accessibility.opens_new_window' | t | default: 'opens in a new window' }})">
+            {% render 'component.icon', type: 'twitter', class: icon_class %}
+        </a>
+      </li>
+    {%- endif %}
+    {% if shop.brand.metafields.social_links.pinterest.value -%}
+      <li class="{{- list_item_class -}}">
+        <a href="{{ shop.brand.metafields.social_links.pinterest.value }}" target="_blank" rel="noopener noreferrer" aria-label="Pinterest ({{ 'general.accessibility.opens_new_window' | t | default: 'opens in a new window' }})">
+            {% render 'component.icon', type: 'pinterest', class: icon_class %}
+        </a>
+      </li>
+    {%- endif %}
+    {% if shop.brand.metafields.social_links.instagram.value -%}
+      <li class="{{- list_item_class -}}">
+        <a href="{{ shop.brand.metafields.social_links.instagram.value }}" target="_blank" rel="noopener noreferrer" aria-label="Instagram ({{ 'general.accessibility.opens_new_window' | t | default: 'opens in a new window' }})">
+            {% render 'component.icon', type: 'instagram', class: icon_class %}
+        </a>
+      </li>
+    {%- endif %}
+    {% if shop.brand.metafields.social_links.tiktok.value -%}
+      <li class="{{- list_item_class -}}">
+        <a href="{{ shop.brand.metafields.social_links.tiktok.value }}" target="_blank" rel="noopener noreferrer" aria-label="TikTok ({{ 'general.accessibility.opens_new_window' | t | default: 'opens in a new window' }})">
+            {% render 'component.icon', type: 'tiktok', class: icon_class %}
+        </a>
+      </li>
+    {%- endif %}
+    {% if shop.brand.metafields.social_links.tumblr.value -%}
+      <li class="{{- list_item_class -}}">
+        <a href="{{ shop.brand.metafields.social_links.tumblr.value }}" target="_blank" rel="noopener noreferrer" aria-label="Tumblr ({{ 'general.accessibility.opens_new_window' | t | default: 'opens in a new window' }})">
+            {% render 'component.icon', type: 'tumblr', class: icon_class %}
+        </a>
+      </li>
+    {%- endif %}
+    {% if shop.brand.metafields.social_links.snapchat.value -%}
+      <li class="{{- list_item_class -}}">
+        <a href="{{ shop.brand.metafields.social_links.snapchat.value }}" target="_blank" rel="noopener noreferrer" aria-label="Snapchat ({{ 'general.accessibility.opens_new_window' | t | default: 'opens in a new window' }})">
+            {% render 'component.icon', type: 'snapchat', class: icon_class %}
+        </a>
+      </li>
+    {%- endif %}
+    {% if shop.brand.metafields.social_links.youtube.value -%}
+      <li class="{{- list_item_class -}}">
+        <a href="{{ shop.brand.metafields.social_links.youtube.value }}" target="_blank" rel="noopener noreferrer" aria-label="YouTube ({{ 'general.accessibility.opens_new_window' | t | default: 'opens in a new window' }})">
+            {% render 'component.icon', type: 'youtube', class: icon_class %}
+        </a>
+      </li>
+    {%- endif %}
+    {% if shop.brand.metafields.social_links.vimeo.value -%}
+      <li class="{{- list_item_class -}}">
+        <a href="{{ shop.brand.metafields.social_links.vimeo.value }}" target="_blank" rel="noopener noreferrer" aria-label="Vimeo ({{ 'general.accessibility.opens_new_window' | t | default: 'opens in a new window' }})">
+            {% render 'component.icon', type: 'vimeo', class: icon_class %}
+        </a>
+      </li>
+    {%- endif %}
+    {% if shop.brand.metafields.social_links.linkedin.value -%}
+      <li class="{{- list_item_class -}}">
+        <a href="{{ shop.brand.metafields.social_links.linkedin.value }}" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn ({{ 'general.accessibility.opens_new_window' | t | default: 'opens in a new window' }})">
+            {% render 'component.icon', type: 'linkedin', class: icon_class %}
+        </a>
+      </li>
+    {%- endif %}
+    {%- endcapture -%}
+
+{%- if links != blank -%}
+    <ul
+        class="flex flex-wrap gap-y-2 gap-x-4 leading-none {{ container_class }}"
+    >
+        {{ links }}
+    </ul>
+{%- endif -%}

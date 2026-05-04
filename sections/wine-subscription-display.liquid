@@ -1,0 +1,87 @@
+{%- comment -%}
+  Expected behaviour: Displays wines from metaobjects organized by subscription and subcategory.
+  About: Section for verifying metaobject data layer. Shows wine subscription hierarchy
+         using snippet-based architecture for reusability.
+  Usage: Add via theme customizer to any page template.
+{%- endcomment -%}
+
+{%- liquid
+  assign s = section.settings
+  assign title = s.title
+
+  assign show_section = true
+
+  if s.visibility_audience == 'premium_only'
+      assign show_section = false
+      if customer
+          if customer.tags contains 'premium-club'
+              assign show_section = true
+          endif
+      endif
+  elsif s.visibility_audience == 'non_premium_only'
+      if customer
+          if customer.tags contains 'premium-club'
+              assign show_section = false
+          endif
+      endif
+  endif
+-%}
+
+{% if show_section %}
+<div class="wine-subscription-display container py-8">
+  {%- if title != blank -%}
+    <h1 class="text-3xl font-bold text-primary mb-6">{{ title }}</h1>
+  {%- endif -%}
+
+  <!-- Wine Subscription Data from Metaobjects -->
+  {% render 'wine-subscription-data', content_for: 'wine-subscription-display-content' %}
+  <!-- End Wine Subscription Data -->
+</div>
+{% endif %}
+
+{% schema %}
+{
+  "name": "Wine Subscription Display",
+  "tag": "section",
+  "class": "wine-subscription-display-section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Visibility"
+    },
+    {
+      "type": "select",
+      "id": "visibility_audience",
+      "label": "Visibility (audience)",
+      "options": [
+        {
+          "value": "everyone",
+          "label": "Everyone"
+        },
+        {
+          "value": "premium_only",
+          "label": "Only premium-club customers"
+        },
+        {
+          "value": "non_premium_only",
+          "label": "Only non premium-club customers"
+        }
+      ],
+      "default": "everyone"
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Section Title",
+      "default": "Wine Subscriptions",
+      "info": "Optional title override. Leave blank to hide."
+    }
+  ],
+  "presets": [
+    {
+      "name": "Wine Subscription Display",
+      "category": "Wine"
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,115 @@
+{% for link in menu %}
+    <li class="">
+        {% if link.links != blank %}
+            <a
+                href="{{ link.url }}"
+                class="flex items-center justify-between font-inter text-base"
+            >
+                {{- link.title -}}
+                <span style="color: {{ accent_color }};">
+                    {%- render 'component.icon',
+                        type: 'full_long_arrow',
+                        class: 'w-10'
+                    -%}
+                </span>
+            </a>
+            <div
+                class="absolute left-0 py-7 px-5 h-full w-full top-0 overflow-hidden pr-0 translate-x-full data-open:translate-x-0 flex flex-col transition data-leave:duration-300 duration-300 ease-out z-10"
+                style="background-color: {{ header_menu_background_color }}; color: {{ header_menu_text_color }};"
+            >
+                <button
+                    class="pt-4 pb-7 flex items-center gap-4"
+                >
+                    <span style="color: {{ accent_color }};">
+                        {%- render 'component.icon',
+                            type: 'full_long_arrow',
+                            class: 'w-fit rotate-180'
+                        -%}
+                    </span>
+                    {{- link.title -}}
+                </button>
+                <ul class="flex flex-col gap-y-7">
+                    {% render 'header-main-menu-mobile-submenu',
+                        menu: link.links,
+                        header_menu_background_color: header_menu_background_color,
+                        header_menu_text_color: header_menu_text_color,
+                        accent_color: accent_color
+                    %}
+                </ul>
+                {%- liquid
+                    assign child_collection_handle = link.title | handle
+                    assign child_collection = collections[child_collection_handle]
+                    assign child_metaobject = child_collection.metafields.custom.header_image_tile.value
+                -%}
+                {%- if child_metaobject.image != blank -%}
+                    <div
+                        class="mt-12 lg:mt-5 mr-5 border-t"
+                        style="border-color: {{ accent_color }};"
+                    >
+                        <div class="relative w-full rounded-lg min-h-[200px] mt-6 lg:mt-4">
+                            <responsive-media
+                                class="absolute inset-0 w-full h-full"
+                            >
+                                {{-
+                                    child_metaobject.image
+                                    | image_url: width: 600
+                                    | image_tag:
+                                        loading: 'lazy',
+                                        class: 'h-full w-full object-cover'
+                                -}}
+                            </responsive-media>
+                            <div
+                                class="absolute inset-0 bg-gradient-to-r from-black/60 to-transparent"
+                            ></div>
+                            <div class="relative z-1 pt-5 pl-5 pb-7 flex flex-col justify-center h-full text-white min-h-[200px]">
+                                {%- if child_metaobject.title != blank -%}
+                                    <h3 class="text-xl font-bold mb-3 leading-tight max-w-28 font-cormorant-garamond">
+                                        {{ child_metaobject.title }}
+                                    </h3>
+                                {%- endif -%}
+                                {%- if child_metaobject.subtitle != blank -%}
+                                    <div class="text-sm text-white/80 mb-4 max-w-[160px]">
+                                        {{
+                                            child_metaobject.subtitle
+                                            | metafield_tag
+                                        }}
+                                    </div>
+                                {%- endif -%}
+                                {%- if child_metaobject.button_text != blank -%}
+                                    {% render 'component.button',
+                                        label: child_metaobject.button_text,
+                                        title: child_metaobject.button_text,
+                                        href: link.url,
+                                        class: 'w-fit border border-white hover:bg-white hover:text-black transition-colors duration-200 py-3 px-9 text-sm',
+                                        id: child_metaobject.button_text,
+                                        attributes: '',
+                                        type: 'button',
+                                        name: child_metaobject.button_text,
+                                        aria_label: child_metaobject.button_text,
+                                        aria_describedby: child_metaobject.button_text,
+                                        style: 'custom',
+                                        size: '',
+                                        icon: '',
+                                        icon_position: '',
+                                        icon_class: '',
+                                        css_variables: '',
+                                        disabled: false,
+                                        loading: false,
+                                        translate: false
+                                    %}
+                                {%- endif -%}
+                            </div>
+                        </div>
+                    </div>
+                {%- endif -%}
+            </div>
+
+        {% else %}
+            <a
+                href="{{ link.url }}"
+            >
+                {{- link.title -}}
+            </a>
+        {% endif %}
+    </li>
+{% endfor %}

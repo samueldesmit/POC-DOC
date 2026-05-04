@@ -1,0 +1,233 @@
+{%- liquid
+    assign container_class = 'container flex flex-col items-center gap-y-7 py-6 lg:flex-row lg:gap-x-14 lg:py-11'
+    assign s = section.settings
+
+    if s.image != blank
+        assign container_class = container_class | append: ' lg:px-[8.25rem]'
+    endif
+
+    assign show_section = true
+
+    if s.visibility_audience == 'premium_only'
+        assign show_section = false
+        if customer
+            if customer.tags contains 'premium-club'
+                assign show_section = true
+            endif
+        endif
+    elsif s.visibility_audience == 'non_premium_only'
+        if customer
+            if customer.tags contains 'premium-club'
+                assign show_section = false
+            endif
+        endif
+    endif
+-%}
+
+{% if show_section %}
+{% if section.blocks.size > 0 %}
+    {% if s.animation_style != blank and s.animation_style != 'none' -%}
+        <gsap-section data-animation="{{ s.animation_style }}">
+    {%- endif %}
+    <div class="{{- container_class -}}">
+        {%- liquid
+            assign responsive_media_class = 'aspect-[343/277.5] w-full lg:-rotate-2 lg:aspect-[600/500]'
+
+            if s.image != blank
+                assign responsive_media_class = responsive_media_class | append: ' lg:w-[55%]'
+            else
+                assign responsive_media_class = responsive_media_class | append: ' lg:flex-1'
+            endif
+
+            if s.reversed
+                assign responsive_media_class = responsive_media_class | append: ' order-last'
+            endif
+        -%}
+        {%- if s.image != blank -%}
+            <responsive-media class="{{- responsive_media_class -}}">
+                {{-
+                    s.image
+                    | image_url: width: 1024
+                    | image_tag:
+                        sizes: '(max-width: 1024px) 100vw, 50vw'
+                -}}
+            </responsive-media>
+        {%- endif -%}
+        {%- liquid
+            assign accordions_block_class = '[&>*]:border-t [&>*]:border-t-black [&>*:last-child]:border-b [&>*:last-child]:border-b-black '
+
+            if s.image != blank
+                assign accordions_block_class = accordions_block_class | append: ' w-full lg:w-[45%]'
+            else
+                assign accordions_block_class = accordions_block_class | append: ' w-full lg:flex-1 mx-auto max-w-[37.5rem]'
+            endif
+        -%}
+        <ul class="{{- accordions_block_class -}}">
+            {%- for block in section.blocks -%}
+                {% assign b = block.settings %}
+                <li {{ block.shopify_attributes }}>
+                    {% render 'component.accordion',
+                        header_class: 'py-4',
+                        title: b.title,
+                        title_class: 'text-body font-bold lg:text-title',
+                        title_tag: b.title_tag,
+                        content: b.content,
+                        content_class: 'text-black/70 font-medium leading-[1.4em] lg:text-body',
+                        styled_content: true
+                    %}
+                </li>
+            {%- endfor -%}
+        </ul>
+    </div>
+    {% if s.animation_style != blank and s.animation_style != 'none' -%}
+        </gsap-section>
+    {%- endif %}
+{% endif %}
+{% endif %}
+
+{% schema %}
+{
+    "name": "Accordion",
+    "class": "section_accordion",
+    "tag": "section",
+    "settings": [
+        {
+            "type": "header",
+            "content": "Visibility"
+        },
+        {
+            "type": "select",
+            "id": "visibility_audience",
+            "label": "Visibility (audience)",
+            "options": [
+                {
+                    "value": "everyone",
+                    "label": "Everyone"
+                },
+                {
+                    "value": "premium_only",
+                    "label": "Only premium-club customers"
+                },
+                {
+                    "value": "non_premium_only",
+                    "label": "Only non premium-club customers"
+                }
+            ],
+            "default": "everyone"
+        },
+        {
+            "type": "image_picker",
+            "id": "image",
+            "label": "Image"
+        },
+        {
+            "type": "checkbox",
+            "id": "reversed",
+            "label": "Show image after text block"
+        },
+        {
+            "type": "header",
+            "content": "Animation"
+        },
+        {
+            "type": "select",
+            "id": "animation_style",
+            "label": "Scroll animation",
+            "info": "Adds a subtle entrance animation when the section scrolls into view.",
+            "options": [
+                { "value": "none", "label": "None" },
+                { "value": "fade-up", "label": "Fade up" },
+                { "value": "fade-in", "label": "Fade in" },
+                { "value": "slide-in-left", "label": "Slide in from left" },
+                { "value": "slide-in-right", "label": "Slide in from right" }
+            ],
+            "default": "none"
+        }
+    ],
+    "blocks": [
+        {
+            "type": "accordion_item",
+            "name": "Accordion Item",
+            "settings": [
+                {
+                    "type": "select",
+                    "id": "title_tag",
+                    "label": "Title tag",
+                    "default": "h4",
+                    "info": "Use for SEO purposes",
+                    "options": [
+                        {
+                            "value": "h1",
+                            "label": "H1"
+                        },
+                        {
+                            "value": "h2",
+                            "label": "H2"
+                        },
+                        {
+                            "value": "h3",
+                            "label": "H3"
+                        },
+                        {
+                            "value": "h4",
+                            "label": "H4"
+                        },
+                        {
+                            "value": "h5",
+                            "label": "H5"
+                        },
+                        {
+                            "value": "h6",
+                            "label": "H6"
+                        }
+                    ]
+                },
+                {
+                    "type": "text",
+                    "id": "title",
+                    "label": "Title"
+                },
+                {
+                    "type": "richtext",
+                    "id": "content",
+                    "label": "Content"
+                }
+            ]
+        }
+    ],
+    "presets": [
+        {
+            "name": "Accordion",
+            "settings": {
+                "reversed": "false"
+            },
+            "blocks": [
+                {
+                    "type": "accordion_item",
+                    "settings": {
+                        "title_tag": "h4",
+                        "title": "Accordion Title",
+                        "content": "<p>Accordion content</p>"
+                    }
+                },
+                {
+                    "type": "accordion_item",
+                    "settings": {
+                        "title_tag": "h4",
+                        "title": "Accordion Title",
+                        "content": "<p>Accordion content</p>"
+                    }
+                },
+                {
+                    "type": "accordion_item",
+                    "settings": {
+                        "title_tag": "h4",
+                        "title": "Accordion Title",
+                        "content": "<p>Accordion content</p>"
+                    }
+                }
+            ]
+        }
+    ]
+}
+{% endschema %}

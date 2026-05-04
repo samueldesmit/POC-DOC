@@ -1,0 +1,83 @@
+{% liquid
+    assign metafields_images = product.selected_or_first_available_variant.metafields.custom.variant_images
+
+    if metafields_images.value.count > 0
+        assign images = metafields_images.value
+        assign images_count = metafields_images.value.count
+    else
+        assign images = product.images
+        assign images_count = product.images.size
+    endif
+%}
+
+<gsap-elements>
+    {% liquid
+        assign product_images_arrow_classes = 'text-brand-200 transition hover:opacity-75 cursor-pointer disabled:invisible disabled:opacity-0 disabled:pointer-events-none'
+        assign main_gallery_prev_arrow_class = 'swiper-button-prev ' | append: product_images_arrow_classes
+        assign main_gallery_next_arrow_class = 'swiper-button-next ' | append: product_images_arrow_classes
+
+        assign aria_prev_slide = 'products.product.gallery.prev_slide' | t
+        assign aria_next_slide = 'products.product.gallery.next_slide' | t
+    %}
+    {% if images != blank %}
+        <product-images-swiper
+            class=""
+        >
+            <div class="swiper-zoom-cursor">
+                {% render 'component.icon',
+                    type: 'zoom_in',
+                    class: 'w-6 h-6 text-white'
+                %}
+            </div>
+            <div class="swiper main-slider relative overflow-hidden ">
+                <div class="swiper-wrapper flex w-full gsap-element-left-right opacity-0">
+                    {%- for image in images -%}
+                        <div
+                            class="swiper-slide w-full min-w-full p-5 lg:p-10"
+                            data-id="{{ image.id }}"
+                        >
+                            <div class="swiper-zoom-container w-full h-full">
+                                <img
+                                    src="{{ image | image_url: width: 1500 }}"
+                                    alt="{{ image.alt | escape }}"
+                                    width="{{ image.width }}"
+                                    height="{{ image.height }}"
+                                    loading="eager"
+                                    class="object-contain w-full aspect-square"
+                                >
+                            </div>
+                        </div>
+                    {%- endfor -%}
+                </div>
+                {% if images_count > 1 %}
+                    <button
+                        class="swiper-button-prev {{ main_gallery_prev_arrow_class }} pointer-events-auto bg-brand-200/10 p-4"
+                        aria-label="{{ aria_prev_slide }}"
+                    >
+                        {% render 'component.icon',
+                            type: 'chevron',
+                            class: 'rotate-180 size-3 md:size-5 text-brand-200'
+                        %}
+                    </button>
+                    <button
+                        class="swiper-button-next {{ main_gallery_next_arrow_class }} pointer-events-auto bg-brand-200/10 p-4"
+                        aria-label="{{ aria_next_slide }}"
+                    >
+                        {% render 'component.icon',
+                            type: 'chevron',
+                            class: 'w-3 md:size-5 text-brand-200'
+                        -%}
+                    </button>
+                {% endif %}
+                <div class="swiper-pagination"></div>
+            </div>
+        </product-images-swiper>
+    {% else %}
+        <div class="h-full w-full flex items-center justify-center text-white aspect-square">
+            {{
+                'image'
+                | placeholder_svg_tag: 'placeholder-svg w-full h-full bg-gray-100 text-white aspect-square'
+            }}
+        </div>
+    {% endif %}
+</gsap-elements>

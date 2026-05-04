@@ -1,0 +1,49 @@
+<add-to-cart-quantity-input
+    data-quantity-input
+    class="flex border border-[#63666F] min-w-[120px] justify-between"
+>
+    <button
+        data-action="decrease"
+        type="button"
+        name="decrease"
+        aria-label="{{- 'accessibility.decrease_quantity' | t -}}"
+        disabled
+        class="inline-flex items-center justify-center p-2 align-middle disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer transition"
+    >
+        {%- render 'component.icon', type: 'minus' -%}
+    </button>
+    <label
+        for="PDPQuantity-{{ section.id }}"
+        class="sr-only"
+    >
+        {{- 'accessibility.quantity_label' | t -}}
+    </label>
+    <input
+        data-input
+        class="text-center inline-flex items-center justify-center align-middle max-w-12 md:max-w-8 lg:max-w-12 outline-none peer bg-transparent focus:ring-0 focus:ring-transparent [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+        type="number"
+        name="pdp-quantity-input"
+        value="{{ current_variant.quantity_rule.min }}"
+        min="{{ current_variant.quantity_rule.min }}"
+        {% if current_variant.inventory_policy == 'deny'
+            and current_variant.product.gift_card? == false
+        %}
+            max="{{ current_variant.inventory_quantity }}"
+        {% elsif current_variant.quantity_rule.max != null %}
+            max="{{ current_variant.quantity_rule.max }}"
+        {% else %}
+            max="99"
+        {% endif %}
+        step="{{ current_variant.quantity_rule.increment }}"
+        id="PDPQuantity-{{ section.id }}"
+    >
+    <button
+        data-action="increase"
+        type="button"
+        name="increase"
+        aria-label="{{- 'accessibility.increase_quantity' | t -}}"
+        class="inline-flex items-center justify-center p-2 align-middle disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer transition"
+    >
+        {%- render 'component.icon', type: 'plus', class: 'text-primary' -%}
+    </button>
+</add-to-cart-quantity-input>

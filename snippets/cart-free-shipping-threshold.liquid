@@ -1,0 +1,66 @@
+{%- comment -%}
+    Displays a progress bar showing how close the customer is to qualifying for free shipping.
+    Uses market metafields for threshold value.
+
+    Accepts:
+        - cart: The cart object
+        - custom_threshold: Optional threshold amount in the store's base currency (e.g. "50")
+
+    Usage:
+        {%- render 'cart-free-shipping-threshold', cart: cart, custom_threshold: section.settings.free_shipping_threshold_amount -%}
+{%- endcomment -%}
+
+{%- liquid
+    if custom_threshold != blank
+        assign threshold = custom_threshold | times: 100
+    else
+        assign threshold = localization.market.metafields.custom.free_shipping_decimal_threshold.value | times: 100
+    endif
+    assign cart_subtotal = cart.total_price
+    assign remaining = threshold | minus: cart_subtotal
+    assign spend_for_free_shipping = remaining | money_without_trailing_zeros
+    assign spend_for_free_shipping_bold = '<strong>' | append: spend_for_free_shipping | append: '</strong>'
+
+    if cart_subtotal >= threshold
+        assign threshold_text = 'cart.drawer.free_shipping_achieved' | t
+    else
+        assign threshold_text = 'cart.drawer.free_shipping_message_html' | t: amount: spend_for_free_shipping_bold
+    endif
+
+    if threshold == blank or threshold == 0
+        break
+    endif
+
+    assign progress = cart_subtotal | times: 1.0 | divided_by: threshold | times: 100 | at_most: 100 | default: 0
+-%}
+
+<cart-free-shipping-threshold
+    class="flex w-full flex-col bg-brand-300 px-3 py-4"
+    style="--progress: {{ progress }}%;"
+>
+    <p
+        class="mb-[11px] text-sm leading-[1.3em] font-inter"
+        style="color: {{ section.settings.free_shipping_text_color | default: '#A08735' }};"
+    >
+        {{ threshold_text }}
+    </p>
+    <div
+        class="relative h-1 w-full rounded-full bg-surface-200/20 before:block before:h-full before:w-[var(--progress,0%)] before:rounded-full before:bg-[var(--bar-color)] before:transition-all before:duration-300"
+        role="progressbar"
+        aria-valuenow="{{ progress | round }}"
+        aria-valuemin="0"
+        aria-valuemax="100"
+        aria-label="{{ 'cart.drawer.free_shipping_progress' | t | default: 'Free shipping progress' }}"
+        style="--bar-color: {{ section.settings.free_shipping_bar_color | default: '#A08735' }};"
+    >
+        <div
+            class="absolute left-[var(--progress,0%)] top-1/2 flex size-5 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full transition-all duration-300"
+            style="background-color: {{ section.settings.free_shipping_bar_color | default: '#A08735' }};"
+        >
+            {%- render 'component.icon',
+                type: 'shipping_threshold_truck',
+                class: 'text-white size-[0.8125rem]'
+            -%}
+        </div>
+    </div>
+</cart-free-shipping-threshold>

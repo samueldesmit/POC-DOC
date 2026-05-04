@@ -1,0 +1,105 @@
+{% liquid
+    assign menu = linklists['main-menu'].links
+    assign is_premium_member = false
+    if customer
+        if customer.tags contains 'premium-club'
+            assign is_premium_member = true
+        endif
+    endif
+%}
+
+{% capture mobile_menu_content %}
+<div class="flex flex-col h-full relative pt-10 px-5 overflow-y-auto! overflow-x-hidden border-t" style="background-color: {{ header_menu_background_color }}; color: {{ header_menu_text_color }}; border-color: {{ accent_color }};">
+
+            <nav class="" style="background-color: {{ header_menu_background_color }}; color: {{ header_menu_text_color }};">
+                <offcanvas-menu>
+                    <ul class="flex flex-col gap-y-7">
+                        {% render 'header-main-menu-mobile-submenu',
+                            menu: menu,
+                            header_menu_background_color: header_menu_background_color, 
+                            header_menu_text_color: header_menu_text_color,
+                            accent_color: accent_color
+                        %}
+                    </ul>
+                </offcanvas-menu>
+            </nav>
+
+        <footer class="my-5" style="background-color: {{ header_menu_background_color }}; color: {{ header_menu_text_color }};">
+            <ul>
+                <li class="py-5 mt-4 border-t border-border" style="border-color: {{ accent_color }};">
+                    {%- liquid
+                        assign account_aria_label = 'accessibility.open_user_account' | t
+                        assign account_attributes = 'aria-label="' | append: account_aria_label | append: '"'
+
+                        if customer
+                            assign account_link = routes.account_url
+                        else
+                            assign account_link = routes.account_login_url
+                        endif
+                    -%}
+                    <a
+                        {{ account_attributes }}
+                        href="{{- account_link -}}"
+                        class="inline-flex items-center gap-4 font-inter text-[14px]"
+                    >
+                        {% assign accent_color_hex = 'text-['
+                            | append: header_menu_text_color
+                            | append: ']'
+                        %}
+                        {%- render 'component.icon',
+                            type: 'account',
+                            class: accent_color_hex,
+                        -%}
+                        
+                        {{
+                            'sections.header.offcanvas_navigation.my_account'
+                            | t
+                        }}
+                    </a>
+                </li>
+                {% if is_premium_member and premium_club_url != blank %}
+                    <li class="py-5 border-t border-border" style="border-color: {{ accent_color }};">
+                        <a
+                            href="{{ premium_club_url }}"
+                            class="inline-flex items-center gap-4 font-inter text-[14px] uppercase tracking-[0.15em] underline underline-offset-4"
+                            style="color: {{ accent_color }};"
+                        >
+                            {{ premium_club_label | default: 'Premium Club Member' }}
+                            {% if premium_club_icon != blank %}
+                                <img
+                                    src="{{ premium_club_icon | image_url: width: 48 }}"
+                                    alt=""
+                                    width="24"
+                                    height="24"
+                                    loading="lazy"
+                                    class="object-contain"
+                                >
+                            {% endif %}
+                        </a>
+                    </li>
+                {% endif %}
+            </ul>
+        </footer>
+    </div>
+{% endcapture %}
+
+{% capture mobile_menu_open_button %}
+    {% render 'component.icon', type: 'menu' %}
+{% endcapture %}
+
+{%- render 'component.modal',
+    data_id: 'offcanvas-menu',
+    open_button: mobile_menu_open_button,
+    content: mobile_menu_content,
+    content_class: 'h-[calc(100vh-var(--header-offset,0px))]! w-full translate-x-full data-open:translate-x-0 data-leave:duration-300 duration-300 ease-out pointer-events-auto bg-[#F4F1EC] absolute top-[var(--header-offset,0px)]',
+    is_popup: false,
+    is_drawer: true,
+    attributes: 'aria-label="Mobile navigation menu"',
+    open_button_class: 'flex items-center cursor-pointer',
+    drawer_from_right: true,
+    desktop_popup_mobile_drawer: false,
+    blur: false,
+    is_top_zero: false,
+    hide_backdrop: true,
+    modal_group: 'header'
+-%}

@@ -1,0 +1,12 @@
+{%- if mobile_visible -%}
+    <div
+        style="background: {{ mobile_bg }}"
+        class="z-[3] absolute inset-0 size-full overlay lg:hidden"
+    ></div>
+{%- endif -%}
+{%- if desktop_visible -%}
+    <div
+        style="background: {{ desktop_bg }}"
+        class="hidden lg:block z-[3] absolute inset-0 size-full"
+    ></div>
+{%- endif -%}

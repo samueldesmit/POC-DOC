@@ -1,0 +1,55 @@
+{% doc %}
+    Checkbox input component with custom styling and icon.
+
+    @param {string} id - Id of the input, also sets the "for=" of the label
+    @param {string} name - Name of the input
+    @param {string} label - The label string of the checkbox
+    @param {string} value - Value of the input element (default: blank)
+    @param {boolean} required - Whether the checkbox input is required (default: false)
+    @param {string} class - Additional class for enclosing container div
+    @param {string} attributes - Additional attributes you want to add, such as state or data-attributes
+
+    @example
+    {%- render 'component.checkbox',
+        id: 'newsletter-signup',
+        name: 'newsletter',
+        label: 'Subscribe to newsletter',
+        value: 'yes',
+        class: '',
+        attributes: '',
+        required: true
+    -%}
+{% enddoc %}
+
+{%- liquid
+    assign required = required | default: false
+-%}
+
+{%- if id and name and label -%}
+    <div class="group flex items-center gap-3 {{ class }}">
+        <div class="text-background relative">
+            <input
+                type="checkbox"
+                name="{{ name }}"
+                id="{{ id }}"
+                value="{{ value }}"
+                class="peer appearance-none border border-white h-5 w-[22px] relative after:absolute after:left-1.5 after:top-0.5 after:w-[6px] after:h-[11px] after:border-r-2 after:border-b-2 after:border-white disabled:opacity-40 after:rotate-45 after:opacity-0 checked:after:opacity-100 after:transition after:duration-100 after:ease-in-out"
+                {% if required %}
+                    required aria-required="true"
+                {% endif %}
+                {{ attributes }}
+            >
+
+            {% render 'component.icon',
+                class: 'pointer-events-none absolute left-1/2 top-1/2 size-4 w-full -translate-x-1/2 -translate-y-1/2 opacity-0 peer-checked:opacity-100',
+                type: 'check'
+            %}
+        </div>
+        <label
+            for="{{ id }}"
+            class="text-primary cursor-pointer"
+        >
+            {{- label -}}
+        </label>
+    </div>
+{%- endif -%}

@@ -1,0 +1,466 @@
+{%- liquid
+    assign s = section.settings
+    assign section_id = 'section-' | append: section.id
+    assign product_count = s.product_list | size
+
+    assign show_section = true
+
+    if s.visibility_audience == 'premium_only'
+        assign show_section = false
+        if customer
+            if customer.tags contains 'premium-club'
+                assign show_section = true
+            endif
+        endif
+    elsif s.visibility_audience == 'non_premium_only'
+        if customer
+            if customer.tags contains 'premium-club'
+                assign show_section = false
+            endif
+        endif
+    endif
+-%}
+
+{% if show_section %}
+{% if product_count > 0 %}
+    <div
+        id="{{ section_id }}"
+        class="{{ s.mobile_margin }} {{ s.desktop_margin }} product-highlight-arrow-border"
+        style="--product-highlight-arrow-border-color: {{ s.arrow_border_color | default: '#A08735' }};"
+    >
+        {% render 'section-colors', current_section: section %}
+        {% if s.animation_style != blank and s.animation_style != 'none' -%}
+            <gsap-section data-animation="{{ s.animation_style }}">
+        {%- endif %}
+        <div
+            class="{{ s.mobile_padding }} {{ s.desktop_padding }} container text-primary w-full bg-background lg:bg-transparent"
+        >
+            {%- capture product_highlight_items -%}
+                {% for product in s.product_list %}
+                    {%- if product_count > 1 -%}<li class="splide__slide">{%- endif -%}
+                        <div class="flex flex-col items-center gap-10 lg:grid lg:grid-cols-2 lg:gap-0">
+                            {%- comment -%} Product Image {%- endcomment -%}
+                            <responsive-media class="lg:w-[340px] lh-[400px] lg:w-full lg:h-[min(80dvh,800px)] lg:order-last flex items-center justify-center">
+                                {{-
+                                    product.images[0].src
+                                    | image_url: width: 1200
+                                    | image_tag:
+                                        class: 'w-full h-full object-contain',
+                                        loading: 'lazy'
+                                -}}
+                            </responsive-media>
+
+                            {%- comment -%} Content {%- endcomment -%}
+                            <div class="w-full lg:h-full {% if s.show_border or s.show_border == nil %}lg:pr-24{% endif %}">
+                                <div
+                                    class="flex flex-col items-start gap-5 px-0 lg:p-20 lg:justify-center h-full w-full {% if s.show_border or s.show_border == nil %}product-highlight-content-border lg:border-r{% endif %}"
+                                    style="background-color: {{ s.background | default: '#FFFFFF' }}"
+                                >
+                                    {%- comment -%} Gold separator line (mobile only) {%- endcomment -%}
+                                    <hr class="w-full border-t -mt-5 lg:hidden product-highlight-hr-border">
+
+                                    {%- comment -%} Winery logo + Product title {%- endcomment -%}
+                                    <div class="flex flex-col gap-3">
+                                        {% if product.metafields.custom.awards
+                                                != blank
+                                        %}
+                                            {% render 'component.awards',
+                                                awards_metafield: product.metafields.custom.awards.value,
+                                                class: 'flex gap-3'
+                                            %}
+                                        {% endif %}
+                                        <h3 class="text-primary font-cormorant-garamond text-[30px] lg:text-[40px] font-semibold leading-[1.2em] tracking-[-0.022em]">
+                                            {{ product.title }}
+                                        </h3>
+                                    </div>
+
+                                    {%- comment -%} Awards {%- endcomment -%}
+
+                                    <p class="text-primary/80 text-sm lg:text-base leading-[1.3em] lg:leading-[1.5em]">
+                                        {{
+                                            product.description
+                                            | strip_html
+                                        }}
+                                    </p>
+
+                                    {% assign more_details_label = 'sections.product_highlight.more_details'
+                                        | t
+                                    %}
+
+                                    {% render 'component.button',
+                                        label: more_details_label,
+                                        title: more_details_label,
+                                        href: product.url,
+                                        style: s.button_style,
+                                        class: 'text-center flex items-center justify-center w-full lg:w-fit'
+                                    %}
+                                </div>
+                            </div>
+                        </div>
+                    {%- if product_count > 1 -%}</li>{%- endif -%}
+                {% endfor %}
+            {%- endcapture -%}
+
+            {% if product_count > 1 %}
+                <splide-section
+                    class="product-highlight-container w-full"
+                    data-splide-per-page-desktop="1"
+                    data-splide-per-page-mobile="1"
+                    data-splide-gap-desktop="0px"
+                    data-splide-gap-mobile="0px"
+                    data-splide-arrows="true"
+                    data-splide-drag="true"
+                >
+                    <div class="splide relative">
+                        <div class="splide__track">
+                            <ul class="splide__list">
+                                {{ product_highlight_items }}
+                            </ul>
+                        </div>
+
+                        {%- comment -%} Desktop-only big arrow navigation overlay {%- endcomment -%}
+                        <button
+                            type="button"
+                            class="hidden lg:flex items-center justify-center absolute inset-y-0 left-1/2 -translate-x-1/2 z-20 pointer-events-auto product-highlight-arrow cursor-pointer"
+                            style="color: var(--product-highlight-arrow-border-color);"
+                            aria-label="Next product"
+                            data-product-highlight-arrow
+                        >
+                            {% render 'component.icon',
+                                type: 'big-aarow',
+                                class: 'w-[72px] h-[72px]'
+                            %}
+                        </button>
+
+                        {%- comment -%} Mobile-only pagination (same as hero), under the button {%- endcomment -%}
+                        <div class="flex justify-start pt-5 lg:hidden">
+                            {% render 'component.splide-arrows',
+                                container_class: 'flex items-center gap-2 text-primary',
+                                style: 'custom',
+                                button_base_class: 'cursor-pointer splide__arrow pointer-events-auto text-primary',
+                                show_pagination: true,
+                                pagination_total: product_count,
+                                pagination_class: 'text-primary text-base'
+                            %}
+                        </div>
+                    </div>
+                </splide-section>
+            {% else %}
+                <div class="product-highlight-container w-full">
+                    {{ product_highlight_items }}
+                </div>
+            {% endif %}
+        </div>
+        {% if s.animation_style != blank and s.animation_style != 'none' -%}
+            </gsap-section>
+        {%- endif %}
+    </div>
+{% endif %}
+{% endif %}
+
+{% schema %}
+{
+    "name": "Product Highlight",
+    "tag": "section",
+    "class": "product-highlight",
+    "settings": [
+        {
+            "type": "header",
+            "content": "Visibility"
+        },
+        {
+            "type": "select",
+            "id": "visibility_audience",
+            "label": "Visibility (audience)",
+            "options": [
+                {
+                    "value": "everyone",
+                    "label": "Everyone"
+                },
+                {
+                    "value": "premium_only",
+                    "label": "Only premium-club customers"
+                },
+                {
+                    "value": "non_premium_only",
+                    "label": "Only non premium-club customers"
+                }
+            ],
+            "default": "everyone"
+        },
+        {
+            "type": "header",
+            "content": "Documentation for this section",
+            "info": "Click [here](https://strix-net.atlassian.net/wiki/spaces/TWL/) for more information."
+        },
+        {
+            "type": "header",
+            "content": "Section Styling"
+        },
+        {
+            "type": "checkbox",
+            "id": "section_styling",
+            "label": "Add styling to section",
+            "info": "If enabled this shows the settings to set the color scheme, spacing, and margin for the section.",
+            "default": false
+        },
+        {
+            "type": "header",
+            "content": "Section Color Scheme",
+            "visible_if": "{{ section.settings.section_styling == true }}"
+        },
+        {
+            "type": "header",
+            "content": "Section Spacing",
+            "visible_if": "{{ section.settings.section_styling == true }}"
+        },
+        {
+            "type": "select",
+            "id": "mobile_padding",
+            "label": "Mobile padding",
+            "visible_if": "{{ section.settings.section_styling == true }}",
+            "options": [
+                {
+                    "value": "py-0",
+                    "label": "None"
+                },
+                {
+                    "value": "py-2",
+                    "label": "S - 8px"
+                },
+                {
+                    "value": "py-4",
+                    "label": "M - 16px"
+                },
+                {
+                    "value": "py-6",
+                    "label": "L - 24px"
+                },
+                {
+                    "value": "py-8",
+                    "label": "XL - 32px"
+                },
+                {
+                    "value": "py-10",
+                    "label": "2XL - 40px"
+                },
+                {
+                    "value": "py-12",
+                    "label": "3XL - 48px"
+                },
+                {
+                    "value": "py-16",
+                    "label": "4XL - 64px"
+                }
+            ],
+            "default": "py-0"
+        },
+        {
+            "type": "select",
+            "id": "desktop_padding",
+            "label": "Desktop padding",
+            "visible_if": "{{ section.settings.section_styling == true }}",
+            "options": [
+                {
+                    "value": "lg:py-0",
+                    "label": "None"
+                },
+                {
+                    "value": "lg:py-2",
+                    "label": "S - 8px"
+                },
+                {
+                    "value": "lg:py-4",
+                    "label": "M - 16px"
+                },
+                {
+                    "value": "lg:py-6",
+                    "label": "L - 24px"
+                },
+                {
+                    "value": "lg:py-8",
+                    "label": "XL - 32px"
+                },
+                {
+                    "value": "lg:py-10",
+                    "label": "2XL - 40px"
+                },
+                {
+                    "value": "lg:py-12",
+                    "label": "3XL - 48px"
+                },
+                {
+                    "value": "lg:py-16",
+                    "label": "4XL - 64px"
+                }
+            ],
+            "default": "lg:py-0"
+        },
+        {
+            "type": "header",
+            "content": "Section Margin",
+            "visible_if": "{{ section.settings.section_styling == true }}"
+        },
+        {
+            "type": "select",
+            "id": "mobile_margin",
+            "label": "Mobile Section margin",
+            "visible_if": "{{ section.settings.section_styling == true }}",
+            "options": [
+                {
+                    "value": "mb-0",
+                    "label": "None"
+                },
+                {
+                    "value": "mb-4",
+                    "label": "Small - 16px"
+                },
+                {
+                    "value": "mb-8",
+                    "label": "Medium - 32px"
+                },
+                {
+                    "value": "mb-12",
+                    "label": "Large - 48px"
+                }
+            ],
+            "default": "mb-0"
+        },
+        {
+            "type": "select",
+            "id": "desktop_margin",
+            "label": "Desktop Section margin",
+            "visible_if": "{{ section.settings.section_styling == true }}",
+            "options": [
+                {
+                    "value": "lg:mb-0",
+                    "label": "None"
+                },
+                {
+                    "value": "lg:mb-8",
+                    "label": "Small - 32px"
+                },
+                {
+                    "value": "lg:mb-12",
+                    "label": "Medium - 48px"
+                },
+                {
+                    "value": "lg:mb-16",
+                    "label": "Large - 64px"
+                }
+            ],
+            "default": "lg:mb-0"
+        },
+        {
+            "type": "header",
+            "content": "Colors",
+            "visible_if": "{{ section.settings.section_styling == true }}"
+        },
+        {
+            "type": "color",
+            "id": "background",
+            "label": "Text background color",
+            "default": "#FFFFFF",
+            "visible_if": "{{ section.settings.section_styling == true }}"
+        },
+        {
+            "type": "color",
+            "id": "primary_text_color",
+            "label": "Primary text color",
+            "default": "#000000",
+            "visible_if": "{{ section.settings.section_styling == true }}"
+        },
+        {
+            "type": "color",
+            "id": "primary_button_color",
+            "label": "Primary button background color",
+            "default": "#A08735",
+            "visible_if": "{{ section.settings.section_styling == true }}"
+        },
+        {
+            "type": "color",
+            "id": "primary_button_text_color",
+            "label": "Primary button text color",
+            "default": "#ffffff",
+            "visible_if": "{{ section.settings.section_styling == true }}"
+        },
+        {
+            "type": "color",
+            "id": "secondary_button_color",
+            "label": "Secondary button background color",
+            "default": "#000000",
+            "visible_if": "{{ section.settings.section_styling == true }}"
+        },
+        {
+            "type": "color",
+            "id": "secondary_button_text_color",
+            "label": "Secondary button text color",
+            "default": "#FFFFFF",
+            "visible_if": "{{ section.settings.section_styling == true }}"
+        },
+
+        {
+            "type": "select",
+            "id": "button_style",
+            "label": "Button style",
+            "options": [
+                {
+                    "value": "primary",
+                    "label": "Primary"
+                },
+                {
+                    "value": "secondary",
+                    "label": "Secondary"
+                }
+            ],
+            "default": "primary"
+        },
+        {
+            "type": "color",
+            "id": "arrow_border_color",
+            "label": "Arrow and border color",
+            "default": "#A08735",
+            "info": "Desktop arrow icon and content border (border uses 50% opacity)."
+        },
+        {
+            "type": "checkbox",
+            "id": "show_border",
+            "label": "Show border",
+            "default": true
+        },
+        {
+            "type": "header",
+            "content": "Products"
+        },
+        {
+            "type": "product_list",
+            "id": "product_list",
+            "label": "Products to display"
+        },
+        {
+            "type": "header",
+            "content": "Animation"
+        },
+        {
+            "type": "select",
+            "id": "animation_style",
+            "label": "Scroll animation",
+            "info": "Adds a subtle entrance animation when the section scrolls into view.",
+            "options": [
+                { "value": "none", "label": "None" },
+                { "value": "fade-up", "label": "Fade up" },
+                { "value": "fade-in", "label": "Fade in" },
+                { "value": "slide-in-left", "label": "Slide in from left" },
+                { "value": "slide-in-right", "label": "Slide in from right" }
+            ],
+            "default": "none"
+        }
+    ],
+
+    "presets": [
+        {
+            "name": "Product Highlight"
+        }
+    ]
+}
+{% endschema %}

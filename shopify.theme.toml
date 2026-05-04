@@ -1,0 +1,7 @@
+[environments.dev]
+store = "internal-dawnrise.myshopify.com"
+password  = "The Theme Access token that you generated with the Theme Access Shopify Plugin"
+
+#[environments.dev]
+#store = "The store that you want to interact with"
+#password  = "The Theme Access token that you generated with the Theme Access Shopify Plugin"

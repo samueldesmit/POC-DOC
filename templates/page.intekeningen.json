@@ -1,0 +1,68 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "main": {
+      "type": "main-page",
+      "disabled": true,
+      "settings": {}
+    },
+    "breadcrumbs_zKVMWc": {
+      "type": "breadcrumbs",
+      "name": "Breadcrumbs",
+      "settings": {
+        "visibility_audience": "everyone",
+        "custom_parent_url": "",
+        "custom_parent_title": "",
+        "custom_current_title": "",
+        "section_styling": false,
+        "mobile_padding": "py-0",
+        "desktop_padding": "lg:py-4",
+        "mobile_margin": "mb-0",
+        "desktop_margin": "lg:mb-0",
+        "background": "#ffffff",
+        "primary_text_color": "#525252"
+      }
+    },
+    "subscription_linker_k4EQwY": {
+      "type": "subscription-linker",
+      "name": "Subscription Linker",
+      "settings": {
+        "visibility_audience": "everyone",
+        "subscription": "buccella-cultwijn-uit-napa-valley",
+        "image": "shopify://shop_images/Chateau_Corton_C.-logo.jpg",
+        "image_position": "left",
+        "subheading": "99 points for the 2022 year",
+        "heading": "{{ section.settings.subscription.sub_title.value }}",
+        "description": "",
+        "button_text": "Shop Now",
+        "button_style": "primary",
+        "button_url": "",
+        "section_styling": false,
+        "mobile_padding": "py-0",
+        "desktop_padding": "lg:py-0",
+        "mobile_margin": "mb-0",
+        "desktop_margin": "lg:mb-0",
+        "background": "#ffffff",
+        "primary_text_color": "#000000",
+        "primary_button_color": "#06061c",
+        "primary_button_text_color": "#ffffff",
+        "secondary_button_color": "#000000",
+        "secondary_button_text_color": "#ffffff",
+        "animation_style": "none"
+      }
+    }
+  },
+  "order": [
+    "main",
+    "breadcrumbs_zKVMWc",
+    "subscription_linker_k4EQwY"
+  ]
+}

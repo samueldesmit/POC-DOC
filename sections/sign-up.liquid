@@ -1,0 +1,428 @@
+{% liquid
+    assign s = section.settings
+    assign section_id = 'section-' | append: section.id
+
+    assign show_section = true
+
+    if s.visibility_audience == 'premium_only'
+        assign show_section = false
+        if customer
+            if customer.tags contains 'premium-club'
+                assign show_section = true
+            endif
+        endif
+    elsif s.visibility_audience == 'non_premium_only'
+        if customer
+            if customer.tags contains 'premium-club'
+                assign show_section = false
+            endif
+        endif
+    endif
+%}
+
+{% if show_section %}
+<div
+    class="{{ s.mobile_margin }} {{ s.desktop_margin }} bg-background {% if s.border_top %}border-t {% endif %} {% if s.border_bottom %}border-b {% endif %}"
+    style="border-color: var(--border-color);"
+    id="{{ section_id }}"
+>
+    {% render 'section-colors', current_section: section %}
+    {% if s.animation_style != blank and s.animation_style != 'none' -%}
+        <gsap-section data-animation="{{ s.animation_style }}">
+    {%- endif %}
+    <div
+        class="{{ s.mobile_padding }} {{ s.desktop_padding }} container text-primary {% if s.grid_of_two %}grid lg:grid-cols-2 lg:gap-20 gap-4{% endif %}"
+    >
+        <div class="flex {% if s.grid_of_two %}lg:justify-end  {% else %} lg:justify-center lg:text-center mb-8{% endif %} ">
+            <div class="flex flex-col gap-3{% if s.grid_of_two %} lg:max-w-[26rem] w-full {% endif %}">
+                <h2
+                    class="
+                        font-cormorant-garamond text-[24px] lg:text-[40px]
+                        font-semibold leading-[120%]
+                    "
+                >
+                    {{ s.title }}
+                </h2>
+                <div class="text-[14px] lg:text-[16px] font-inter font-normal leading-[100%]">
+                    {{ s.description }}
+                </div>
+            </div>
+        </div>
+        <div class="{% if s.grid_of_two != true %} flex flex-col lg:items-center justify-center {% endif %}">
+            <form
+                action="#"
+                class="flex {% if s.grid_of_two != false %} flex-col {% else %} flex-col lg:flex-row {% endif %} gap-2 items-center justify-center {% if s.grid_of_two != false %} lg:max-w-[26rem] {%  else %} lg:max-w-[36rem]  {%  endif %} w-full "
+            >
+                <input
+                    type="email"
+                    placeholder="{{ s.placeholder }}"
+                    class="border border-primary p-2 w-full  min-w-[20rem] h-12"
+                >
+                {% render 'component.button',
+                    label: s.button_text,
+                    type: 'submit',
+                    class: 'border border-primary w-full text-center',
+                    style: s.button_style,
+                    size: 'large',
+                    icon: 'arrow-right',
+                    icon_class: 'w-4 h-4'
+                %}
+            </form>
+            <div
+                class="
+                    text-xs
+                    font-inter mt-1
+                "
+            >
+                {{ s.privacy_text }}
+            </div>
+        </div>
+    </div>
+    {% if s.animation_style != blank and s.animation_style != 'none' -%}
+        </gsap-section>
+    {%- endif %}
+</div>
+{% endif %}
+
+{% schema %}
+{
+    "name": "Sign Up",
+    "tag": "section",
+    "class": "sign-up",
+    "settings": [
+        {
+            "type": "header",
+            "content": "Visibility"
+        },
+        {
+            "type": "select",
+            "id": "visibility_audience",
+            "label": "Visibility (audience)",
+            "options": [
+                {
+                    "value": "everyone",
+                    "label": "Everyone"
+                },
+                {
+                    "value": "premium_only",
+                    "label": "Only premium-club customers"
+                },
+                {
+                    "value": "non_premium_only",
+                    "label": "Only non premium-club customers"
+                }
+            ],
+            "default": "everyone"
+        },
+        {
+            "type": "header",
+            "content": "Documentation for this section",
+            "info": "Click [here](https://strix-net.atlassian.net/wiki/spaces/TWL/pages/3720183810/Section+Winery+Selection) for more information."
+        },
+        {
+            "type": "header",
+            "content": "Section Styling"
+        },
+        {
+            "type": "checkbox",
+            "id": "section_styling",
+            "label": "Add styling to section",
+            "info": "If enabled this shows the settings to set the color scheme, spacing, and margin for the section.",
+            "default": false
+        },
+        {
+            "type": "header",
+            "content": "Section Color Scheme",
+            "visible_if": "{{ section.settings.section_styling == true }}"
+        },
+        {
+            "type": "header",
+            "content": "Section Spacing",
+            "visible_if": "{{ section.settings.section_styling == true }}"
+        },
+        {
+            "type": "select",
+            "id": "mobile_padding",
+            "label": "Mobile padding",
+            "visible_if": "{{ section.settings.section_styling == true }}",
+            "options": [
+                {
+                    "value": "py-0",
+                    "label": "None"
+                },
+                {
+                    "value": "py-2",
+                    "label": "S - 8px"
+                },
+                {
+                    "value": "py-4",
+                    "label": "M - 16px"
+                },
+                {
+                    "value": "py-6",
+                    "label": "L - 24px"
+                },
+                {
+                    "value": "py-8",
+                    "label": "XL - 32px"
+                },
+                {
+                    "value": "py-10",
+                    "label": "2XL - 40px"
+                },
+                {
+                    "value": "py-12",
+                    "label": "3XL - 48px"
+                },
+                {
+                    "value": "py-16",
+                    "label": "4XL - 64px"
+                }
+            ],
+            "default": "py-0"
+        },
+        {
+            "type": "select",
+            "id": "desktop_padding",
+            "label": "Desktop padding",
+            "visible_if": "{{ section.settings.section_styling == true }}",
+            "options": [
+                {
+                    "value": "lg:py-0",
+                    "label": "None"
+                },
+                {
+                    "value": "lg:py-2",
+                    "label": "S - 8px"
+                },
+                {
+                    "value": "lg:py-4",
+                    "label": "M - 16px"
+                },
+                {
+                    "value": "lg:py-6",
+                    "label": "L - 24px"
+                },
+                {
+                    "value": "lg:py-8",
+                    "label": "XL - 32px"
+                },
+                {
+                    "value": "lg:py-10",
+                    "label": "2XL - 40px"
+                },
+                {
+                    "value": "lg:py-12",
+                    "label": "3XL - 48px"
+                },
+                {
+                    "value": "lg:py-16",
+                    "label": "4XL - 64px"
+                }
+            ],
+            "default": "lg:py-0"
+        },
+        {
+            "type": "header",
+            "content": "Section Margin",
+            "visible_if": "{{ section.settings.section_styling == true }}"
+        },
+        {
+            "type": "select",
+            "id": "mobile_margin",
+            "label": "Mobile Section margin",
+            "visible_if": "{{ section.settings.section_styling == true }}",
+            "options": [
+                {
+                    "value": "mb-0",
+                    "label": "None"
+                },
+                {
+                    "value": "mb-4",
+                    "label": "Small - 16px"
+                },
+                {
+                    "value": "mb-8",
+                    "label": "Medium - 32px"
+                },
+                {
+                    "value": "mb-12",
+                    "label": "Large - 48px"
+                }
+            ],
+            "default": "mb-0"
+        },
+        {
+            "type": "select",
+            "id": "desktop_margin",
+            "label": "Desktop Section margin",
+            "visible_if": "{{ section.settings.section_styling == true }}",
+            "options": [
+                {
+                    "value": "lg:mb-0",
+                    "label": "None"
+                },
+                {
+                    "value": "lg:mb-8",
+                    "label": "Small - 32px"
+                },
+                {
+                    "value": "lg:mb-12",
+                    "label": "Medium - 48px"
+                },
+                {
+                    "value": "lg:mb-16",
+                    "label": "Large - 64px"
+                }
+            ],
+            "default": "lg:mb-0"
+        },
+        {
+            "type": "header",
+            "content": "Colors",
+            "visible_if": "{{ section.settings.section_styling == true }}"
+        },
+        {
+            "type": "color",
+            "id": "background",
+            "label": "Section background color",
+            "default": "#FFFFFF",
+            "visible_if": "{{ section.settings.section_styling == true }}"
+        },
+        {
+            "type": "color",
+            "id": "primary_text_color",
+            "label": "Primary text color",
+            "default": "#000000",
+            "visible_if": "{{ section.settings.section_styling == true }}"
+        },
+        {
+            "type": "color",
+            "id": "border_color",
+            "label": "Border color",
+            "default": "#B19E5E",
+            "visible_if": "{{ section.settings.section_styling == true }}"
+        },
+        {
+            "type": "color",
+            "id": "primary_button_color",
+            "label": "Primary button background color",
+            "default": "#000000",
+            "visible_if": "{{ section.settings.section_styling == true }}"
+        },
+        {
+            "type": "color",
+            "id": "primary_button_text_color",
+            "label": "Primary button text color",
+            "default": "#FFFFFF",
+            "visible_if": "{{ section.settings.section_styling == true }}"
+        },
+        {
+            "type": "color",
+            "id": "secondary_button_color",
+            "label": "Secondary button background color",
+            "default": "#000000",
+            "visible_if": "{{ section.settings.section_styling == true }}"
+        },
+        {
+            "type": "color",
+            "id": "secondary_button_text_color",
+            "label": "Secondary button text color",
+            "default": "#FFFFFF",
+            "visible_if": "{{ section.settings.section_styling == true }}"
+        },
+        {
+            "type": "header",
+            "content": "Content"
+        },
+        {
+            "type": "text",
+            "id": "title",
+            "label": "Title",
+            "default": "Direct access to the world of fine wine"
+        },
+        {
+            "type": "richtext",
+            "id": "description",
+            "label": "Description",
+            "default": "<p>Get insider updates on the world’s most exceptional wines, before anyone else.</p>"
+        },
+        {
+            "type": "text",
+            "id": "placeholder",
+            "label": "Placeholder",
+            "default": "Email Address"
+        },
+        {
+            "type": "text",
+            "id": "privacy_text",
+            "label": "Privacy text",
+            "default": "We respect your data and privacy. Unsubscribe anytime."
+        },
+        {
+            "type": "text",
+            "id": "button_text",
+            "label": "Button text",
+            "default": "Sign Up"
+        },
+        {
+            "type": "select",
+            "id": "button_style",
+            "label": "Button style",
+            "options": [
+                {
+                    "value": "primary",
+                    "label": "Primary"
+                },
+                {
+                    "value": "secondary",
+                    "label": "Secondary"
+                }
+            ],
+            "default": "primary"
+        },
+        {
+            "type": "checkbox",
+            "id": "grid_of_two",
+            "label": "Grid of two",
+            "default": false
+        },
+        {
+            "type": "checkbox",
+            "id": "border_top",
+            "label": "Add border top",
+            "default": false
+        },
+        {
+            "type": "checkbox",
+            "id": "border_bottom",
+            "label": "Add border bottom",
+            "default": false
+        },
+        {
+            "type": "header",
+            "content": "Animation"
+        },
+        {
+            "type": "select",
+            "id": "animation_style",
+            "label": "Scroll animation",
+            "info": "Adds a subtle entrance animation when the section scrolls into view.",
+            "options": [
+                { "value": "none", "label": "None" },
+                { "value": "fade-up", "label": "Fade up" },
+                { "value": "fade-in", "label": "Fade in" },
+                { "value": "slide-in-left", "label": "Slide in from left" },
+                { "value": "slide-in-right", "label": "Slide in from right" }
+            ],
+            "default": "none"
+        }
+    ],
+    "blocks": [],
+    "presets": [
+        {
+            "name": "Sign Up"
+        }
+    ]
+}
+{% endschema %}

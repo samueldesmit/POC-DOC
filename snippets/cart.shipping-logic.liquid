@@ -1,0 +1,35 @@
+{%- comment -%}
+    Displays shipping cost based on market metafields.
+    Shows "Free" when threshold is reached, actual cost when below, or "TBC" when not configured.
+
+    Accepts:
+        - custom_shipping_cost: Optional shipping cost amount (e.g. "5.95")
+
+    Usage:
+        {%- render 'cart.shipping-logic', custom_shipping_cost: section.settings.shipping_cost -%}
+{%- endcomment -%}
+
+{%- liquid
+    if custom_shipping_cost != blank
+        assign shipping_cost = custom_shipping_cost | replace: ',', '.' | plus: 0.0 | times: 100 | money_without_trailing_zeros
+    else
+        assign shipping_cost = localization.market.metafields.custom.shipping_cost.value | money_without_trailing_zeros
+    endif
+    assign threshold = localization.market.metafields.custom.free_shipping_decimal_threshold.value | times: 100
+    assign cart_subtotal = cart.total_price
+
+    if shipping_cost == blank or shipping_cost == 0
+        assign shipping_cost_text = 'cart.drawer.shipping_tbc' | t
+    else
+        if cart_subtotal >= threshold and threshold > 0
+            assign shipping_cost_text = 'cart.drawer.shipping_free' | t
+        else
+            assign shipping_cost_text = shipping_cost
+        endif
+    endif
+-%}
+
+<p class="flex w-full justify-between text-[0.9375rem] font-normal leading-[130%] text-surface-500">
+    <span>{{- 'cart.drawer.shipping_label' | t -}}</span>
+    <span>{{- shipping_cost_text -}}</span>
+</p>

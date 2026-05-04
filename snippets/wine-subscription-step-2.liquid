@@ -1,0 +1,435 @@
+{%- doc -%}
+    Wine Subscription Flow - Step 2: Login/Register
+  Three states:
+    1. Guest - Initial: Enter email, click continue to log in
+    2. Guest - Registration form: Full form for new customers
+    3. Logged in: Show customer data, allow proceeding
+  Accepts:
+    - {object} s: Section settings
+
+  @param {object} [s] - Section settings object providing step 2 copy and labels
+{%- enddoc -%}
+
+<li class="splide__slide w-full">
+    <div class="flex flex-col gap-6 lg:gap-10 max-w-[424px] mx-auto px-4 lg:px-0">
+        {%- comment -%} Title {%- endcomment -%}
+        <div class="text-center space-y-3">
+            <h2 class="font-cormorant-garamond text-[30px] leading-[130%] text-primary font-semibold mb-3">
+                {{ s.step2_title | default: 'Uw gegevens' }}
+            </h2>
+
+            {% unless customer %}
+                {%- comment -%} Guest: Show both options {%- endcomment -%}
+                <p class="font-inter text-[15px] leading-[130%] text-primary font-normal">
+                    {{
+                        s.step2_subtitle_existing
+                        | default: 'Al klant bij The Wine List?'
+                    }}
+                </p>
+                {% if shop.customer_accounts_enabled %}
+                    <div class="flex justify-center mt-6 mb-10">
+                        <shopify-account menu="customer-account-main-menu">
+                            <div
+                                slot="signed-out-avatar"
+                                class="inline-flex items-center justify-center h-[46px] px-8 border text-sm font-inter transition-all duration-300 hover:underline underline-offset-4 cursor-pointer"
+                                style="border-color: var(--color-secondary-background, #000000); color: var(--color-secondary-foreground, #000000);"
+                            >
+                                {{
+                                    s.step2_sign_in_button
+                                    | default: 'Inloggen met account'
+                                }}
+                            </div>
+                        </shopify-account>
+                    </div>
+                {% endif %}
+                <p
+                    class="font-inter text-[15px] leading-[130%] text-primary font-normal"
+                    data-register-prompt
+                >
+                    {{
+                        s.step2_subtitle_new
+                        | default: 'Nog geen klant bij The Wine List?'
+                    }}
+                    <a
+                        href="#"
+                        class="underline hover:no-underline cursor-pointer text-[#A08735] underline-offset-4"
+                        data-show-register
+                    >
+                        {{
+                            s.step2_create_account_link
+                            | default: 'Maak een nieuw klantaccount aan.'
+                        }}
+                    </a>
+                </p>
+
+            {% else %}
+                {%- comment -%} Logged in: Confirmation text {%- endcomment -%}
+                <p class="font-inter text-[15px] leading-[130%] text-primary font-normal">
+                    {{ s.step2_logged_in_text | default: 'U bent ingelogd als' }}
+                    {{ customer.email }}
+                </p>
+            {% endunless %}
+        </div>
+
+        {% unless customer %}
+            {%- comment -%}
+                ========================================
+                     GUEST: REGISTRATION FORM (Hidden by default)
+                ========================================
+            {%- endcomment -%}
+            <div
+                class="space-y-4 hidden"
+                data-register-form
+            >
+                {%- comment -%} First Name + Last Name (side by side) {%- endcomment -%}
+                <div class="flex gap-[14px]">
+                    <div class="flex-1 border border-[#DEDEDE] rounded-[5px] bg-white focus-within:border-primary transition-colors">
+                        <label class="block text-xs text-[#707070] pt-[11px] px-[11px] pb-0 leading-[1.5em]">
+                            {{
+                                'sections.wine_subscription.first_name'
+                                | t
+                                | default: 'First name'
+                            }}
+                        </label>
+                        <input
+                            type="text"
+                            data-customer-firstname
+                            class="w-full px-[11px] pb-[11px] pt-[2px] text-sm leading-[1.3em] text-primary bg-transparent border-0 focus:outline-none"
+                            autocomplete="given-name"
+                        >
+                    </div>
+                    <div class="flex-1 border border-[#DEDEDE] rounded-[5px] bg-white focus-within:border-primary transition-colors">
+                        <label class="block text-xs text-[#707070] pt-[11px] px-[11px] pb-0 leading-[1.5em]">
+                            {{
+                                'sections.wine_subscription.last_name'
+                                | t
+                                | default: 'Last Name'
+                            }}
+                        </label>
+                        <input
+                            type="text"
+                            data-customer-lastname
+                            class="w-full px-[11px] pb-[11px] pt-[2px] text-sm leading-[1.3em] text-primary bg-transparent border-0 focus:outline-none"
+                            autocomplete="family-name"
+                        >
+                    </div>
+                </div>
+
+                {%- comment -%} Phone Number {%- endcomment -%}
+                <div class="border border-[#DEDEDE] rounded-[5px] bg-white focus-within:border-primary transition-colors">
+                    <label class="block text-xs text-[#707070] pt-[11px] px-[11px] pb-0 leading-[1.5em]">
+                        {{
+                            'sections.wine_subscription.phone_number'
+                            | t
+                            | default: 'Phone Number'
+                        }}
+                    </label>
+                    <input
+                        type="tel"
+                        data-customer-phone
+                        class="w-full px-[11px] pb-[11px] pt-[2px] text-sm leading-[1.3em] text-primary bg-transparent border-0 focus:outline-none"
+                        autocomplete="tel"
+                        placeholder="06 12345678"
+                    >
+                </div>
+
+                {%- comment -%} Country + City (side by side) {%- endcomment -%}
+                <div class="flex gap-[14px]">
+                    <div class="flex-1 border border-[#DEDEDE] rounded-[5px] bg-white focus-within:border-primary transition-colors">
+                        <label class="block text-xs text-[#707070] pt-[11px] px-[11px] pb-0 leading-[1.5em]">
+                            {{
+                                'sections.wine_subscription.country'
+                                | t
+                                | default: 'Country'
+                            }}
+                        </label>
+                        <input
+                            type="text"
+                            data-customer-country
+                            class="w-full px-[11px] pb-[11px] pt-[2px] text-sm leading-[1.3em] text-primary bg-transparent border-0 focus:outline-none"
+                            autocomplete="country-name"
+                        >
+                    </div>
+                    <div class="flex-1 border border-[#DEDEDE] rounded-[5px] bg-white focus-within:border-primary transition-colors">
+                        <label class="block text-xs text-[#707070] pt-[11px] px-[11px] pb-0 leading-[1.5em]">
+                            {{
+                                'sections.wine_subscription.city'
+                                | t
+                                | default: 'City'
+                            }}
+                        </label>
+                        <input
+                            type="text"
+                            data-customer-city
+                            class="w-full px-[11px] pb-[11px] pt-[2px] text-sm leading-[1.3em] text-primary bg-transparent border-0 focus:outline-none"
+                            autocomplete="address-level2"
+                        >
+                    </div>
+                </div>
+
+                {%- comment -%} Address + Postcode (side by side) {%- endcomment -%}
+                <div class="flex gap-[14px]">
+                    <div class="flex-[2] border border-[#DEDEDE] rounded-[5px] bg-white focus-within:border-primary transition-colors">
+                        <label class="block text-xs text-[#707070] pt-[11px] px-[11px] pb-0 leading-[1.5em]">
+                            {{
+                                'sections.wine_subscription.address'
+                                | t
+                                | default: 'Address'
+                            }}
+                        </label>
+                        <input
+                            type="text"
+                            data-customer-address
+                            class="w-full px-[11px] pb-[11px] pt-[2px] text-sm leading-[1.3em] text-primary bg-transparent border-0 focus:outline-none"
+                            autocomplete="street-address"
+                        >
+                    </div>
+                    <div class="flex-1 border border-[#DEDEDE] rounded-[5px] bg-white focus-within:border-primary transition-colors">
+                        <label class="block text-xs text-[#707070] pt-[11px] px-[11px] pb-0 leading-[1.5em]">
+                            {{
+                                'sections.wine_subscription.postcode'
+                                | t
+                                | default: 'Postcode'
+                            }}
+                        </label>
+                        <input
+                            type="text"
+                            data-customer-postcode
+                            class="w-full px-[11px] pb-[11px] pt-[2px] text-sm leading-[1.3em] text-primary bg-transparent border-0 focus:outline-none"
+                            autocomplete="postal-code"
+                        >
+                    </div>
+                </div>
+
+                {%- comment -%} Email {%- endcomment -%}
+                <div class="border border-[#DEDEDE] rounded-[5px] bg-white focus-within:border-primary transition-colors">
+                    <label class="block text-xs text-[#707070] pt-[11px] px-[11px] pb-0 leading-[1.5em]">
+                        {{
+                            'sections.wine_subscription.email_address'
+                            | t
+                            | default: 'Email address'
+                        }}
+                    </label>
+                    <input
+                        type="email"
+                        data-customer-email
+                        class="w-full px-[11px] pb-[11px] pt-[2px] text-sm leading-[1.3em] text-primary bg-transparent border-0 focus:outline-none"
+                        autocomplete="email"
+                    >
+                </div>
+
+                <p
+                    class="text-red-600 text-sm text-center hidden"
+                    data-error-register
+                >
+                    {{
+                        s.step2_error_fields
+                        | default: 'Vul alle verplichte velden in'
+                    }}
+                </p>
+            </div>
+
+        {% else %}
+            {%- comment -%}
+                ========================================
+                     LOGGED IN: Editable fields, pre-filled from customer data
+                ========================================
+            {%- endcomment -%}
+            <div
+                class="space-y-4"
+                data-customer-form
+            >
+                {%- comment -%} First Name + Last Name {%- endcomment -%}
+                <div class="flex gap-[14px]">
+                    <div class="flex-1 border border-[#DEDEDE] rounded-[5px] bg-white focus-within:border-primary transition-colors">
+                        <label class="block text-xs text-[#707070] pt-[11px] px-[11px] pb-0 leading-[1.5em]">
+                            {{
+                                'sections.wine_subscription.first_name'
+                                | t
+                                | default: 'First name'
+                            }}
+                        </label>
+                        <input
+                            type="text"
+                            data-customer-firstname
+                            value="{{ customer.first_name }}"
+                            class="w-full px-[11px] pb-[11px] pt-[2px] text-sm leading-[1.3em] text-primary bg-transparent border-0 focus:outline-none"
+                            autocomplete="given-name"
+                        >
+                    </div>
+                    <div class="flex-1 border border-[#DEDEDE] rounded-[5px] bg-white focus-within:border-primary transition-colors">
+                        <label class="block text-xs text-[#707070] pt-[11px] px-[11px] pb-0 leading-[1.5em]">
+                            {{
+                                'sections.wine_subscription.last_name'
+                                | t
+                                | default: 'Last Name'
+                            }}
+                        </label>
+                        <input
+                            type="text"
+                            data-customer-lastname
+                            value="{{ customer.last_name }}"
+                            class="w-full px-[11px] pb-[11px] pt-[2px] text-sm leading-[1.3em] text-primary bg-transparent border-0 focus:outline-none"
+                            autocomplete="family-name"
+                        >
+                    </div>
+                </div>
+
+                {%- comment -%} Phone Number {%- endcomment -%}
+                <div class="border border-[#DEDEDE] rounded-[5px] bg-white focus-within:border-primary transition-colors">
+                    <label class="block text-xs text-[#707070] pt-[11px] px-[11px] pb-0 leading-[1.5em]">
+                        {{
+                            'sections.wine_subscription.phone_number'
+                            | t
+                            | default: 'Phone Number'
+                        }}
+                    </label>
+                    <input
+                        type="tel"
+                        data-customer-phone
+                        value="{{ customer.phone | default: customer.default_address.phone }}"
+                        class="w-full px-[11px] pb-[11px] pt-[2px] text-sm leading-[1.3em] text-primary bg-transparent border-0 focus:outline-none"
+                        autocomplete="tel"
+                        placeholder="06 12345678"
+                    >
+                </div>
+
+                {%- comment -%} Country + City {%- endcomment -%}
+                <div class="flex gap-[14px]">
+                    <div class="flex-1 border border-[#DEDEDE] rounded-[5px] bg-white focus-within:border-primary transition-colors">
+                        <label class="block text-xs text-[#707070] pt-[11px] px-[11px] pb-0 leading-[1.5em]">
+                            {{
+                                'sections.wine_subscription.country'
+                                | t
+                                | default: 'Country'
+                            }}
+                        </label>
+                        <input
+                            type="text"
+                            data-customer-country
+                            value="{{ customer.default_address.country }}"
+                            class="w-full px-[11px] pb-[11px] pt-[2px] text-sm leading-[1.3em] text-primary bg-transparent border-0 focus:outline-none"
+                            autocomplete="country-name"
+                        >
+                    </div>
+                    <div class="flex-1 border border-[#DEDEDE] rounded-[5px] bg-white focus-within:border-primary transition-colors">
+                        <label class="block text-xs text-[#707070] pt-[11px] px-[11px] pb-0 leading-[1.5em]">
+                            {{
+                                'sections.wine_subscription.city'
+                                | t
+                                | default: 'City'
+                            }}
+                        </label>
+                        <input
+                            type="text"
+                            data-customer-city
+                            value="{{ customer.default_address.city }}"
+                            class="w-full px-[11px] pb-[11px] pt-[2px] text-sm leading-[1.3em] text-primary bg-transparent border-0 focus:outline-none"
+                            autocomplete="address-level2"
+                        >
+                    </div>
+                </div>
+
+                {%- comment -%} Address + Postcode (side by side) {%- endcomment -%}
+                <div class="flex gap-[14px]">
+                    <div class="flex-[2] border border-[#DEDEDE] rounded-[5px] bg-white focus-within:border-primary transition-colors">
+                        <label class="block text-xs text-[#707070] pt-[11px] px-[11px] pb-0 leading-[1.5em]">
+                            {{
+                                'sections.wine_subscription.address'
+                                | t
+                                | default: 'Address'
+                            }}
+                        </label>
+                        <input
+                            type="text"
+                            data-customer-address
+                            value="{{ customer.default_address.address1 }}"
+                            class="w-full px-[11px] pb-[11px] pt-[2px] text-sm leading-[1.3em] text-primary bg-transparent border-0 focus:outline-none"
+                            autocomplete="street-address"
+                        >
+                    </div>
+                    <div class="flex-1 border border-[#DEDEDE] rounded-[5px] bg-white focus-within:border-primary transition-colors">
+                        <label class="block text-xs text-[#707070] pt-[11px] px-[11px] pb-0 leading-[1.5em]">
+                            {{
+                                'sections.wine_subscription.postcode'
+                                | t
+                                | default: 'Postcode'
+                            }}
+                        </label>
+                        <input
+                            type="text"
+                            data-customer-postcode
+                            value="{{ customer.default_address.zip }}"
+                            class="w-full px-[11px] pb-[11px] pt-[2px] text-sm leading-[1.3em] text-primary bg-transparent border-0 focus:outline-none"
+                            autocomplete="postal-code"
+                        >
+                    </div>
+                </div>
+
+                {%- comment -%} Email {%- endcomment -%}
+                <div class="border border-[#DEDEDE] rounded-[5px] bg-white focus-within:border-primary transition-colors">
+                    <label class="block text-xs text-[#707070] pt-[11px] px-[11px] pb-0 leading-[1.5em]">
+                        {{
+                            'sections.wine_subscription.email_address'
+                            | t
+                            | default: 'Email address'
+                        }}
+                    </label>
+                    <input
+                        type="email"
+                        data-customer-email
+                        value="{{ customer.email }}"
+                        class="w-full px-[11px] pb-[11px] pt-[2px] text-sm leading-[1.3em] text-primary bg-transparent border-0 focus:outline-none"
+                        autocomplete="email"
+                    >
+                </div>
+
+                <p
+                    class="text-red-600 text-sm text-center hidden"
+                    data-error-register
+                >
+                    {{
+                        s.step2_error_fields
+                        | default: 'Vul alle verplichte velden in'
+                    }}
+                </p>
+            </div>
+        {% endunless %}
+
+        {%- comment -%} Error message for login required {%- endcomment -%}
+        {% unless customer %}
+            <p
+                class="text-red-600 text-sm text-center hidden"
+                data-error-login-required
+            >
+                {{
+                    s.step2_error_login_required
+                    | default: 'Log in of maak een account aan om door te gaan'
+                }}
+            </p>
+        {% endunless %}
+
+        {%- comment -%} Navigation Buttons {%- endcomment -%}
+        <div class="flex justify-between gap-[14px] lg:gap-10 w-full max-w-[488px] mx-auto">
+            <button
+                type="button"
+                class="flex-1 lg:w-[240px] h-[46px] flex items-center justify-center border text-sm font-inter transition-colors hover:opacity-80 cursor-pointer"
+                style="border-color: var(--color-secondary-background, #000000); color: var(--color-secondary-foreground, #000000);"
+                data-prev-step
+            >
+                {{ s.step2_back_button | default: 'Terug' }}
+            </button>
+            <button
+                type="button"
+                class="flex-1 lg:w-[240px] h-[46px] flex items-center justify-center text-sm font-inter transition-colors hover:opacity-90 cursor-pointer"
+                style="background-color: var(--color-primary-background, #06061C); color: var(--color-primary-foreground, #ffffff);"
+                data-next-step
+                {% unless customer %}
+                    data-requires-auth
+                {% endunless %}
+            >
+                {{ s.step2_continue_button | default: 'Doorgaan' }}
+            </button>
+        </div>
+    </div>
+</li>

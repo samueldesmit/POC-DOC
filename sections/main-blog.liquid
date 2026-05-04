@@ -1,0 +1,353 @@
+{% liquid
+    assign s = section.settings
+    assign section_id = 'section-' | append: section.id
+%}
+
+<div
+    id="{{ section_id }}"
+    class="{{ s.mobile_margin }} {{ s.desktop_margin }} bg-background"
+>
+    {% render 'section-colors', current_section: section %}
+    <div class="container {{ s.mobile_padding }} {{ s.desktop_padding }} text-primary">
+        {% if s.show_title %}
+            <div class="flex justify-center items-center w-full text-[40px] md:text-[52px] font-cormorant-garamond mb-6">
+                <h1>{{ blog.title }}</h1>
+            </div>
+        {% endif %}
+        {% liquid
+            assign show_filter_region = s.show_filter_region
+            assign show_filter_country = s.show_filter_country
+            assign show_filter_winery = s.show_filter_winery
+            assign show_filter_category = s.show_filter_category
+        %}
+        {% if show_filter_region
+            or show_filter_country
+            or show_filter_winery
+            or show_filter_category
+        %}
+            <div data-blog-filters>
+                {% render 'blog-filter',
+                    blog: blog,
+                    show_filter_region: show_filter_region,
+                    show_filter_country: show_filter_country,
+                    show_filter_winery: show_filter_winery,
+                    show_filter_category: show_filter_category
+                %}
+            </div>
+        {% endif %}
+
+        {%- paginate blog.articles by s.articles_per_page -%}
+            <blog-grid
+                class="flex flex-col gap-y-9 pt-[1.875rem] pb-[3rem] lg:pt-[3.125rem] lg:pb-[3.5rem]"
+                data-section-id="{{ section.id }}"
+                data-current-page="{{ paginate.current_page }}"
+            >
+                {%- if paginate.current_page != 1 -%}
+                    <div class="flex items-center justify-center">
+                        <button
+                            type="button"
+                            data-load-more="prev"
+                            class="w-[216px] py-3 border border-primary text-primary text-sm text-center hover:bg-black hover:text-white hover:border-black transition-colors cursor-pointer"
+                        >
+                            {{ 'blogs.pagination.load_previous' | t }}
+                        </button>
+                    </div>
+                {%- endif -%}
+
+                <section
+                    data-articles-grid
+                    class="gap-y-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 md:gap-x-3 md:gap-y-6 lg:gap-8"
+                >
+                    {%- for article in blog.articles -%}
+                        {%- liquid
+                            assign article_is_restricted = false
+                            if article.metafields.custom.premium_club_exclusive.value == true
+                                assign article_is_restricted = true
+                                if customer and customer.tags contains 'premium-club'
+                                    assign article_is_restricted = false
+                                endif
+                            endif
+                        -%}
+                        {%- unless article_is_restricted -%}
+                            {% render 'component.article-card',
+                                article: article,
+                                grid_of_two_start: s.grid_of_two_start,
+                                forloop: forloop
+                            %}
+                        {%- endunless -%}
+                    {%- else -%}
+                        <p class="col-span-4 py-10 mx-auto font-bold text-center">
+                            {{ 'blogs.no_results' | t }}
+                        </p>
+                    {%- endfor -%}
+                </section>
+
+                {% assign articles_shown = paginate.page_size
+                    | times: paginate.current_page
+                %}
+                {%- if blog.articles_count > articles_shown -%}
+                    <div
+                        class="flex flex-col items-center justify-center gap-4"
+                        data-pagination-footer
+                    >
+                        <p
+                            class="text-sm text-primary"
+                            data-viewed-count
+                            data-page-size="{{ paginate.page_size }}"
+                            data-total="{{ blog.articles_count }}"
+                            data-template="{{ 'blogs.pagination.viewed_of' | t: viewed: 'VIEWED_PLACEHOLDER', total: 'TOTAL_PLACEHOLDER' }}"
+                        >
+                            {{
+                                'blogs.pagination.viewed_of'
+                                | t:
+                                    viewed: articles_shown,
+                                    total: blog.articles_count
+                            }}
+                        </p>
+                        <button
+                            type="button"
+                            data-load-next
+                            class="w-[216px] py-3 border border-primary text-primary text-sm text-center hover:bg-black hover:text-white hover:border-black transition-colors cursor-pointer"
+                        >
+                            {{ 'blogs.pagination.load_more' | t }}
+                        </button>
+                    </div>
+                {%- endif -%}
+            </blog-grid>
+        {%- endpaginate -%}
+    </div>
+</div>
+
+{% schema %}
+{
+    "name": "Blog",
+    "settings": [
+        {
+            "type": "header",
+            "content": "Section Styling"
+        },
+        {
+            "type": "checkbox",
+            "id": "section_styling",
+            "label": "Add styling to section",
+            "info": "If enabled this shows the settings to set the color scheme, spacing, and margin for the section.",
+            "default": false
+        },
+        {
+            "type": "header",
+            "content": "Section Spacing",
+            "visible_if": "{{ section.settings.section_styling == true }}"
+        },
+        {
+            "type": "select",
+            "id": "mobile_padding",
+            "label": "Mobile padding",
+            "visible_if": "{{ section.settings.section_styling == true }}",
+            "options": [
+                {
+                    "value": "py-0",
+                    "label": "None"
+                },
+                {
+                    "value": "py-2",
+                    "label": "S - 8px"
+                },
+                {
+                    "value": "py-4",
+                    "label": "M - 16px"
+                },
+                {
+                    "value": "py-6",
+                    "label": "L - 24px"
+                },
+                {
+                    "value": "py-8",
+                    "label": "XL - 32px"
+                },
+                {
+                    "value": "py-10",
+                    "label": "2XL - 40px"
+                },
+                {
+                    "value": "py-12",
+                    "label": "3XL - 48px"
+                },
+                {
+                    "value": "py-16",
+                    "label": "4XL - 64px"
+                }
+            ],
+            "default": "py-0"
+        },
+        {
+            "type": "select",
+            "id": "desktop_padding",
+            "label": "Desktop padding",
+            "visible_if": "{{ section.settings.section_styling == true }}",
+            "options": [
+                {
+                    "value": "lg:py-0",
+                    "label": "None"
+                },
+                {
+                    "value": "lg:py-2",
+                    "label": "S - 8px"
+                },
+                {
+                    "value": "lg:py-4",
+                    "label": "M - 16px"
+                },
+                {
+                    "value": "lg:py-6",
+                    "label": "L - 24px"
+                },
+                {
+                    "value": "lg:py-8",
+                    "label": "XL - 32px"
+                },
+                {
+                    "value": "lg:py-10",
+                    "label": "2XL - 40px"
+                },
+                {
+                    "value": "lg:py-12",
+                    "label": "3XL - 48px"
+                },
+                {
+                    "value": "lg:py-16",
+                    "label": "4XL - 64px"
+                }
+            ],
+            "default": "lg:py-0"
+        },
+        {
+            "type": "header",
+            "content": "Section Margin",
+            "visible_if": "{{ section.settings.section_styling == true }}"
+        },
+        {
+            "type": "select",
+            "id": "mobile_margin",
+            "label": "Mobile section margin",
+            "visible_if": "{{ section.settings.section_styling == true }}",
+            "options": [
+                {
+                    "value": "mb-0",
+                    "label": "None"
+                },
+                {
+                    "value": "mb-4",
+                    "label": "Small - 16px"
+                },
+                {
+                    "value": "mb-8",
+                    "label": "Medium - 32px"
+                },
+                {
+                    "value": "mb-12",
+                    "label": "Large - 48px"
+                }
+            ],
+            "default": "mb-0"
+        },
+        {
+            "type": "select",
+            "id": "desktop_margin",
+            "label": "Desktop section margin",
+            "visible_if": "{{ section.settings.section_styling == true }}",
+            "options": [
+                {
+                    "value": "lg:mb-0",
+                    "label": "None"
+                },
+                {
+                    "value": "lg:mb-8",
+                    "label": "Small - 32px"
+                },
+                {
+                    "value": "lg:mb-12",
+                    "label": "Medium - 48px"
+                },
+                {
+                    "value": "lg:mb-16",
+                    "label": "Large - 64px"
+                }
+            ],
+            "default": "lg:mb-0"
+        },
+        {
+            "type": "header",
+            "content": "Colors",
+            "visible_if": "{{ section.settings.section_styling == true }}"
+        },
+        {
+            "type": "color",
+            "id": "background",
+            "label": "Section background color",
+            "default": "#FFFFFF",
+            "visible_if": "{{ section.settings.section_styling == true }}"
+        },
+        {
+            "type": "color",
+            "id": "primary_text_color",
+            "label": "Primary text color",
+            "default": "#525252",
+            "visible_if": "{{ section.settings.section_styling == true }}"
+        },
+        {
+            "type": "checkbox",
+            "id": "show_filter_region",
+            "label": "Show region filter",
+            "default": true
+        },
+        {
+            "type": "checkbox",
+            "id": "show_filter_country",
+            "label": "Show country filter",
+            "default": true
+        },
+        {
+            "type": "checkbox",
+            "id": "show_filter_winery",
+            "label": "Show winery filter",
+            "default": true
+        },
+        {
+            "type": "checkbox",
+            "id": "show_filter_category",
+            "label": "Show category filter",
+            "default": true
+        },
+        {
+            "type": "checkbox",
+            "id": "show_title",
+            "label": "Show title",
+            "default": true
+        },
+        {
+            "type": "range",
+            "id": "articles_per_page",
+            "label": "Articles per page",
+            "min": 4,
+            "max": 24,
+            "step": 4,
+            "default": 12
+        },
+        {
+            "type": "checkbox",
+            "id": "grid_of_two_start",
+            "label": "Grid of two for first two articles",
+            "default": false
+        }
+    ],
+    "blocks": [],
+    "enabled_on": {
+        "templates": ["blog"]
+    },
+    "presets": [
+        {
+            "name": "Blog"
+        }
+    ]
+}
+{% endschema %}

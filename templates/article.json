@@ -1,0 +1,157 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "breadcrumbs_mDTA6r": {
+      "type": "breadcrumbs",
+      "name": "Breadcrumbs",
+      "settings": {
+        "visibility_audience": "everyone",
+        "custom_parent_url": "",
+        "custom_parent_title": "",
+        "custom_current_title": "",
+        "section_styling": true,
+        "mobile_padding": "py-2",
+        "desktop_padding": "lg:py-2",
+        "mobile_margin": "mb-0",
+        "desktop_margin": "lg:mb-0",
+        "background": "#ffffff",
+        "primary_text_color": "#525252"
+      }
+    },
+    "richtext_GbRiYq": {
+      "type": "richtext",
+      "blocks": {
+        "heading_bttgFL": {
+          "type": "heading",
+          "settings": {
+            "heading": "{{ article.title }}",
+            "font_family": "font-cormorant-garamond",
+            "font_weight": "600",
+            "mobile_font_size": "30px",
+            "desktop_font_size": "52px",
+            "margin_bottom": "14px"
+          }
+        }
+      },
+      "block_order": [
+        "heading_bttgFL"
+      ],
+      "name": "Richtext",
+      "settings": {
+        "visibility_audience": "everyone",
+        "section_styling": true,
+        "container": true,
+        "content_alignment": "text-center",
+        "mobile_padding": "py-0",
+        "desktop_padding": "lg:py-0",
+        "mobile_margin": "mb-0",
+        "desktop_margin": "lg:mb-0",
+        "background": "#ffffff",
+        "primary_text_color": "#000000",
+        "secondary_text_color": "#000000",
+        "animation_style": "fade-in"
+      }
+    },
+    "hero_FDJPhF": {
+      "type": "hero",
+      "blocks": {
+        "hero_slide_bn7dkR": {
+          "type": "hero_slide",
+          "settings": {
+            "block_styling": false,
+            "primary_text_color": "#282828",
+            "secondary_text_color": "#282828",
+            "primary_button_color": "#ffffff",
+            "primary_button_text_color": "#282828",
+            "secondary_button_color": "#000000",
+            "secondary_button_text_color": "#ffffff",
+            "image": "{{ article.image }}",
+            "enable_overlay": false,
+            "overlay_type": "gradient",
+            "mobile_gradient": "linear-gradient(180deg, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.3) 100%)",
+            "desktop_gradient": "linear-gradient(180deg, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.3) 100%)",
+            "overlay_opacity": 30,
+            "text": "",
+            "title": "",
+            "button_text": "",
+            "button_url": "/home",
+            "button_style": "primary"
+          }
+        }
+      },
+      "block_order": [
+        "hero_slide_bn7dkR"
+      ],
+      "name": "Hero",
+      "settings": {
+        "visibility_audience": "everyone",
+        "section_styling": true,
+        "mobile_margin": "mb-0",
+        "desktop_margin": "lg:mb-0",
+        "full_width_mobile": true,
+        "full_width_desktop": false,
+        "aspect_ratio_desktop": "lg:aspect-[1440/450]",
+        "aspect_ratio_mobile": "aspect-[375/350]",
+        "enable_autoplay": true,
+        "autoplay_interval": 5000,
+        "animation_style": "fade-in"
+      }
+    },
+    "main": {
+      "type": "main-article",
+      "settings": {
+        "section_styling": true,
+        "mobile_padding": "py-2",
+        "desktop_padding": "lg:py-6",
+        "background": "#ffffff",
+        "primary_text_color": "#000000"
+      }
+    },
+    "text_image_3JeAeQ": {
+      "type": "text-image",
+      "name": "Image and text",
+      "settings": {
+        "visibility_audience": "everyone",
+        "section_styling": false,
+        "mobile_padding": "py-0",
+        "desktop_padding": "lg:py-0",
+        "mobile_margin": "mb-0",
+        "desktop_margin": "lg:mb-0",
+        "divider_color": "#b19e5e",
+        "background": "#ffffff",
+        "primary_text_color": "#000000",
+        "primary_button_color": "rgba(0,0,0,0)",
+        "primary_button_text_color": "#000000",
+        "secondary_button_color": "#000000",
+        "secondary_button_text_color": "#ffffff",
+        "winery_article": "{{ article }}",
+        "image_aspect_ratio": "aspect-671/789",
+        "image_position": "left",
+        "mobile_image_position": "up",
+        "text_alignment": "left",
+        "heading": "",
+        "heading_size": "lg",
+        "text": "",
+        "button_text": "",
+        "button_url": "#",
+        "button_style": "primary",
+        "animation_style": "none"
+      }
+    }
+  },
+  "order": [
+    "breadcrumbs_mDTA6r",
+    "richtext_GbRiYq",
+    "hero_FDJPhF",
+    "main",
+    "text_image_3JeAeQ"
+  ]
+}

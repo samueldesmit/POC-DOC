@@ -1,0 +1,209 @@
+{%- liquid
+    assign breadcrumbs = settings.breadcrumbs | default: linklists.breadcrumbs
+
+    assign first_link = routes.root_url
+    assign first_link_title = 'general.breadcrumbs.home' | t
+
+    case template.name
+        when 'collection'
+            assign current_handle = collection.handle
+
+            for link in breadcrumbs.links
+                if link.object.handle == current_handle
+                    assign second_link = link.url
+                    assign second_link_title = link.title
+                    assign active_link = link.url
+                endif
+
+                for childlink in link.links
+                    if second_link
+                        break
+                    endif
+                    if childlink.object.handle == current_handle
+                        assign second_link = link.url
+                        assign second_link_title = link.title
+                        assign third_link = childlink.url
+                        assign third_link_title = childlink.title
+                        assign active_link = childlink.url
+                    endif
+
+                    for grandchildlink in childlink.links
+                        if third_link
+                            break
+                        endif
+                        if grandchildlink.object.handle == current_handle
+                            assign second_link = link.url
+                            assign second_link_title = link.title
+                            assign third_link = childlink.url
+                            assign third_link_title = childlink.title
+                            assign fourth_link = grandchildlink.url
+                            assign fourth_link_title = grandchildlink.title
+                            assign active_link = grandchildlink.url
+                        endif
+                    endfor
+                endfor
+            endfor
+
+            if second_link == blank
+                assign second_link = collection.url
+                assign second_link_title = collection.title
+                assign active_link = collection.url
+            endif
+        when 'product'
+            assign current_handle = product.handle
+
+            for link in breadcrumbs.links
+                for collection in product.collections
+                    if link.object.handle == collection.handle
+                        unless second_link
+                            assign second_link = link.url
+                            assign second_link_title = link.title
+                        endunless
+                        break
+                    endif
+                endfor
+
+                for childlink in link.links
+                    for collection in product.collections
+                        if childlink.object.handle == collection.handle
+                            unless third_link
+                                assign second_link = link.url
+                                assign second_link_title = link.title
+                                assign third_link = childlink.url
+                                assign third_link_title = childlink.title
+                                break
+                            endunless
+                        endif
+                    endfor
+
+                    unless second_link == current_handle
+                        for grandchildlink in childlink.links
+                            for collection in product.collections
+                                if grandchildlink.object.handle == collection.handle
+                                    unless fourth_link
+                                        assign second_link = link.url
+                                        assign second_link_title = link.title
+                                        assign third_link = childlink.url
+                                        assign third_link_title = childlink.title
+                                        assign fourth_link = grandchildlink.url
+                                        assign fourth_link_title = grandchildlink.title
+                                        break
+                                    endunless
+                                endif
+                            endfor
+                        endfor
+                    endunless
+                endfor
+            endfor
+
+            assign fifth_link = product.url
+            assign fifth_link_title = product.title
+            assign active_link = product.url
+        when 'article'
+            assign second_link = blog.url
+            assign second_link_title = blog.title
+            assign third_link = article.url
+            assign third_link_title = article.title
+            assign active_link = article.url
+        when 'blog'
+            assign second_link = blog.url
+            assign second_link_title = blog.title
+            assign active_link = blog.url
+        when 'page'
+            assign second_link = page.url
+            assign second_link_title = page.title
+            assign active_link = page.url
+        when 'cart'
+            assign second_link = routes.cart_url
+            assign second_link_title = 'general.breadcrumbs.cart' | t
+        when 'search'
+            assign second_link = routes.search_url
+            assign second_link_title = 'general.search.search' | t
+        when '404'
+
+        when 'index'
+
+    endcase
+
+    if second_link == blank and custom_parent_url != blank
+        assign second_link = custom_parent_url
+        assign second_link_title = custom_parent_title
+        assign third_link = request.path
+        assign third_link_title = custom_current_title | default: page_title
+        assign active_link = request.path
+    endif
+
+    assign links_array = first_link | append: ',' | append: second_link | append: ',' | append: third_link | append: ',' | append: fourth_link | append: fifth_link | split: ',' | compact
+    assign titles_array = first_link_title | append: ',' | append: second_link_title | append: ',' | append: third_link_title | append: ',' | append: fourth_link_title | append: fifth_link_title | split: ',' | compact
+-%}
+
+{%- if links_array.size > 1 -%}
+    <nav aria-label="Breadcrumb">
+        <ol class="flex flex-wrap items-center justify-start">
+            {%- for link in links_array -%}
+                {%- if link == '' -%}
+                    {%- continue -%}
+                {%- endif -%}
+                {%- unless forloop.first -%}
+                    <li
+                        class="mx-4"
+                        aria-hidden="true"
+                    >
+                        {% render 'component.icon',
+                            type: 'chevron',
+                            class: 'text-current w-3 aspect-square'
+                        %}
+                    </li>
+                {%- endunless -%}
+                <li>
+                    {%- liquid
+                        assign styling = 'font-inter text-xs font-normal'
+
+                        if link == active_link
+                            assign tag = 'span'
+                            assign styling = styling | append: ''
+                            assign attributes = 'aria-current="page"'
+                        else
+                            assign tag = 'a'
+                            assign styling = styling | append: ''
+                            assign attributes = 'href="' | append: link | append: '" '
+                        endif
+                    -%}
+                    <{{ tag }}
+                        class="{{ styling }}"
+                        {{ attributes }}
+                    >
+                        {{- titles_array[forloop.index0] -}}
+                    </{{ tag }}>
+                </li>
+            {%- endfor -%}
+        </ol>
+    </nav>
+{%- endif -%}
+
+{%- if links_array.size > 1 -%}
+    {%- # https://developers.google.com/search/docs/appearance/structured-data/breadcrumb#microdata_1 -%}
+    {%- if link == '' -%}
+        {%- continue -%}
+    {%- endif -%}
+    <script type="application/ld+json">
+        {
+          "@context": "https://schema.org",
+          "@type": "BreadcrumbList",
+          "itemListElement": [
+            {%- for link in links_array -%}
+              {%- unless forloop.first -%}
+                ,
+              {%- endunless -%}
+              {
+                "@type": "ListItem",
+                "position": {{ forloop.index -}},
+                "name": "{{- titles_array[forloop.index0] -}}",
+                "item": "{{- link -}}"
+              }
+
+            {%- endfor -%}
+          ]
+        }
+    </script>
+{%- endif -%}

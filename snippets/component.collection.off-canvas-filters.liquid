@@ -1,0 +1,222 @@
+{% liquid
+    capture total_active_values
+        render 'component.collection.active-filters-counter', products: products
+    endcapture
+
+    assign total_active_values = total_active_values | plus: 0
+
+    assign apply_label = 'collection.filters.apply' | t
+%}
+
+{% capture off_canvas_filters_content %}
+    <div class="flex h-full flex-col relative">
+        <header class="px-7 py-5 border-b border-b-brand-400/50 flex items-center relative">
+            <span
+                data-target="filters-form.products-count-mobile"
+                class="flex flex-col justify-center items-center space-y-1"
+            >
+                <span class="font-cormorant-garamond text-[1.0625rem] font-medium leading-tight">
+                    {{
+                        'collection.filters.off_canvas_filters_header_title'
+                        | t
+                    -}}
+                </span>
+            </span>
+            <modal-toggle
+                target="off-canvas-filters"
+                aria-hidden="true"
+                class="absolute right-4 top-1/2 -translate-y-1/2"
+            >
+                {% render 'component.icon',
+                    type: 'close',
+                    class: 'size-4 text-black'
+                %}
+            </modal-toggle>
+        </header>
+
+        <div class="p-6 flex-1 overflow-hidden">
+            <div class="overflow-y-auto h-full">
+                <off-canvas-filters class="block">
+                    <ul>
+                        {%- for filter in collection.filters -%}
+                            <li class="py-3" data-filter-param="{{ filter.param_name }}">
+                                {%- liquid
+                                    assign sorted_values = filter.values
+                                    # Keep the selected values grouped together when operator is AND
+
+                                    if filter.operator == 'AND'
+                                        assign active_filter_values = filter.values | where: 'active', true
+                                        assign inactive_filter_values = filter.values | where: 'active', false
+                                        assign sorted_values = active_filter_values | concat: inactive_filter_values
+                                    endif
+
+                                    assign filter_label = filter.label
+                                -%}
+
+                                <div class="filter-button">
+                                    {% render 'component.button',
+                                        label: filter_label,
+                                        title: filter_label,
+                                        href: '',
+                                        class: 'w-full !justify-between !font-inter !text-sm !font-normal !leading-tight focus:outline-none',
+                                        id: filter_label,
+                                        attributes: '',
+                                        type: 'button',
+                                        name: filter_label,
+                                        aria_label: filter_label,
+                                        aria_describedby: filter_label,
+                                        style: 'link',
+                                        size: '',
+                                        icon: 'full_long_arrow',
+                                        icon_position: 'right',
+                                        icon_class: 'text-surface-500',
+                                        css_variables: '',
+                                        disabled: false,
+                                        loading: false,
+                                        translate: false
+                                    %}
+                                </div>
+
+                                <div class="filter-content absolute z-10 left-0 h-full w-full top-0 overflow-hidden translate-x-full data-open:translate-x-0 flex flex-col transition data-leave:duration-300 duration-300 ease-out bg-white">
+                                    <header class="px-7 py-5 border-b border-b-brand-400/50 flex items-center justify-between">
+                                        <span class="font-cormorant-garamond text-[1.0625rem] font-medium leading-tight">
+                                            {{ 'collection.filters.off_canvas_filters_header_title' | t }}
+                                        </span>
+                                        <button type="button" class="filter-back-button">
+                                            {% render 'component.icon',
+                                                type: 'close',
+                                                class: 'size-4 text-black'
+                                            %}
+                                        </button>
+                                    </header>
+
+                                    <div class="p-6 h-full flex-1 overflow-hidden">
+                                        <div class="overflow-y-auto h-full">
+                                            <button type="button" class="filter-back-button flex items-center gap-2 font-inter text-sm font-normal leading-tight mb-4">
+                                                {% render 'component.icon',
+                                                    type: 'chevron',
+                                                    class: 'size-3 rotate-180'
+                                                %}
+                                                {{ filter_label }}
+                                            </button>
+                                            {%- case filter.type -%}
+                                                {%- when 'list' -%}
+                                                    <ul class="flex flex-col" data-target="filters-form.filter-options">
+                                                        {%- render 'component.collection.filter-list-values',
+                                                            sorted_values: sorted_values,
+                                                            list_class: 'py-4'
+                                                        -%}
+                                                    </ul>
+
+                                                {%- when 'price_range' -%}
+                                                    {%- render 'component.collection.filter-price-range-values',
+                                                        filter: filter
+                                                    -%}
+                                            {%- endcase -%}
+                                        </div>
+                                    </div>
+                                    <footer class="w-full justify-between items-center gap-x-4 border-t border-t-brand-400/50 p-5 flex">
+                                        <div class="clear-whole-filter-container inline w-max mx-auto">
+                                            {%- liquid
+                                                assign show_count = show_count | default: true
+                                                assign default_class = 'border-b border-current data-disabled:pointer-events-none bg-transparent cursor-pointer p-0 mx-auto text-black'
+                                                assign button_class = button_class | default: default_class
+                                            -%}
+
+                                            <button
+                                                type="button"
+                                                data-target="filters-form.clear-all"
+                                                {% if total_active_values == 0 %}
+                                                    data-disabled
+                                                {% endif %}
+                                                class="{{ button_class }}"
+                                                >
+                                                {{ 'collection.filters.clear_all' | t -}}
+                                                {%- if show_count and total_active_values > 0 %}
+                                                    ({{ total_active_values }})
+                                                {%- endif %}
+                                            </button>
+                                        </div>
+                                        <modal-toggle
+                                            target="off-canvas-filters"
+                                            aria-hidden="true"
+                                            class="w-max"
+                                        >
+                                            {% capture show_results_attributes %}
+                                                data-target="filters-form.show-results"
+                                            {% endcapture %}
+
+                                            {% render 'component.button',
+                                                label: apply_label,
+                                                title: apply_label,
+                                                class: 'text-center text-white bg-surface-500 py-3 px-8',
+                                                attributes: show_results_attributes,
+                                                translate: false
+                                            %}
+                                        </modal-toggle>
+                                    </footer>
+                                </div>
+                            </li>
+                        {%- endfor -%}
+                    </ul>
+                </off-canvas-filters>
+            </div>
+        </div>
+        <footer class="w-full justify-between items-center gap-x-4 border-t border-t-brand-400/50 p-5 flex">
+           
+            {%- liquid
+                assign show_count = show_count | default: true
+                assign default_class = 'border-b border-current data-disabled:pointer-events-none bg-transparent cursor-pointer p-0 text-black'
+                assign button_class = button_class | default: default_class
+            -%}
+
+            <button
+                type="button"
+                data-target="filters-form.clear-all"
+                {% if total_active_values == 0 %}
+                    data-disabled
+                {% endif %}
+                class="{{ button_class }}"
+                >
+                {{ 'collection.filters.remove_all' | t -}}
+                {%- if total_active_values > 0 %}
+                    ({{ total_active_values }})
+                {%- endif %}
+            </button>
+
+            <modal-toggle
+                target="off-canvas-filters"
+                aria-hidden="true"
+                class="w-max"
+            >
+                {% capture show_results_attributes %}
+                    data-target="filters-form.show-results"
+                {% endcapture %}
+
+                {% render 'component.button',
+                    label: apply_label,
+                    title: apply_label,
+                    class: 'w-full text-center text-white bg-surface-500 py-3 px-8',
+                    attributes: show_results_attributes
+                %}
+            </modal-toggle>
+        </footer>
+    </div>
+{% endcapture %}
+
+{% capture off_canvas_filters_open_button %}{% endcapture %}
+
+{%- render 'component.modal',
+    data_id: 'off-canvas-filters',
+    open_button: off_canvas_filters_open_button,
+    content: off_canvas_filters_content,
+    content_class: 'h-full overflow-hidden bg-white w-[87%]!',
+    is_popup: false,
+    is_drawer: true,
+    drawer_from_right: true,
+    attributes: 'aria-labelledby="off-canvas-filters-title"',
+    blur: false,
+    is_top_zero: false,
+    open_button_class: '',
+    desktop_popup_mobile_drawer: false
+-%}

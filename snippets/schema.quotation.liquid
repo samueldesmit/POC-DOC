@@ -1,0 +1,37 @@
+<script type="application/ld+json">
+    {%- if quote_count > 1 -%}
+      {
+        "@context": "https://schema.org",
+        "@type": "ItemList",
+        "itemListElement": [
+          {%- for block in blocks -%}
+            {%- if block.settings.title != blank and block.settings.description != blank and block.settings.author != blank -%}
+              {
+                "@type": "Quotation",
+                "position": {{ forloop.index }},
+                "text": {{ block.settings.description | strip_html | json }},
+                "creator": {
+                  "@type": "Person",
+                  "name": {{ block.settings.author | json }}
+                }
+              }{%- unless forloop.last -%},{%- endunless -%}
+            {%- endif -%}
+          {%- endfor -%}
+        ]
+      }
+    {%- else -%}
+        {
+          "@context": "https://schema.org",
+          "@type": "Quotation",
+            {%- for block in blocks -%}
+              {% if block.settings.title != blank and block.settings.description != blank and block.settings.author != blank %}
+                "text": {{ block.settings.description | strip_html | json }},
+                "creator": {
+                  "@type": "Person",
+                  "name": {{ block.settings.author | json }}
+                }
+              {%- endif -%}
+            {%- endfor -%}
+        }
+      {%- endif -%}
+</script>

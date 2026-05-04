@@ -1,0 +1,38 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "breadcrumbs_jrzwMX": {
+      "type": "breadcrumbs",
+      "name": "Breadcrumbs",
+      "settings": {
+        "visibility_audience": "everyone",
+        "custom_parent_url": "",
+        "custom_parent_title": "",
+        "custom_current_title": "",
+        "section_styling": true,
+        "mobile_padding": "py-2",
+        "desktop_padding": "lg:py-4",
+        "mobile_margin": "mb-0",
+        "desktop_margin": "lg:mb-0",
+        "background": "#ffffff",
+        "primary_text_color": "#525252"
+      }
+    },
+    "main": {
+      "type": "main-search",
+      "settings": {}
+    }
+  },
+  "order": [
+    "breadcrumbs_jrzwMX",
+    "main"
+  ]
+}

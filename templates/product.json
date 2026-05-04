@@ -1,0 +1,306 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "breadcrumbs_imHg79": {
+      "type": "breadcrumbs",
+      "name": "Breadcrumbs",
+      "settings": {
+        "visibility_audience": "everyone",
+        "custom_parent_url": "",
+        "custom_parent_title": "",
+        "custom_current_title": "",
+        "section_styling": true,
+        "mobile_padding": "py-4",
+        "desktop_padding": "lg:py-4",
+        "mobile_margin": "mb-0",
+        "desktop_margin": "lg:mb-0",
+        "background": "#FFFFFF",
+        "primary_text_color": "#525252"
+      }
+    },
+    "main_product_C3CRD8": {
+      "type": "main-product",
+      "blocks": {
+        "product_title_VFCq7L": {
+          "type": "product_title",
+          "settings": {}
+        },
+        "product_variants_gzH8Nc": {
+          "type": "product_variants",
+          "settings": {}
+        },
+        "product_usps_XKjKiJ": {
+          "type": "product_usps",
+          "settings": {}
+        },
+        "product_info_M9cFQH": {
+          "type": "product_info",
+          "settings": {}
+        },
+        "product_price_pDcxGm": {
+          "type": "product_price",
+          "settings": {}
+        },
+        "product_form_EE6j9F": {
+          "type": "product_form",
+          "settings": {}
+        },
+        "store_usps_ETXVXp": {
+          "type": "store_usps",
+          "settings": {
+            "usps_1": "✓ Secure payment",
+            "usps_2": "✓ Taste guarantee",
+            "usps_3": "✓ Rated 9.3",
+            "usps_contact": "<p><strong>Need help?</strong><br> Our experts are just a call away <strong>0887120100</strong></p>"
+          }
+        }
+      },
+      "block_order": [
+        "product_title_VFCq7L",
+        "product_variants_gzH8Nc",
+        "product_usps_XKjKiJ",
+        "product_info_M9cFQH",
+        "product_price_pDcxGm",
+        "product_form_EE6j9F",
+        "store_usps_ETXVXp"
+      ],
+      "name": "Main Product",
+      "settings": {
+        "section_styling": false,
+        "mobile_padding": "py-0",
+        "desktop_padding": "lg:py-4",
+        "mobile_margin": "mb-0",
+        "desktop_margin": "lg:mb-0",
+        "background": "#ffffff",
+        "primary_text_color": "#06061c",
+        "secondary_text_color": "#a08735",
+        "primary_button_color": "#a08735",
+        "primary_button_text_color": "#ffffff"
+      }
+    },
+    "product_information_wCwM4M": {
+      "type": "product-information",
+      "name": "Product Information",
+      "settings": {
+        "visibility_audience": "everyone",
+        "section_styling": true,
+        "mobile_padding": "py-6",
+        "desktop_padding": "lg:py-8",
+        "mobile_margin": "mb-0",
+        "desktop_margin": "lg:mb-0",
+        "background": "#f8f6f1",
+        "secondary_text_color": "#a08735",
+        "primary_text_color": "#06061c",
+        "title": "Product Information",
+        "title_2": "The Wine"
+      }
+    },
+    "winery_selection_PxMMwk": {
+      "type": "winery-selection",
+      "blocks": {
+        "winery_9FrCPq": {
+          "type": "winery",
+          "settings": {
+            "article": "{{ product.metafields.custom.winery.value }}",
+            "show_winery_video": true,
+            "show_winery_logo": true,
+            "show_winery_name": true,
+            "show_winery_button": true,
+            "button_style": "primary",
+            "button_url": "",
+            "extra_button_text": "",
+            "extra_button_url": "",
+            "extra_button_style": "secondary",
+            "enable_overlay": false,
+            "overlay_type": "gradient",
+            "mobile_gradient": "linear-gradient(180deg, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.3) 100%)",
+            "desktop_gradient": "linear-gradient(180deg, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.3) 100%)",
+            "overlay_opacity": 30
+          }
+        }
+      },
+      "block_order": [
+        "winery_9FrCPq"
+      ],
+      "name": "Winery Selection",
+      "settings": {
+        "visibility_audience": "everyone",
+        "view_all_wineries_url": "/blogs/wijnhuizen",
+        "section_styling": false,
+        "mobile_padding": "py-0",
+        "desktop_padding": "lg:py-0",
+        "mobile_margin": "mb-0",
+        "desktop_margin": "lg:mb-0",
+        "background": "#ffffff",
+        "primary_text_color": "#ffffff",
+        "secondary_text_color": "#a08735",
+        "primary_button_color": "rgba(0,0,0,0)",
+        "primary_button_text_color": "#ffffff",
+        "secondary_button_color": "rgba(0,0,0,0)",
+        "secondary_button_text_color": "#000000",
+        "section_title": "Discover our exclusive wineries",
+        "aspect_ratio_desktop": "lg:aspect-[1340/382]",
+        "aspect_ratio_mobile": "aspect-[375/307]",
+        "make_section_full_width": true,
+        "autoplay_slider": false,
+        "slider_interval": 5000,
+        "animation_style": "image-zoom"
+      }
+    },
+    "text_image_TNBQAz": {
+      "type": "text-image",
+      "name": "Text with Image",
+      "settings": {
+        "visibility_audience": "everyone",
+        "section_styling": false,
+        "mobile_padding": "py-6",
+        "desktop_padding": "lg:py-8",
+        "mobile_margin": "mb-0",
+        "desktop_margin": "lg:mb-0",
+        "divider_color": "#b19e5e",
+        "background": "#ffffff",
+        "primary_text_color": "#000000",
+        "primary_button_color": "rgba(0,0,0,0)",
+        "primary_button_text_color": "#000000",
+        "secondary_button_color": "#000000",
+        "secondary_button_text_color": "#ffffff",
+        "winery_article": "{{ product.metafields.custom.winery.value }}",
+        "image": "shopify://shop_images/Rectangle_46_2.png",
+        "image_aspect_ratio": "aspect-671/789",
+        "image_position": "left",
+        "mobile_image_position": "up",
+        "text_alignment": "left",
+        "heading": "Feature highlight with image",
+        "heading_size": "lg",
+        "text": "<p>Combine text and image to showcase your product features, tell your brand story, or explain your value proposition. This versatile section can be customized to match your brand's design.</p>",
+        "button_text": "Button text",
+        "button_url": "#",
+        "button_style": "primary",
+        "animation_style": "split-sides"
+      }
+    },
+    "product_slider_rRTfi7": {
+      "type": "product-slider",
+      "name": "Product Slider",
+      "settings": {
+        "visibility_audience": "everyone",
+        "section_styling": true,
+        "mobile_padding": "py-0",
+        "desktop_padding": "lg:py-4",
+        "mobile_margin": "mb-8",
+        "desktop_margin": "lg:mb-8",
+        "background": "#ffffff",
+        "primary_text_color": "#282828",
+        "secondary_text_color": "#c02b2b",
+        "primary_button_color": "#cfdadd",
+        "primary_button_text_color": "#282828",
+        "secondary_button_color": "#000000",
+        "secondary_button_text_color": "#ffffff",
+        "collection": "alle-wijnen",
+        "product_list": [],
+        "text": "",
+        "title": "<h2>De bestsellers van deze maand</h2>",
+        "button_text": "BEKIJK ZE ALLEMAAL",
+        "button_url": "",
+        "button_style": "primary",
+        "animation_style": "stagger-up"
+      }
+    },
+    "instagram_slider_LEQHR4": {
+      "type": "instagram-slider",
+      "blocks": {
+        "instagram_slide_aQekxB": {
+          "type": "instagram_slide",
+          "settings": {
+            "image": "shopify://shop_images/instagram_1.png",
+            "caption": "Message from the winelist",
+            "link": "",
+            "open_in_new_tab": true
+          }
+        },
+        "instagram_slide_RtJcD3": {
+          "type": "instagram_slide",
+          "settings": {
+            "image": "shopify://shop_images/instagram_2.png",
+            "caption": "Message from the winelist",
+            "link": "",
+            "open_in_new_tab": true
+          }
+        },
+        "instagram_slide_VqpbeF": {
+          "type": "instagram_slide",
+          "settings": {
+            "image": "shopify://shop_images/instagram_3.png",
+            "caption": "Message from the winelist",
+            "link": "",
+            "open_in_new_tab": true
+          }
+        },
+        "instagram_slide_8azhBa": {
+          "type": "instagram_slide",
+          "settings": {
+            "image": "shopify://shop_images/instagram_4.png",
+            "caption": "Message from the winelist",
+            "link": "",
+            "open_in_new_tab": true
+          }
+        },
+        "instagram_slide_mnTKrx": {
+          "type": "instagram_slide",
+          "settings": {
+            "image": "shopify://shop_images/instagram_5.png",
+            "caption": "Message from the winelist",
+            "link": "",
+            "open_in_new_tab": true
+          }
+        }
+      },
+      "block_order": [
+        "instagram_slide_aQekxB",
+        "instagram_slide_RtJcD3",
+        "instagram_slide_VqpbeF",
+        "instagram_slide_8azhBa",
+        "instagram_slide_mnTKrx"
+      ],
+      "name": "Instagram Slider",
+      "settings": {
+        "visibility_audience": "everyone",
+        "section_styling": true,
+        "mobile_padding": "py-0",
+        "desktop_padding": "lg:py-0",
+        "mobile_margin": "mb-8",
+        "desktop_margin": "lg:mb-12",
+        "background": "#ffffff",
+        "primary_text_color": "#000000",
+        "title": "Wine is better when shared",
+        "handle": "thewinelistnl",
+        "link": "",
+        "aspect_ratio": "aspect-[267/334]",
+        "autoplay": true,
+        "interval": 5,
+        "gap_mobile": 8,
+        "gap_desktop": 12,
+        "per_page_desktop": 5,
+        "per_page_mobile": 2.2,
+        "animation_style": "stagger-up"
+      }
+    }
+  },
+  "order": [
+    "breadcrumbs_imHg79",
+    "main_product_C3CRD8",
+    "product_information_wCwM4M",
+    "winery_selection_PxMMwk",
+    "text_image_TNBQAz",
+    "product_slider_rRTfi7",
+    "instagram_slider_LEQHR4"
+  ]
+}

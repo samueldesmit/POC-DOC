@@ -1,0 +1,114 @@
+{% doc %}
+    Renders a fieldset with native select box with custom title and options.
+
+    @param {string} title - Title of the select box
+    @param {string} id - Id of the select box (required)
+    @param {string} key - Key of the select box
+    @param {string} label - Label of the select box
+    @param {object} options - Array of options to be displayed in the select box (required)
+    @param {boolean} no_border - Whether to remove border styling (default: false)
+    @param {boolean} align_vertical - Whether to align elements vertically (default: false)
+    @param {string} icon_class - CSS classes for the dropdown icon (default: 'rotate-90 w-3 aspect-square')
+    @param {string} container_class - Additional CSS classes for the container
+    @param {boolean} show_title - Whether to show the title label (default: true)
+    @param {string} class - Additional CSS classes for the fieldset
+    @param {string} label_class - Additional CSS classes for the label
+
+    @example
+    {%- render 'component.select',
+        title: "Country",
+        key: 'country',
+        label: "Select your country",
+        options: localization.available_countries,
+        id: "country_code"
+    -%}
+{% enddoc %}
+
+{%- liquid
+    assign no_border = no_border | default: false, allow_false: true
+    assign align_vertical = align_vertical | default: false, allow_false: true
+    assign icon_class = icon_class | default: 'rotate-90 w-3 aspect-square', allow_false: true
+
+    assign container_class = 'relative flex items-center gap-2 px-4 py-3 transition-all duration-300 cursor-pointer lg:hover:bg-gray-light lg:hover:border-highlight justify-between ' | append: container_class
+
+    if no_border == false
+        assign container_class = container_class
+    endif
+    assign show_title = show_title | default: true, allow_false: true
+-%}
+
+<fieldset
+    data-component="nativeSelect"
+    class="flex font-medium {% if align_vertical == true %}flex-col gap-3{% else %}flex-row items-center gap-2{% endif %} {{ class }}"
+>
+    {%- if title != blank and show_title == true -%}
+        <label
+            class="text-xs font-semibold text-surface-500"
+            for="{{ id }}"
+        >
+            {{- title -}}
+        </label>
+    {%- endif -%}
+    <div
+        data-select-container
+        class="{{- container_class -}}"
+    >
+        <span
+            data-label
+            class="pointer-events-none cursor-pointer flex items-center {{ label_class -}}"
+        >
+            <span class="truncate overflow-hidden">
+                {{- label | capitalize -}}
+            </span>
+        </span>
+        {% render 'component.icon', type: 'chevron', class: icon_class %}
+        <select
+            data-select
+            name="{{ id }}"
+            id="{{ id }}"
+            class="w-full h-full absolute top-0 left-0 opacity-0 cursor-pointer"
+        >
+            {%- for item in options -%}
+                {%- liquid
+                    assign option_label = item.name
+                    assign is_selected = false
+
+                    case id
+                        when 'language_code'
+                            if item.iso_code == localization[key].iso_code
+                                assign is_selected = true
+                            endif
+
+                            assign item_value = item.iso_code
+                        when 'country_code'
+                            assign option_label = item.name | append: ' (' | append: item.currency.symbol | append: ')'
+
+                            if item.iso_code == localization[key].iso_code
+                                assign is_selected = true
+                            endif
+
+                            assign item_value = item.iso_code
+                        when 'sort_by'
+                            assign sort_by_value = collection.sort_by | default: collection.default_sort_by | downcase
+                            assign item_value = item.value | downcase
+
+                            if item_value == sort_by_value
+                                assign is_selected = true
+                            endif
+                    endcase
+                -%}
+
+                <option
+                    data-name="{{- option_label -}}"
+                    value="{{- item_value -}}"
+                    {% if is_selected %}
+                        selected
+                    {% endif %}
+                    class="text-black"
+                >
+                    {{- option_label | capitalize -}}
+                </option>
+            {%- endfor -%}
+        </select>
+    </div>
+</fieldset>

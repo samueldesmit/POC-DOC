@@ -1,0 +1,575 @@
+{%- liquid
+    assign s = section.settings
+
+    assign show_section = true
+
+    if s.visibility_audience == 'premium_only'
+        assign show_section = false
+        if customer
+            if customer.tags contains 'premium-club'
+                assign show_section = true
+            endif
+        endif
+    elsif s.visibility_audience == 'non_premium_only'
+        if customer
+            if customer.tags contains 'premium-club'
+                assign show_section = false
+            endif
+        endif
+    endif
+-%}
+
+{% if show_section %}
+    <div
+        class="{{ s.mobile_margin }} {{ s.desktop_margin }} bg-background"
+        id="section-{{ section.id }}"
+    >
+        {% render 'section-colors', current_section: section %}
+        <div
+            class="{{ s.mobile_padding }} {{ s.desktop_padding }} container text-primary grid lg:grid-cols-[2fr_5fr] overflow-hidden"
+        >
+            <div class="flex flex-col gap-2 justify-between items-center border-b lg:border-b-0 lg:border-r border-secondary/50 pb-4 lg:pb-0 lg:pr-6 mr-0 lg:mr-6">
+                <h3 class="font-cormorant-garamond text-[30px] text-center font-medium leading-[120%]">
+                    {{ s.title }}
+                </h3>
+                <div class="flex flex-col gap-1">
+                    <p
+                        class="flex items-center gap-4 text-2xl font-extrabold font-inter justify-center"
+                        data-kiyoh-rating
+                    >
+                        <span data-kiyoh-rating-number>
+                            {{- s.rating_number -}}
+                        </span>
+                        {% comment %}
+                            <span class="flex items-center gap-1">
+                                {% render 'component.icon',
+                                    type: 'star',
+                                    class: 'text-primary'
+                                %}
+                                {% render 'component.icon',
+                                    type: 'star',
+                                    class: 'text-primary'
+                                %}
+                                {% render 'component.icon',
+                                    type: 'star',
+                                    class: 'text-primary'
+                                %}
+                                {% render 'component.icon',
+                                    type: 'star',
+                                    class: 'text-primary'
+                                %}
+                                {% render 'component.icon',
+                                    type: 'star',
+                                    class: 'text-primary'
+                                %}
+                            </span>
+                        {% endcomment %}
+                    </p>
+                    <div class="flex items-center gap-2 justify-center">
+                        <span
+                            class="text-sm font-inter text-primary/60 mt-2"
+                            data-kiyoh-review-count
+                        ></span>
+                        <span class="text-sm font-inter text-primary/60 mt-2">
+                            |
+                        </span>
+
+                        {% if s.kiyoh_logo != blank %}
+                            <responsive-media
+                                class="flex items-center my-auto w-[60px]"
+                                data-visible
+                            >
+                                {{
+                                    s.kiyoh_logo
+                                    | image_url: height: 200
+                                    | image_tag:
+                                        loading: 'lazy',
+                                        widths: '100,200',
+                                        style: 'object-fit: contain'
+                                }}
+                            </responsive-media>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            {% liquid
+                if s.autoplay != false
+                    assign slider_type = 'loop'
+                else
+                    assign slider_type = 'slide'
+                endif
+            %}
+
+            {% if s.use_xml_feed %}
+                <kiyoh-reviews
+                    class="w-full min-w-0 mt-10 lg:mt-0"
+                    data-splide-type="{{ slider_type }}"
+                    data-splide-per-page-desktop="{{ s.per_page_desktop }}"
+                    data-splide-per-page-mobile="{{ s.per_page_mobile }}"
+                    data-splide-autoplay="{{ s.autoplay }}"
+                    data-splide-interval="{{ s.interval | times: 1000 }}"
+                    data-splide-gap-desktop="12px"
+                    data-splide-gap-mobile="8px"
+                    data-show-review-stars="{{ s.show_review_stars }}"
+                    data-splide-smooth-autoplay="{{ s.smooth_autoplay }}"
+                    data-splide-auto-scroll-speed="{{ s.auto_scroll_speed }}"
+                >
+                    {% if s.animation_style != blank
+                        and s.animation_style != 'none'
+                    -%}
+                        <gsap-section data-animation="{{ s.animation_style }}">
+                    {%- endif %}
+                    <div
+                        class="splide min-w-0"
+                        data-kiyoh-splide
+                    >
+                        <div class="splide__track overflow-visible! lg:overflow-hidden!">
+                            <ul
+                                class="splide__list"
+                                data-kiyoh-slides
+                            >
+                                {% for block in section.blocks %}
+                                    {% assign b = block.settings %}
+                                    <li class="splide__slide grid grid-cols-[14px_1fr] gap-5">
+                                        {% render 'component.icon',
+                                            type: 'quote',
+                                            class: 'text-primary'
+                                        %}
+                                        <div
+                                            class="flex flex-col gap-2 font-cormorant-garamond text-[20px] text-primary font-medium leading-[150%]"
+                                        >
+                                            {{ b.review_quote }}
+                                            <span class="text-[12px] font-inter uppercase font-normalw">
+                                                {{ b.review_author }}
+                                            </span>
+                                        </div>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+                    {% if s.animation_style != blank
+                        and s.animation_style != 'none'
+                    -%}
+                        </gsap-section>
+                    {%- endif %}
+                </kiyoh-reviews>
+            {% else %}
+                <splide-section
+                    class="w-full min-w-0 mt-10 lg:mt-0"
+                    data-splide-type="{{ slider_type }}"
+                    data-splide-per-page-desktop="{{ s.per_page_desktop }}"
+                    data-splide-per-page-mobile="{{ s.per_page_mobile }}"
+                    data-splide-autoplay="{{ s.autoplay }}"
+                    data-splide-interval="{{ s.interval | times: 1000 }}"
+                    data-splide-gap-desktop="12px"
+                    data-splide-gap-mobile="8px"
+                    data-splide-pagination="false"
+                    data-splide-arrows="false"
+                    data-splide-smooth-autoplay="{{ s.smooth_autoplay }}"
+                    data-splide-auto-scroll-speed="{{ s.auto_scroll_speed }}"
+                >
+                    {% if s.animation_style != blank
+                        and s.animation_style != 'none'
+                    -%}
+                        <gsap-section data-animation="{{ s.animation_style }}">
+                    {%- endif %}
+                    <div class="splide min-w-0">
+                        <div class="splide__track overflow-visible! lg:overflow-hidden!">
+                            <ul class="splide__list">
+                                {% for block in section.blocks %}
+                                    {% assign b = block.settings %}
+                                    <li class="splide__slide grid grid-cols-[14px_1fr] gap-5">
+                                        {% render 'component.icon',
+                                            type: 'quote',
+                                            class: 'text-primary'
+                                        %}
+                                        <div
+                                            class="flex flex-col gap-2 font-cormorant-garamond text-[20px] text-primary font-medium leading-[150%]"
+                                        >
+                                            {{ b.review_quote }}
+                                            <span class="text-[12px] font-inter uppercase font-normalw">
+                                                {{ b.review_author }}
+                                            </span>
+                                        </div>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+                    {% if s.animation_style != blank
+                        and s.animation_style != 'none'
+                    -%}
+                        </gsap-section>
+                    {%- endif %}
+                </splide-section>
+            {% endif %}
+        </div>
+    </div>
+{% endif %}
+{% schema %}
+{
+    "name": "Review Quote",
+    "tag": "section",
+    "class": "review-quote",
+    "settings": [
+        {
+            "type": "header",
+            "content": "Visibility"
+        },
+        {
+            "type": "select",
+            "id": "visibility_audience",
+            "label": "Visibility (audience)",
+            "options": [
+                {
+                    "value": "everyone",
+                    "label": "Everyone"
+                },
+                {
+                    "value": "premium_only",
+                    "label": "Only premium-club customers"
+                },
+                {
+                    "value": "non_premium_only",
+                    "label": "Only non premium-club customers"
+                }
+            ],
+            "default": "everyone"
+        },
+        {
+            "type": "header",
+            "content": "Documentation for this section",
+            "info": "Click [here](https://strix-net.atlassian.net/wiki/spaces/TWL/pages/3733913613/Section+Review+Quote) for more information."
+        },
+        {
+            "type": "header",
+            "content": "Section Styling"
+        },
+        {
+            "type": "checkbox",
+            "id": "section_styling",
+            "label": "Add styling to section",
+            "info": "If enabled this shows the settings to set the color scheme, spacing, and margin for the section.",
+            "default": false
+        },
+        {
+            "type": "header",
+            "content": "Section Color Scheme",
+            "visible_if": "{{ section.settings.section_styling == true }}"
+        },
+        {
+            "type": "header",
+            "content": "Section Spacing",
+            "visible_if": "{{ section.settings.section_styling == true }}"
+        },
+        {
+            "type": "select",
+            "id": "mobile_padding",
+            "label": "Mobile padding",
+            "visible_if": "{{ section.settings.section_styling == true }}",
+            "options": [
+                {
+                    "value": "py-0",
+                    "label": "None"
+                },
+                {
+                    "value": "py-2",
+                    "label": "S - 8px"
+                },
+                {
+                    "value": "py-4",
+                    "label": "M - 16px"
+                },
+                {
+                    "value": "py-6",
+                    "label": "L - 24px"
+                },
+                {
+                    "value": "py-8",
+                    "label": "XL - 32px"
+                },
+                {
+                    "value": "py-10",
+                    "label": "2XL - 40px"
+                },
+                {
+                    "value": "py-12",
+                    "label": "3XL - 48px"
+                },
+                {
+                    "value": "py-16",
+                    "label": "4XL - 64px"
+                }
+            ],
+            "default": "py-0"
+        },
+        {
+            "type": "select",
+            "id": "desktop_padding",
+            "label": "Desktop padding",
+            "visible_if": "{{ section.settings.section_styling == true }}",
+            "options": [
+                {
+                    "value": "lg:py-0",
+                    "label": "None"
+                },
+                {
+                    "value": "lg:py-2",
+                    "label": "S - 8px"
+                },
+                {
+                    "value": "lg:py-4",
+                    "label": "M - 16px"
+                },
+                {
+                    "value": "lg:py-6",
+                    "label": "L - 24px"
+                },
+                {
+                    "value": "lg:py-8",
+                    "label": "XL - 32px"
+                },
+                {
+                    "value": "lg:py-10",
+                    "label": "2XL - 40px"
+                },
+                {
+                    "value": "lg:py-12",
+                    "label": "3XL - 48px"
+                },
+                {
+                    "value": "lg:py-16",
+                    "label": "4XL - 64px"
+                }
+            ],
+            "default": "lg:py-0"
+        },
+        {
+            "type": "header",
+            "content": "Section Margin",
+            "visible_if": "{{ section.settings.section_styling == true }}"
+        },
+        {
+            "type": "select",
+            "id": "mobile_margin",
+            "label": "Mobile Section margin",
+            "visible_if": "{{ section.settings.section_styling == true }}",
+            "options": [
+                {
+                    "value": "mb-0",
+                    "label": "None"
+                },
+                {
+                    "value": "mb-4",
+                    "label": "Small - 16px"
+                },
+                {
+                    "value": "mb-8",
+                    "label": "Medium - 32px"
+                },
+                {
+                    "value": "mb-12",
+                    "label": "Large - 48px"
+                }
+            ],
+            "default": "mb-0"
+        },
+        {
+            "type": "select",
+            "id": "desktop_margin",
+            "label": "Desktop Section margin",
+            "visible_if": "{{ section.settings.section_styling == true }}",
+            "options": [
+                {
+                    "value": "lg:mb-0",
+                    "label": "None"
+                },
+                {
+                    "value": "lg:mb-8",
+                    "label": "Small - 32px"
+                },
+                {
+                    "value": "lg:mb-12",
+                    "label": "Medium - 48px"
+                },
+                {
+                    "value": "lg:mb-16",
+                    "label": "Large - 64px"
+                }
+            ],
+            "default": "lg:mb-0"
+        },
+        {
+            "type": "header",
+            "content": "Colors",
+            "visible_if": "{{ section.settings.section_styling == true }}"
+        },
+        {
+            "type": "color",
+            "id": "background",
+            "label": "Section background color",
+            "default": "#FFFFFF",
+            "visible_if": "{{ section.settings.section_styling == true }}"
+        },
+        {
+            "type": "color",
+            "id": "primary_text_color",
+            "label": "Primary text color",
+            "default": "#000000",
+            "visible_if": "{{ section.settings.section_styling == true }}"
+        },
+        {
+            "type": "color",
+            "id": "secondary_text_color",
+            "label": "Border color",
+            "default": "#A08735",
+            "visible_if": "{{ section.settings.section_styling == true }}"
+        },
+        {
+            "type": "checkbox",
+            "id": "use_xml_feed",
+            "label": "Use KiYOH XML feed",
+            "info": "When enabled, reviews are loaded from the KiYOH XML feed. When disabled, only the manually added review blocks below are shown.",
+            "default": true
+        },
+        {
+            "type": "text",
+            "id": "title",
+            "label": "Title",
+            "default": "Customers rate us highly:"
+        },
+        {
+            "type": "text",
+            "id": "rating_number",
+            "label": "Rating (fallback)",
+            "default": "9.3",
+            "info": "Used when KiYOH feed URL is not set or fails to load."
+        },
+        {
+            "type": "image_picker",
+            "id": "kiyoh_logo",
+            "label": "Kiyoh logo",
+            "info": "Optional image to display as the Kiyoh logo."
+        },
+        {
+            "type": "checkbox",
+            "id": "show_review_stars",
+            "label": "Show stars per review",
+            "info": "Display the individual star rating on each review slide.",
+            "default": true
+        },
+        {
+            "type": "header",
+            "content": "Splider settings"
+        },
+        {
+            "type": "checkbox",
+            "id": "autoplay",
+            "label": "Autoplay",
+            "default": true
+        },
+        {
+            "type": "range",
+            "id": "interval",
+            "label": "Interval (seconds)",
+            "default": 5,
+            "min": 1,
+            "max": 20,
+            "step": 1,
+            "visible_if": "{{ section.settings.smooth_autoplay == false }}"
+        },
+        {
+            "type": "checkbox",
+            "id": "smooth_autoplay",
+            "label": "Smooth autoplay",
+            "info": "Enables a continuous smooth scroll instead of stepping slide by slide.",
+            "default": false
+        },
+        {
+            "type": "range",
+            "id": "auto_scroll_speed",
+            "label": "Scroll speed",
+            "info": "Speed of the smooth auto-scroll. Higher = faster.",
+            "default": 1,
+            "min": 0.5,
+            "max": 5,
+            "step": 0.5,
+            "visible_if": "{{ section.settings.smooth_autoplay == true }}"
+        },
+        {
+            "type": "range",
+            "id": "per_page_desktop",
+            "label": "Slides per page on desktop",
+            "default": 3,
+            "min": 1,
+            "max": 5,
+            "step": 0.1
+        },
+        {
+            "type": "range",
+            "id": "per_page_mobile",
+            "label": "Slides per page on mobile",
+            "default": 1.2,
+            "min": 1,
+            "max": 5,
+            "step": 0.1
+        },
+        {
+            "type": "header",
+            "content": "Animation"
+        },
+        {
+            "type": "select",
+            "id": "animation_style",
+            "label": "Scroll animation",
+            "info": "Adds a subtle entrance animation when the section scrolls into view.",
+            "options": [
+                { "value": "none", "label": "None" },
+                { "value": "fade-up", "label": "Fade up" },
+                { "value": "fade-in", "label": "Fade in" },
+                { "value": "slide-in-left", "label": "Slide in from left" },
+                { "value": "slide-in-right", "label": "Slide in from right" }
+            ],
+            "default": "none"
+        }
+    ],
+    "blocks": [
+        {
+            "type": "review_quote",
+            "name": "Review Quote",
+            "settings": [
+                {
+                    "type": "text",
+                    "id": "review_quote",
+                    "label": "Review Quote",
+                    "default": "Top wijn en goede service!"
+                },
+                {
+                    "type": "text",
+                    "id": "review_author",
+                    "label": "Review Author",
+                    "default": "John Doe"
+                }
+            ]
+        }
+    ],
+    "presets": [
+        {
+            "name": "Review Quote",
+            "blocks": [
+                {
+                    "type": "review_quote"
+                },
+                {
+                    "type": "review_quote"
+                },
+                {
+                    "type": "review_quote"
+                }
+            ]
+        }
+    ]
+}
+{% endschema %}

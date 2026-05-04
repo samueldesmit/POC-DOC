@@ -1,0 +1,138 @@
+{%- doc -%}
+  Expected behaviour: Renders a wine card for the selection flow with data attributes for JS integration.
+  About: Display snippet for wine entries from subscription_subcategory_wine metaobjects.
+         Shows product image, vendor, title, price, minimum amount, and placeholder for quantity controls.
+         Includes data attributes for future JavaScript interaction (Plan 02-02).
+  Accepts:
+    - {object} wine_entry: Required. The wine metaobject entry from subscription.subscription_wines.value
+    - {string} class: Optional. Additional CSS classes for the card wrapper.
+  Usage:
+    {% render 'wine-card-selection', wine_entry: wine_entry %}
+    {% render 'wine-card-selection', wine_entry: wine_entry, class: 'col-span-2' %}
+
+  @param {object} wine_entry - The wine metaobject entry from subscription.subscription_wines.value
+  @param {string} [class] - Additional CSS classes for the card wrapper
+{%- enddoc -%}
+
+{%- liquid
+  # Extract product from wine entry
+  assign product = wine_entry.wine.value
+  assign minimum_amount = wine_entry.minimum_amount | default: 1
+
+  # Skip if no product found
+  if product == blank
+    break
+  endif
+
+  # Get product details
+  assign variant_id = product.variants.first.id
+  assign product_title = product.title
+  assign product_price = product.price | money
+  assign product_image = product.featured_image
+  assign product_vendor = product.vendor
+-%}
+
+<div
+  class="wine-card-selection flex flex-col h-full justify-between bg-white {{ class }}"
+  data-product-id="{{ variant_id }}"
+  data-product-title="{{ product_title | escape }}"
+  data-product-price="{{ product.price }}"
+  data-product-image="{% if product_image %}{{ product_image | image_url: width: 600 }}{% endif %}"
+  data-min-amount="{{ minimum_amount }}"
+>
+  {%- comment -%} Product Image {%- endcomment -%}
+  <div class="relative aspect-square w-full mb-4">
+    <a href="{{ product.url }}" class="absolute inset-0 z-10"></a>
+    {%- if product_image -%}
+      <responsive-media class="w-full h-full aspect-square">
+        {{
+          product_image
+          | image_url: width: 600
+          | image_tag:
+              class: 'w-full h-full object-contain',
+              loading: 'lazy',
+              alt: product_title
+        }}
+      </responsive-media>
+    {%- else -%}
+      {{
+        'image'
+        | placeholder_svg_tag: 'w-full h-full bg-gray-100 text-white'
+      }}
+    {%- endif -%}
+
+    {%- comment -%} Info tooltip (from POC pattern) {%- endcomment -%}
+    <div class="absolute top-2 right-2 z-20 group/info">
+      <div class="w-8 h-8 bg-white/90 rounded-full flex items-center justify-center shadow-md">
+        {%- render 'component.icon',
+          type: 'info_circle',
+          class: 'w-5 h-5 text-primary'
+        -%}
+      </div>
+      <div class="absolute top-full right-0 mt-2 w-64 bg-white rounded-lg shadow-xl p-4 opacity-0 pointer-events-none group-hover/info:opacity-100 group-hover/info:pointer-events-auto transition-opacity z-30">
+        <p class="text-sm font-semibold mb-2">{{ product_title }}</p>
+        {%- if product.description != blank -%}
+          <p class="text-xs text-gray-600">{{ product.description | strip_html | truncate: 150 }}</p>
+        {%- endif -%}
+      </div>
+    </div>
+  </div>
+
+  {%- comment -%} Product Info {%- endcomment -%}
+  <div class="flex flex-col items-center text-center">
+    {%- if product_vendor != blank -%}
+      {%- if product.metafields.custom.winery != blank -%}
+        <a
+          href="{{ product.metafields.custom.winery.value.url }}"
+          class="text-secondary text-xs uppercase tracking-wider mb-1 hover:underline z-20 relative"
+        >
+          {{ product.metafields.custom.winery.value.title }}
+        </a>
+      {%- else -%}
+        <span class="text-secondary text-xs uppercase tracking-wider mb-1">{{ product_vendor }}</span>
+      {%- endif -%}
+    {%- endif -%}
+
+    <a
+      href="{{ product.url }}"
+      class="font-cormorant-garamond text-lg text-primary mb-2 hover:underline z-20 relative"
+    >
+      {{ product_title }}
+    </a>
+
+    <p class="text-sm font-semibold mb-4">{{ product_price }}</p>
+
+    {%- comment -%} Quantity Controls Placeholder (will be implemented in Plan 02-02) {%- endcomment -%}
+    <div
+      class="quantity-controls flex items-center gap-4 border border-surface-400 py-2 px-4"
+      data-quantity-container="{{ variant_id }}"
+    >
+      <button
+        type="button"
+        data-qty-minus="{{ variant_id }}"
+        data-min-qty="{{ minimum_amount }}"
+        class="w-8 h-8 flex items-center justify-center text-lg font-medium disabled:opacity-30"
+        disabled
+      >
+        -
+      </button>
+      <span
+        data-qty-display="{{ variant_id }}"
+        class="min-w-[2rem] text-center font-semibold"
+      >
+        {{- minimum_amount -}}
+      </span>
+      <button
+        type="button"
+        data-qty-plus="{{ variant_id }}"
+        class="w-8 h-8 flex items-center justify-center text-lg font-medium"
+      >
+        +
+      </button>
+    </div>
+
+    {%- if minimum_amount > 0 -%}
+      <span class="text-xs text-gray-500 mt-2">Min: {{ minimum_amount }}</span>
+    {%- endif -%}
+  </div>
+</div>

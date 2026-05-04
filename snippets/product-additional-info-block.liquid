@@ -1,0 +1,29 @@
+{% liquid
+    assign pdp_additional_info_block_list = localization.market.metafields.custom.pdp_additional_info_block.value
+%}
+
+<div
+    class="py-8 px-6 bg-gray-100"
+    data-additional-info-block
+>
+    {% unless current_variant.available %}
+        {%- render 'component.pdp.back-in-stock', variant: current_variant -%}
+    {% endunless %}
+    {% if pdp_additional_info_block_list.size > 0 %}
+        <ul class="mb-6 last:mb-0 space-y-3">
+            {% for item in pdp_additional_info_block_list %}
+                <li class="flex gap-x-3">
+                    {% render 'component.icon',
+                        type: 'checkbox_checked_circle',
+                        class: 'size-5 shrink-0'
+                    %}
+                    <span class="font-light">{{ item }}</span>
+                </li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+    {% render 'component.payment-methods',
+        container_classes: 'flex flex-wrap justify-start gap-x-3 gap-y-3',
+        item_classes: ''
+    %}
+</div>

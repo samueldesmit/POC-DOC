@@ -1,0 +1,56 @@
+<sort-form class="group/sort-form w-full lg:w-auto">
+    <form class="relative flex items-center w-full lg:w-auto">
+        {%- comment -%} Mobile select - shows "Sort By" by default {%- endcomment -%}
+        <select
+            name="sort_by"
+            class="lg:hidden appearance-none py-1 bg-transparent border-none text-[0.9375rem] font-normal text-primary cursor-pointer focus:outline-none focus:ring-0 transition-colors duration-300 ease-out group-data-loading/sort-form:pointer-events-none flex-1 pr-2 lg:pr-8"
+        >
+            <option
+                value=""
+                disabled
+                selected
+            >
+                {{ 'collection.sorting.sort_by' | t }}
+            </option>
+            {%- for option in collection.sort_options -%}
+                <option
+                    value="{{ option.value | escape }}"
+                    {% if sort_by == option.value %}
+                        selected
+                    {% endif %}
+                >
+                    {{ option.name | escape }}
+                </option>
+            {%- endfor -%}
+        </select>
+
+        {%- comment -%} Desktop select - shows alphabetically by default {%- endcomment -%}
+        <select
+            name="sort_by"
+            class="hidden lg:block flex-1 appearance-none py-1 pr-8 bg-transparent border-none text-[0.9375rem] font-normal text-primary cursor-pointer focus:outline-none focus:ring-0 transition-colors duration-300 ease-out group-data-loading/sort-form:pointer-events-none"
+        >
+            {%- for option in collection.sort_options -%}
+                {%- liquid
+                    assign is_selected = false
+                    if sort_by == option.value
+                        assign is_selected = true
+                    elsif sort_by == blank and option.value == 'title-ascending'
+                        assign is_selected = true
+                    endif
+                -%}
+                <option
+                    value="{{ option.value | escape }}"
+                    {% if is_selected %}
+                        selected
+                    {% endif %}
+                >
+                    {{ option.name | escape }}
+                </option>
+            {%- endfor -%}
+        </select>
+
+        <div class="absolute right-0 pointer-events-none">
+            {% render 'component.icon', type: 'chevron-down', class: 'size-5' %}
+        </div>
+    </form>
+</sort-form>

@@ -1,0 +1,103 @@
+{% doc %}
+    Renders a text input element of type text, email, search, password, or textarea with a label and optional error message.
+
+    @param {string} id - Id of the input, also sets the "for=" of the label
+    @param {string} name - Name of the input
+    @param {string} label - The label string of the input. It can be either the translation key or a hardcoded string
+    @param {string} type - Type of the input (e.g. text, email, password, textarea) (default: text)
+    @param {string} placeholder - The placeholder string of the input. It can be either the translation key or a hardcoded string
+    @param {boolean} required - Whether the input is required (default: false)
+    @param {string} autocomplete - Autocomplete attribute (default: "on")
+    @param {string} autocapitalize - Autocapitalize attribute (default: "off")
+    @param {string} autocorrect - Autocorrect attribute (default: "off")
+    @param {boolean} spellcheck - Spellcheck attribute (default: false)
+    @param {string} default_value - Default value of the input element
+    @param {string} class - Additional class for enclosing container div (default: "w-full")
+    @param {string} label_class - Additional class for the label (default: "flex text-sm mb-2")
+    @param {string} attributes - Additional attributes you want to add, like data-attributes, aria-attributes or state-attributes
+    @param {string} input_class - Additional class for the input (default: "w-full border border-current bg-transparent px-4 py-3 disabled:cursor-not-allowed")
+    @param {string} [color_class] - Additional color-related classes appended to the input
+
+    @example
+    {%- render 'component.input',
+        id: 'email',
+        name: 'email',
+        label: 'Email Address',
+        label_class: '',
+        input_class: '',
+        type: 'email',
+        placeholder: 'Enter your email',
+        required: true,
+        autocomplete: 'email',
+        autocapitalize: 'off',
+        autocorrect: 'off',
+        spellcheck: false,
+        default_value: '',
+        class: 'mb-4',
+        attributes: 'data-test="email-input"'
+    -%}
+{% enddoc %}
+
+{%- liquid
+    assign required = required | default: false
+    assign type = type | default: 'text'
+    assign class = class | default: 'w-full'
+    assign all_classes = 'w-full border border-current bg-transparent px-4 py-3 disabled:cursor-not-allowed autofill-white ' | append: input_class | append: ' ' | append: color_class
+-%}
+
+{%- if id and name -%}
+    <div class="relative {{ class }}">
+        {%- if label != blank -%}
+            <label
+                for="{{ id }}"
+                class="{{ label_class }} flex text-sm mb-2"
+            >
+                {{- label -}}
+            </label>
+        {%- endif -%}
+        {% if type == 'textarea' %}
+            <textarea
+                name="{{ name }}"
+                id="{{ id }}"
+                class="{{ all_classes }} pt-3"
+                {% if placeholder %}
+                    placeholder="{{ placeholder }}"
+                {% endif %}
+                {% if default_value != blank %}
+                    value="{{ default_value }}"
+                {% endif %}
+                {% if required %}
+                    required aria-required="true"
+                {% endif %}
+                autocomplete="{{ autocomplete |  default: 'on' }}"
+                autocapitalize="{{ autocapitalize |  default: 'off'}}"
+                autocorrect="{{ autocorrect |  default: 'off'}}"
+                aria-label="{{- label -}}"
+                spellcheck="{{ spellcheck |  default: false }}"
+                {{ attributes }}
+            ></textarea>
+        {% else %}
+            <input
+                type="{{ type }}"
+                name="{{ name }}"
+                id="{{ id }}"
+                class="{{ all_classes }}"
+                {% if placeholder %}
+                    placeholder="{{ placeholder }}"
+                {% endif %}
+                {% if default_value != blank %}
+                    value="{{ default_value }}"
+                {% endif %}
+                {% if required %}
+                    required aria-required="true"
+                {% endif %}
+                autocomplete="{{ autocomplete |  default: 'on' }}"
+                autocapitalize="{{ autocapitalize |  default: 'off'}}"
+                autocorrect="{{ autocorrect |  default: 'off'}}"
+                aria-label="{{- label -}}"
+                spellcheck="{{ spellcheck |  default: false }}"
+                {{ attributes }}
+            >
+        {% endif %}
+    </div>
+{%- endif -%}

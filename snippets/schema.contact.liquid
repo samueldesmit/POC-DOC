@@ -1,0 +1,21 @@
+<script type="application/ld+json">
+  {
+    "@context": "http://schema.org",
+    "@type": "ContactPage",
+    "@id": "{{ page.url }}#webpage",
+    "url": "{{ request.origin | append: page.url }}",
+    "name": "{{ page.title }}",
+    {%- # No need to change the date format, best to sync in this format (ISO 8601) -%}
+    "datePublished": "{{ page.published_at | date: '%Y-%m-%dT%T' }}",
+    "dateModified": "{{ page.updated_at | date: '%Y-%m-%dT%T' }}",
+    "image": {
+      "@type": "ImageObject",
+      {%- # Is the page_image (featured_image) the correct one or is there another one that can ben used (i.e. a  metafield) -%}
+      "url": "https:{{ page_image | image_url: width: 1024 }}",
+      "image": "https:{{ page_image | image_url: width: 1024 }}",
+      "name": {{ page_image.alt | json }},
+      "width": "1024",
+      "height": "1024"
+    }
+  }
+</script>

@@ -1,0 +1,120 @@
+<cart-item-form class="flex h-full w-full flex-col">
+    <form
+        action="{{ routes.cart_url }}"
+        data-target="cart-item.form"
+        class="group-data-loading/cart-form:pointer-events-none flex h-full flex-col"
+    >
+        <quantity-input class="flex h-full flex-col">
+            {%- comment -%} Top row: Vendor, Title, Delete {%- endcomment -%}
+            <div class="mb-auto flex items-start justify-between gap-2">
+                <div class="flex flex-col gap-0.5">
+                    {%- if item.product.metafields.custom.winery != blank -%}
+                        <span class="font-inter text-[0.6875rem] font-normal uppercase leading-[150%] tracking-[0.034375rem] text-black">
+                            {{- item.product.metafields.custom.winery.value.title | escape -}}
+                        </span>
+                    {%- endif -%}
+                    <a
+                        href="{{ item.product.url }}"
+                        class="font-cormorant-garamond text-base font-medium leading-[130%] text-black"
+                    >
+                        {{- item.product.title -}}
+                    </a>
+                    {%- unless item.product.has_only_default_variant -%}
+                        <span class="text-[0.75rem] text-black">
+                            {{- item.variant.title -}}
+                        </span>
+                    {%- endunless -%}
+                </div>
+                <button
+                    data-target="quantity-input.remove"
+                    type="button"
+                    name="remove"
+                    aria-label="Remove item"
+                    class="shrink-0 cursor-pointer p-1 text-black transition-colors hover:text-black/70"
+                >
+                    {%- render 'component.icon',
+                        type: 'delete_bin',
+                        class: 'size-4'
+                    -%}
+                </button>
+            </div>
+
+            {%- comment -%} Bottom row: Quantity controls, Price {%- endcomment -%}
+            <div class="mt-2 flex items-center justify-between gap-2">
+                <div class="flex items-center border border-surface-300">
+                    <button
+                        data-target="quantity-input.minus"
+                        type="button"
+                        name="minus"
+                        aria-label="Decrease quantity"
+                        {% if item.variant.quantity_rule.min
+                            and item.quantity <= item.variant.quantity_rule.min
+                        %}
+                            disabled
+                        {% endif %}
+                        class="inline-flex size-8 items-center justify-center cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed"
+                    >
+                        {%- render 'component.icon',
+                            type: 'minus',
+                            class: 'size-1.5 w-4 h-4 text-surface-500'
+                        -%}
+                    </button>
+                    <input
+                        data-target="quantity-input.input"
+                        class="hidden"
+                        type="number"
+                        name="updates[]"
+                        value="{{ item.quantity }}"
+                        min="{{ item.variant.quantity_rule.min }}"
+                        {% if item.variant.inventory_policy == 'deny' %}
+                            max="{{ item.variant.inventory_quantity }}"
+                        {% elsif item.variant.quantity_rule.max != null %}
+                            max="{{ item.variant.quantity_rule.max }}"
+                        {% endif %}
+                        step="{{ item.variant.quantity_rule.increment }}"
+                        id="Quantity-{{ item.index | plus: 1 }}"
+                        data-index="{{ item.index | plus: 1 }}"
+                    >
+                    <span
+                        data-target="quantity-input.value"
+                        class="inline-flex min-w-[1.5rem] items-center justify-center text-center text-[0.9375rem] font-light leading-[150%] text-surface-500"
+                    >
+                        {{ item.quantity }}
+                    </span>
+                    <button
+                        data-target="quantity-input.plus"
+                        type="button"
+                        name="plus"
+                        aria-label="{{- 'accessibility.increase_quantity' | t -}}"
+                        {% if item.variant.quantity_rule.max
+                            and item.quantity >= item.variant.quantity_rule.max
+                        %}
+                            disabled
+                        {% elsif item.quantity
+                                >= item.variant.inventory_quantity
+                            and item.variant.inventory_policy == 'deny'
+                        %}
+                            disabled
+                        {% endif %}
+                        class="inline-flex size-8 items-center justify-center cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed"
+                    >
+                        {%- render 'component.icon',
+                            type: 'plus',
+                            class: 'size-1.5 w-4 h-4 text-surface-500'
+                        -%}
+                    </button>
+                </div>
+                <div class="flex flex-col items-end">
+                    <span class="text-[0.8125rem] font-medium text-surface-500">
+                        {{ item.final_line_price | money }}
+                    </span>
+                    {%- if item.variant.compare_at_price > item.variant.price -%}
+                        <span class="text-[0.6875rem] font-normal text-surface-400 line-through">
+                            {{ item.variant.compare_at_price | times: item.quantity | money }}
+                        </span>
+                    {%- endif -%}
+                </div>
+            </div>
+        </quantity-input>
+    </form>
+</cart-item-form>

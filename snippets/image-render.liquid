@@ -1,0 +1,235 @@
+{% comment %}
+    Renders an image.
+
+    For more instructions on how to use this snippet, please visit:
+    https://github.com/surf-turf/marlin/wiki/Image-render
+
+    Accepts:
+    - image: {object} - The image object
+    - max_width: {number} - The max width of the image
+    - sizes: {string} (optional) - Custom string with sizes and rules, default is 100vw
+    - alt: {string} (optional) - Alt text
+    - title: {string} (optional) - Title text
+    - lazy: {boolean|string} (optional) - Whether to lazy load the image
+    - preload: {boolean|string} (optional) - Whether to lazy load the image
+    - class: {string} (optional) - The class to apply to the image
+    - parent_class: {string} (optional) - The class to apply to the parent of the image
+
+    Usage:
+    {%- render 'image-render',
+      image: block.settings.hero_split_image,
+      width: 720,
+      sizes: '(max-width: 768px) 40vw, 100vw',
+      preload: 'true',
+    -%}
+{% endcomment %}
+
+{%- if image != blank -%}
+    {%- liquid
+        assign image_object = image
+        assign image_width = width
+        assign image_height = height
+        assign default_widths = '320, 360, 375, 400, 420, 480, 520, 640, 768, 840, 960, 1080, 1200, 1280, 1440, 1600, 1920, 2048, 2560, 3000, 4000'
+        assign default_lazy_value = 'lazy'
+        assign default_preload = false
+        assign default_importance = 'low'
+        assign default_fetchpriority = 'low'
+        assign default_decoding = 'async'
+        assign default_sizes = 'auto'
+        assign default_width = 1400
+        assign default_quality = 200
+        assign shopify_max = 5120
+        assign used_widths = default_widths
+        assign alt_is_used = false
+        assign image_url_width = default_width
+        assign image_tag_width = default_width
+
+        if section.index0 >= 1
+            assign lazy_value = 'lazy'
+            assign importance = default_importance
+            assign fetchpriority = default_fetchpriority
+        endif
+
+        # If lazy loading is set to true, set the lazy loading to true. Else set it to false.
+        if lazy != blank
+            if lazy == true
+                assign lazy_value = 'lazy'
+                assign importance = default_importance
+                assign fetchpriority = default_fetchpriority
+            else
+                assign lazy_value = 'eager'
+                assign importance = 'high'
+                assign fetchpriority = 'high'
+            endif
+        else
+            assign lazy_value = default_lazy_value
+        endif
+
+        # If preload is set to true, set the preload to true. Else set it to false.
+        if preload != blank or preload == false
+            if preload == true
+                assign preload_value = true
+                assign importance = 'high'
+                assign fetchpriority = 'high'
+            elsif preload == false
+                assign preload_value = false
+                assign lazy_value = 'lazy'
+                assign importance = default_importance
+                assign fetchpriority = default_fetchpriority
+            endif
+        else
+            assign preload_value = default_preload
+        endif
+
+        if section.index0 == 0
+            assign lazy_value = 'eager'
+            assign importance = 'high'
+            assign preload_value = true
+            assign fetchpriority = 'high'
+        endif
+
+        if sizes != blank
+            assign sizes = sizes
+        else
+            assign sizes = default_sizes
+        endif
+
+        # If the alt is empty, set the alt to the image alt.
+        if alt != blank
+            assign alt = alt | escape
+            assign alt_is_used = true
+        elsif image_object.alt != blank
+            assign alt = image.alt | escape
+            assign alt_is_used = true
+        endif
+
+        # If the title is empty, set the title to the image alt.
+        if title != blank
+            assign title = title
+        else
+            if alt_is_used == true
+                assign title = alt
+            endif
+        endif
+
+        # If the alt is empty, don't set the alt tag but use the presentation role.
+        if alt == blank
+            assign role = 'presentation'
+        endif
+
+        # If the image width is smaller than 1px, set it to 500px.
+        if image_width <= 1
+            assign image_width = 500
+        endif
+
+        # If the image height is smaller than 1px, set it to 500px.
+        if image_height <= 1
+            assign image_height = 500
+        endif
+
+        if width != blank
+            if width == 'full'
+                assign image_tag_width = shopify_max
+                assign image_url_width = shopify_max
+            else
+                assign image_tag_width = width
+                assign image_url_width = width
+            endif
+        endif
+
+        if image_quality != blank
+            assign percentage = image_quality | divided_by: 100
+            assign image_url_width = image_url_width | times: percentage
+        else
+            assign default_quality_percentage = default_quality | divided_by: 100
+            assign image_url_width = image_url_width | times: default_quality_percentage
+        endif
+
+        assign array_of_used_widths = used_widths | split: ', '
+        assign new_used_widths = blank
+
+        for used_width in array_of_used_widths
+            assign converted_used_width = used_width | plus: 0
+            assign converted_image_url_width = image_url_width | plus: 0
+
+            if converted_used_width < converted_image_url_width
+                assign new_used_widths = new_used_widths | append: converted_used_width | append: ', '
+            endif
+        endfor
+
+        if widths != blank
+            assign new_used_widths = widths
+        endif
+
+        assign image_url = image_object | image_url: width: image_url_width, format: 'WebP'
+
+        if crop != blank
+            assign image_url = image_url | image_url: crop: crop, width: image_url_width, height: height, format: 'WebP'
+        endif
+
+        assign widths = new_used_widths | remove_last: ','
+
+        if image_url != blank
+            assign image_url = image_object | image_url: width: image_url_width
+        endif
+    -%}
+
+    <div
+        class="{{ parent_class }}"
+        style="position:relative"
+    >
+        {%- liquid
+            if debug == true
+                echo '<div style="position:absolute;top:8px;left:8px;z-index:100;color:red;font-size:20px">'
+                echo 'preload: ' | append: preload_value | append: ' <br>'
+                echo 'lazyload: ' | append: lazy_value | append: ' <br>'
+                echo 'importance: ' | append: importance | append: ' <br>'
+                echo 'sizes: ' | append: sizes | append: ' <br>'
+                echo 'height: ' | append: height | append: ' <br>'
+                echo 'url width: ' | append: image_url_width | append: ' <br>'
+                echo 'tag width: ' | append: image_tag_width | append: ' <br>'
+                echo 'widths: ' | append: widths | append: ' <br>'
+                echo 'alt: ' | append: alt | append: ' <br>'
+                echo 'role: ' | append: role | append: ' <br>'
+                echo 'title: ' | append: title | append: ' <br>'
+                echo 'decoding: ' | append: default_decoding
+                echo '</div>'
+            endif
+        -%}
+        {% # theme-check-disable RemoteAsset %}
+        {{
+            image_url
+            | image_tag:
+                alt: alt,
+                height: height,
+                loading: lazy_value,
+                preload: preload_value,
+                sizes: sizes,
+                title: title,
+                width: image_tag_width,
+                widths: widths,
+                importance: importance,
+                fetchpriority: fetchpriority,
+                role: role,
+                class: class,
+                decoding: default_decoding,
+                onload: 'this.style.opacity=1'
+        }}
+        {% # theme-check-enable AssetUrlFilters RemoteAsset %}
+    </div>
+{%- else -%}
+    {%- if show_placeholder == true -%}
+        <div
+            class="{{ parent_class }}"
+        >
+            {%- if placeholder_title -%}
+                {{ placeholder_title | placeholder_svg_tag: 'placeholder-svg' }}
+            {%- else -%}
+                {{
+                    'product-apparel-2'
+                    | placeholder_svg_tag: 'placeholder-svg'
+                }}
+            {%- endif -%}
+        </div>
+    {%- endif -%}
+{%- endif -%}

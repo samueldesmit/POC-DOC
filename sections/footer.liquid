@@ -1,0 +1,392 @@
+{% liquid
+    assign s = section.settings
+    assign section_id = 'section-' | append: section.id
+    assign footer_menu = linklists[s.footer_menu].links
+%}
+
+<footer
+    id="{{ section_id }}"
+    class="{{ s.mobile_padding }} {{ s.desktop_padding }} bg-background border-t border-border"
+>
+    {% render 'section-colors', current_section: section %}
+
+    <div class="container lg:hidden mb-4">
+        <ul class="text-primary">
+            {% capture contact_content %}
+                <div class="space-y-4 mb-3">
+                    {% render 'footer-contact-info',
+                        address: s.contact_address,
+                        address_url: s.contact_address_url,
+                        email: s.contact_email,
+                        phone: s.contact_phone,
+                        phone_hours: s.contact_phone_hours,
+                        is_desktop: false
+                    %}
+                </div>
+            {% endcapture %}
+            {%- assign contact_heading = s.contact_heading | default: 'Contact' -%}
+            <li class="border-b border-border">
+                {% render 'component.accordion',
+                    title: contact_heading,
+                    content: contact_content,
+                    header_class: 'pb-6',
+                    title_class: 'text-primary text-base leading-tight font-cormorant-garamond'
+                %}
+            </li>
+
+            {% for link in footer_menu %}
+                {%- assign child_links = link.links -%}
+                {% capture child_links_content %}
+                    {% if child_links.size > 0 %}
+                        <ul class="flex flex-col gap-2 mb-3 text-sm">
+                            {% for child_link in child_links %}
+                                <li>
+                                    <a href="{{ child_link.url }}" class="hover:text-primary/50">
+                                        {{- child_link.title -}}
+                                    </a>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+                {% endcapture %}
+                <li class="border-b border-border">
+                    {% render 'component.accordion',
+                        title: link.title,
+                        content: child_links_content,
+                        header_class: 'py-6',
+                        title_class: 'text-primary text-base font-cormorant-garamond leading-tight'
+                    %}
+                </li>
+            {% endfor %}
+        </ul>
+
+        <div class="mt-4 pt-4">
+            <p class="text-primary mb-3 text-sm font-cormorant-garamond">
+                {{ s.social_heading | default: 'Follow us' }}
+            </p>
+            {% render 'component.social-media',
+                container_class: 'justify-start',
+                icon_class: 'size-6 text-primary'
+            %}
+        </div>
+    </div>
+
+    <div class="container hidden lg:flex justify-evenly mb-4 px-0">
+        <div class="space-y-4">
+            <h3
+                class="
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        text-primary mb-3 font-cormorant-garamond text-base lg:text-[20px] font-bold leading-[130%]
+                "
+            >
+                {{ s.contact_heading | default: 'Contact' }}
+            </h3>
+
+            {% render 'footer-contact-info',
+                address: s.contact_address,
+                address_url: s.contact_address_url,
+                email: s.contact_email,
+                phone: s.contact_phone,
+                phone_hours: s.contact_phone_hours,
+                is_desktop: true
+            %}
+
+            <div class="mt-7">
+                <p
+                    class="
+                        text-primary mb-3 font-cormorant-garamond text-base lg:text-[20px] font-bold leading-[130%]
+                    "
+                >
+                    {{ s.social_heading | default: 'Follow us' }}
+                </p>
+                {% render 'component.social-media',
+                    container_class: 'justify-start',
+                    icon_class: 'size-6 text-primary'
+                %}
+            </div>
+        </div>
+
+        <div class="w-px self-stretch bg-border"></div>
+
+        {% for link in footer_menu %}
+            <div>
+                {% assign class = 'mb-3 block text-primary font-cormorant-garamond text-base lg:text-[20px] font-bold leading-[130%]
+' %}
+                {% if link.url != '#' %}
+                    <a
+                        href="{{ link.url }}"
+                        class="{{ class }} hover:text-primary/50"
+                    >
+                        {{- link.title -}}
+                    </a>
+                {% else %}
+                    <span class="{{ class }}">{{ link.title }}</span>
+                {% endif %}
+
+                {% if link.links %}
+                    <ul class="space-y-2 text-primary text-[14px] font-inter font-normal leading-[140%]">
+                        {% for link in link.links %}
+                            <li>
+                                <a
+                                    href="{{ link.url }}"
+                                    class="hover:text-primary/50"
+                                >
+                                    {{- link.title -}}
+                                </a>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+            </div>
+        {% endfor %}
+    </div>
+    <div class="w-full bg-secondary-foreground py-[12px] lg:py-[18px] text-secondary">
+        <div class="w-full container flex items-center justify-center lg:justify-between">
+            {% if s.bottom_bar_text != blank %}
+                <div class="text-secondary font-inter text-[13px] leading-[140%] lg:text-[14px]">
+                    {{ s.bottom_bar_text }}
+                </div>
+            {% endif %}
+            {% if s.bottom_bar_image != blank %}
+                <responsive-media class="ml-auto h-[27px] hidden lg:block isolation-auto">
+                    {{
+                        s.bottom_bar_image
+                        | image_url: width: 100
+                        | image_tag: alt: s.bottom_bar_text
+                        | default: shop.name,
+                            class: 'object-contain h-full isolation-auto',
+                            fetchpriority: 'lazy'
+                    -}}
+                </responsive-media>
+            {% endif %}
+        </div>
+    </div>
+</footer>
+
+{% schema %}
+{
+    "name": "Footer",
+    "tag": "footer",
+    "class": "footer",
+    "settings": [
+        {
+            "type": "header",
+            "content": "Documentation for this section",
+            "info": "Click [here](https://strix-net.atlassian.net/wiki/spaces/TWL/pages/4044488711/Footer for more information."
+        },
+        {
+            "type": "header",
+            "content": "Contact Information"
+        },
+        {
+            "type": "text",
+            "id": "contact_heading",
+            "label": "Contact heading",
+            "default": "Contact"
+        },
+        {
+            "type": "textarea",
+            "id": "contact_address",
+            "label": "Address",
+            "default": "Zonnenberg 8 2716 PG, Zoetermeer"
+        },
+        {
+            "type": "url",
+            "id": "contact_address_url",
+            "label": "Address link (Google Maps)",
+            "info": "Optional link to Google Maps location"
+        },
+        {
+            "type": "text",
+            "id": "contact_email",
+            "label": "Email",
+            "default": "info@winelist.nl"
+        },
+        {
+            "type": "text",
+            "id": "contact_phone",
+            "label": "Phone number",
+            "default": "088 712 0100"
+        },
+        {
+            "type": "text",
+            "id": "contact_phone_hours",
+            "label": "Phone hours",
+            "default": "working days until 6 p.m.",
+            "info": "Optional text shown below phone number"
+        },
+        {
+            "type": "text",
+            "id": "social_heading",
+            "label": "Social media heading",
+            "default": "Follow us"
+        },
+        {
+            "type": "header",
+            "content": "Footer Menu"
+        },
+        {
+            "type": "link_list",
+            "id": "footer_menu",
+            "label": "Footer menu"
+        },
+        {
+            "type": "header",
+            "content": "Section Styling"
+        },
+        {
+            "type": "checkbox",
+            "id": "section_styling",
+            "label": "Add styling to section",
+            "info": "If enabled this shows the settings to set the color scheme, spacing, and margin for the section.",
+            "default": false
+        },
+        {
+            "type": "header",
+            "content": "Section Spacing",
+            "visible_if": "{{ section.settings.section_styling == true }}"
+        },
+        {
+            "type": "select",
+            "id": "mobile_padding",
+            "label": "Mobile padding",
+            "visible_if": "{{ section.settings.section_styling == true }}",
+            "options": [
+                {
+                    "value": "pt-0",
+                    "label": "None"
+                },
+                {
+                    "value": "pt-2",
+                    "label": "S - 8px"
+                },
+                {
+                    "value": "pt-4",
+                    "label": "M - 16px"
+                },
+                {
+                    "value": "pt-6",
+                    "label": "L - 24px"
+                },
+                {
+                    "value": "pt-8",
+                    "label": "XL - 32px"
+                },
+                {
+                    "value": "pt-10",
+                    "label": "2XL - 40px"
+                },
+                {
+                    "value": "pt-12",
+                    "label": "3XL - 48px"
+                },
+                {
+                    "value": "pt-16",
+                    "label": "4XL - 64px"
+                }
+            ],
+            "default": "pt-0"
+        },
+        {
+            "type": "select",
+            "id": "desktop_padding",
+            "label": "Desktop padding",
+            "visible_if": "{{ section.settings.section_styling == true }}",
+            "options": [
+                {
+                    "value": "lg:pt-0",
+                    "label": "None"
+                },
+                {
+                    "value": "lg:pt-2",
+                    "label": "S - 8px"
+                },
+                {
+                    "value": "lg:pt-4",
+                    "label": "M - 16px"
+                },
+                {
+                    "value": "lg:pt-6",
+                    "label": "L - 24px"
+                },
+                {
+                    "value": "lg:pt-8",
+                    "label": "XL - 32px"
+                },
+                {
+                    "value": "lg:pt-10",
+                    "label": "2XL - 40px"
+                },
+                {
+                    "value": "lg:pt-12",
+                    "label": "3XL - 48px"
+                },
+                {
+                    "value": "lg:pt-16",
+                    "label": "4XL - 64px"
+                }
+            ],
+            "default": "lg:pt-0"
+        },
+        {
+            "type": "text",
+            "id": "bottom_bar_text",
+            "label": "Bottom bar text",
+            "default": "© 2026 Wines & Spirits, All rights reserved."
+        },
+        {
+            "type": "image_picker",
+            "id": "bottom_bar_image",
+            "label": "Bottom bar image"
+        },
+        {
+            "type": "header",
+            "content": "Colors",
+            "visible_if": "{{ section.settings.section_styling == true }}"
+        },
+        {
+            "type": "color",
+            "id": "background",
+            "label": "Section background color",
+            "default": "#FFFFFF",
+            "visible_if": "{{ section.settings.section_styling == true }}"
+        },
+        {
+            "type": "color",
+            "id": "primary_text_color",
+            "label": "Primary text color",
+            "default": "#000000",
+            "visible_if": "{{ section.settings.section_styling == true }}"
+        },
+        {
+            "type": "color",
+            "id": "border_color",
+            "label": "Border/divider color",
+            "default": "#A08735",
+            "visible_if": "{{ section.settings.section_styling == true }}"
+        },
+        {
+            "type": "color",
+            "id": "secondary_text_color",
+            "label": "Bottom bar text color",
+            "default": "#ffffff",
+            "visible_if": "{{ section.settings.section_styling == true }}"
+        },
+        {
+            "type": "color",
+            "id": "secondary_button_text_color",
+            "label": "Bottom bar background color",
+            "default": "#A08735",
+            "visible_if": "{{ section.settings.section_styling == true }}"
+        }
+    ],
+    "enabled_on": {
+        "groups": ["footer"]
+    },
+    "presets": [
+        {
+            "name": "Footer",
+            "settings": {}
+        }
+    ]
+}
+{% endschema %}

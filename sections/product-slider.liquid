@@ -1,0 +1,503 @@
+{% liquid
+    assign s = section.settings
+    assign section_id = 'section-' | append: section.id
+    assign product_list = s.collection.products | default: s.product_list
+    assign show_section = true
+
+    assign desktop_static = false
+    if product_list.size <= 4
+        assign desktop_static = true
+    endif
+
+    assign desktop_grid_cols = 'lg:grid-cols-4'
+    case product_list.size
+        when 1
+            assign desktop_grid_cols = 'lg:grid-cols-1'
+        when 2
+            assign desktop_grid_cols = 'lg:grid-cols-2'
+        when 3
+            assign desktop_grid_cols = 'lg:grid-cols-3'
+    endcase
+
+    if s.visibility_audience == 'premium_only'
+        assign show_section = false
+        if customer
+            if customer.tags contains 'premium-club'
+                assign show_section = true
+            endif
+        endif
+    elsif s.visibility_audience == 'non_premium_only'
+        if customer
+            if customer.tags contains 'premium-club'
+                assign show_section = false
+            endif
+        endif
+    endif
+%}
+
+{% if product_list != blank and show_section %}
+    <div
+        id="{{ section_id }}"
+        class="{{ s.mobile_margin }} {{ s.desktop_margin }} bg-background overflow-hidden"
+    >
+        {% render 'section-colors', current_section: section %}
+        <div
+            class="container {{ s.mobile_padding }} {{ s.desktop_padding }}"
+        >
+            {% if s.animation_style != blank and s.animation_style != 'none' -%}
+                <gsap-section data-animation="{{ s.animation_style }}">
+            {%- endif %}
+            <splide-section
+                class="{% if desktop_static %}lg:hidden{% endif %}"
+                data-splide-type="slide"
+                data-splide-per-page-mobile="1.4125"
+                data-splide-per-page-desktop="4.1"
+                data-splide-gap-desktop="1rem"
+                data-splide-gap-mobile="1.1rem"
+                data-splide-arrows="true"
+                data-splide-disable-on-desktop="{{ desktop_static }}"
+            >
+                <div class="splide w-full">
+                    <div class="flex flex-col mb-6 lg:mb-13">
+                        {% if s.text != blank %}
+                            <p class="text-secondary text-sm line-clamp-1">
+                                {{ s.text }}
+                            </p>
+                        {% endif %}
+                        <div class="flex justify-between md:gap-3 items-end gap-2">
+                            {% if s.title != blank %}
+                                <div class="text-primary text-[30px] lg:text-[40px] font-cormorant-garamond tracking-[-0.88px] font-semibold">
+                                    {{ s.title }}
+                                </div>
+                            {% endif %}
+                            {% render 'component.splide-arrows',
+                                button_base_class: 'rounded-full bg-background text-primary items-center justify-center p-2 cursor-pointer disabled:cursor-not-allowed disabled:opacity-50 disabled:pointer-events-none splide__arrow pointer-events-auto',
+                                style: 'primary',
+                                icon_class: 'size-5',
+                                container_class: 'splide__arrows splide__arrows--ltr items-end pointer-events-none z-10 flex '
+                            %}
+                        </div>
+                    </div>
+                    <div class="w-full h-full mx-auto splide__track !overflow-visible">
+                        <ul class="w-full splide__list">
+                            {% for product in product_list %}
+                                <li class="splide__slide w-full relative">
+                                    {% render 'component.product',
+                                        product: product,
+                                        product_link: true,
+                                        add_to_cart: false,
+                                        class: 'h-full w-full aspect-[310/420] md:aspect-[400/420] rounded-lg',
+                                        eager: false,
+                                        current_variant: product.selected_or_first_available_variant
+                                    %}
+                                    {% unless forloop.last %}
+                                        <span
+                                            class="block absolute top-0 right-[-0.55rem] lg:right-[-0.5rem] h-full w-px opacity-50 bg-brand-400"
+                                            aria-hidden="true"
+                                        ></span>
+                                    {% endunless %}
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            </splide-section>
+            {% if desktop_static %}
+                <div class="hidden lg:block">
+                    <div class="flex flex-col mb-6 lg:mb-13">
+                        {% if s.text != blank %}
+                            <p class="text-secondary text-sm line-clamp-1">
+                                {{ s.text }}
+                            </p>
+                        {% endif %}
+                        {% if s.title != blank %}
+                            <div class="text-primary text-[30px] lg:text-[40px] font-cormorant-garamond tracking-[-0.88px] font-semibold">
+                                {{ s.title }}
+                            </div>
+                        {% endif %}
+                    </div>
+                    <div class="grid {{ desktop_grid_cols }} gap-4">
+                        {% for product in product_list %}
+                            <div class="w-full relative">
+                                {% render 'component.product',
+                                    product: product,
+                                    product_link: true,
+                                    add_to_cart: false,
+                                    class: 'h-full w-full aspect-[310/420] md:aspect-[400/420] rounded-lg',
+                                    eager: false,
+                                    current_variant: product.selected_or_first_available_variant
+                                %}
+                                {% unless forloop.last %}
+                                    <span
+                                        class="block absolute top-0 right-[-0.5rem] h-full w-px opacity-50 bg-brand-400"
+                                        aria-hidden="true"
+                                    ></span>
+                                {% endunless %}
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endif %}
+            {% if s.animation_style != blank and s.animation_style != 'none' -%}
+                </gsap-section>
+            {%- endif %}
+            {% if s.button_text != blank and s.button_url != blank %}
+                {% assign button_class = 'w-fit md:w-max justify-center text-center !font-normal text-[0.875rem] m-auto mt-8 lg:mt-13' %}
+                {% render 'component.button',
+                    label: s.button_text,
+                    title: s.button_text,
+                    href: s.button_url,
+                    class: button_class,
+                    id: s.button_text,
+                    attributes: '',
+                    type: 'button',
+                    name: s.button_text,
+                    aria_label: s.button_text,
+                    aria_describedby: s.button_text,
+                    style: s.button_style,
+                    size: '',
+                    icon: '',
+                    icon_position: '',
+                    icon_class: '',
+                    css_variables: '',
+                    disabled: false,
+                    loading: false,
+                    translate: false
+                %}
+            {% endif %}
+        </div>
+    </div>
+{% endif %}
+
+{% schema %}
+{
+    "name": "Product Slider",
+    "tag": "section",
+    "class": "product-slider",
+    "disabled_on": {
+        "groups": ["header", "footer"]
+    },
+    "settings": [
+        {
+            "type": "header",
+            "content": "Documentation for this section",
+            "info": "Click [here](https://strix-net.atlassian.net/wiki/x/J4Ck3) for more information."
+        },
+        {
+            "type": "select",
+            "id": "visibility_audience",
+            "label": "Visibility (audience)",
+            "options": [
+                {
+                    "value": "everyone",
+                    "label": "Everyone"
+                },
+                {
+                    "value": "premium_only",
+                    "label": "Only premium-club customers"
+                },
+                {
+                    "value": "non_premium_only",
+                    "label": "Only non premium-club customers"
+                }
+            ],
+            "default": "everyone"
+        },
+        {
+            "type": "header",
+            "content": "Section Styling"
+        },
+        {
+            "type": "checkbox",
+            "id": "section_styling",
+            "label": "Add styling to section",
+            "info": "If enabled this shows the settings to set the color scheme, spacing, and margin for the section.",
+            "default": false
+        },
+        {
+            "type": "header",
+            "content": "Section Spacing",
+            "visible_if": "{{ section.settings.section_styling == true }}"
+        },
+        {
+            "type": "select",
+            "id": "mobile_padding",
+            "label": "Mobile padding",
+            "visible_if": "{{ section.settings.section_styling == true }}",
+            "options": [
+                {
+                    "value": "py-0",
+                    "label": "None"
+                },
+                {
+                    "value": "py-2",
+                    "label": "S - 8px"
+                },
+                {
+                    "value": "py-4",
+                    "label": "M - 16px"
+                },
+                {
+                    "value": "py-6",
+                    "label": "L - 24px"
+                },
+                {
+                    "value": "py-8",
+                    "label": "XL - 32px"
+                },
+                {
+                    "value": "py-10",
+                    "label": "2XL - 40px"
+                },
+                {
+                    "value": "py-12",
+                    "label": "3XL - 48px"
+                },
+                {
+                    "value": "py-16",
+                    "label": "4XL - 64px"
+                }
+            ],
+            "default": "py-0"
+        },
+        {
+            "type": "select",
+            "id": "desktop_padding",
+            "label": "Desktop padding",
+            "visible_if": "{{ section.settings.section_styling == true }}",
+            "options": [
+                {
+                    "value": "lg:py-0",
+                    "label": "None"
+                },
+                {
+                    "value": "lg:py-2",
+                    "label": "S - 8px"
+                },
+                {
+                    "value": "lg:py-4",
+                    "label": "M - 16px"
+                },
+                {
+                    "value": "lg:py-6",
+                    "label": "L - 24px"
+                },
+                {
+                    "value": "lg:py-8",
+                    "label": "XL - 32px"
+                },
+                {
+                    "value": "lg:py-10",
+                    "label": "2XL - 40px"
+                },
+                {
+                    "value": "lg:py-12",
+                    "label": "3XL - 48px"
+                },
+                {
+                    "value": "lg:py-16",
+                    "label": "4XL - 64px"
+                }
+            ],
+            "default": "lg:py-0"
+        },
+        {
+            "type": "header",
+            "content": "Section Margin",
+            "visible_if": "{{ section.settings.section_styling == true }}"
+        },
+        {
+            "type": "select",
+            "id": "mobile_margin",
+            "label": "Mobile Section margin",
+            "visible_if": "{{ section.settings.section_styling == true }}",
+            "options": [
+                {
+                    "value": "mb-0",
+                    "label": "None"
+                },
+                {
+                    "value": "mb-4",
+                    "label": "Small - 16px"
+                },
+                {
+                    "value": "mb-8",
+                    "label": "Medium - 32px"
+                },
+                {
+                    "value": "mb-12",
+                    "label": "Large - 48px"
+                }
+            ],
+            "default": "mb-0"
+        },
+        {
+            "type": "select",
+            "id": "desktop_margin",
+            "label": "Desktop Section margin",
+            "visible_if": "{{ section.settings.section_styling == true }}",
+            "options": [
+                {
+                    "value": "lg:mb-0",
+                    "label": "None"
+                },
+                {
+                    "value": "lg:mb-8",
+                    "label": "Small - 32px"
+                },
+                {
+                    "value": "lg:mb-12",
+                    "label": "Medium - 48px"
+                },
+                {
+                    "value": "lg:mb-16",
+                    "label": "Large - 64px"
+                }
+            ],
+            "default": "lg:mb-0"
+        },
+        {
+            "type": "header",
+            "content": "Section Colors",
+            "visible_if": "{{ section.settings.section_styling == true }}"
+        },
+        {
+            "type": "color",
+            "id": "background",
+            "label": "Section background color",
+            "default": "#FFFFFF",
+            "visible_if": "{{ section.settings.section_styling == true }}"
+        },
+        {
+            "type": "color",
+            "id": "primary_text_color",
+            "label": "Primary text color",
+            "default": "#282828",
+            "visible_if": "{{ section.settings.section_styling == true }}"
+        },
+        {
+            "type": "color",
+            "id": "secondary_text_color",
+            "label": "Secondary text color",
+            "default": "#C02B2B",
+            "visible_if": "{{ section.settings.section_styling == true }}"
+        },
+        {
+            "type": "color",
+            "id": "primary_button_color",
+            "label": "Primary button background color",
+            "default": "#CFDADD",
+            "visible_if": "{{ section.settings.section_styling == true }}"
+        },
+        {
+            "type": "color",
+            "id": "primary_button_text_color",
+            "label": "Primary button text color",
+            "default": "#282828",
+            "visible_if": "{{ section.settings.section_styling == true }}"
+        },
+        {
+            "type": "color",
+            "id": "secondary_button_color",
+            "label": "Secondary button background color",
+            "default": "#000000",
+            "visible_if": "{{ section.settings.section_styling == true }}"
+        },
+        {
+            "type": "color",
+            "id": "secondary_button_text_color",
+            "label": "Secondary button text color",
+            "default": "#FFFFFF",
+            "visible_if": "{{ section.settings.section_styling == true }}"
+        },
+        {
+            "type": "header",
+            "content": "Products"
+        },
+        {
+            "type": "collection",
+            "id": "collection",
+            "label": "Collection to display",
+            "info": "If a collection is selected, the products will be fetched from the collection. If no collection is selected, the products will be fetched from the product list."
+        },
+        {
+            "type": "product_list",
+            "id": "product_list",
+            "label": "Products to display",
+            "limit": 12
+        },
+        {
+            "type": "header",
+            "content": "Section Content"
+        },
+        {
+            "type": "text",
+            "id": "text",
+            "label": "Subtitle",
+            "default": "Subtitle"
+        },
+        {
+            "type": "richtext",
+            "id": "title",
+            "label": "Title",
+            "default": "<h2>De bestsellers van deze maand</h2>"
+        },
+        {
+            "type": "header",
+            "content": "Button"
+        },
+        {
+            "type": "text",
+            "id": "button_text",
+            "label": "Button text",
+            "default": "BEKIJK ZE ALLEMAAL"
+        },
+        {
+            "type": "url",
+            "id": "button_url",
+            "label": "Button url"
+        },
+        {
+            "type": "select",
+            "id": "button_style",
+            "label": "Button style",
+            "options": [
+                {
+                    "value": "primary",
+                    "label": "Primary"
+                },
+                {
+                    "value": "secondary",
+                    "label": "Secondary"
+                }
+            ],
+            "default": "primary"
+        },
+        {
+            "type": "header",
+            "content": "Animation"
+        },
+        {
+            "type": "select",
+            "id": "animation_style",
+            "label": "Scroll animation",
+            "info": "Adds a subtle entrance animation when the section scrolls into view.",
+            "options": [
+                { "value": "none", "label": "None" },
+                { "value": "fade-up", "label": "Fade up" },
+                { "value": "fade-in", "label": "Fade in" },
+                { "value": "stagger-up", "label": "Stagger up" },
+                { "value": "slide-in-left", "label": "Slide in from left" },
+                { "value": "slide-in-right", "label": "Slide in from right" }
+            ],
+            "default": "none"
+        }
+    ],
+    "blocks": [],
+    "presets": [
+        {
+            "name": "Product Slider"
+        }
+    ]
+}
+{% endschema %}

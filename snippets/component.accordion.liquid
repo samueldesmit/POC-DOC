@@ -1,0 +1,91 @@
+{% doc %}
+    Renders an accordion
+
+  Accepts:
+  - title: {String} Accordion title
+  - content: {String} Accordion content
+
+  Optional:
+    - group: {String} (Default: section.id) Group to associate accordion with when more than one accordion is used in a section
+    - active: {Boolean} (Default: false) Set to true to have the accordion open by default
+    - class: {String} Class to give to the container
+
+    @param {string} [title] - Accordion title
+    @param {string} [content] - Accordion content
+    @param {string} [class] - Class to give to the container
+    @param {string} [group] - Group to associate accordion with when multiple accordions exist in a section (default: section.id)
+    @param {boolean} [active] - Set to true to have the accordion open by default
+    @param {object} [section] - Section context object used for generating the accordion id and group
+    @param {string} [title_class] - Additional classes for the title element (default: 'text-heading text-current')
+    @param {string} [title_tag] - HTML tag for the title element (default: 'h4')
+    @param {string} [icon_style] - Icon style variant: 'chevron' or 'plus-minus' (default: 'chevron')
+    @param {boolean} [faq_style] - Whether to apply FAQ styling with background color (default: false)
+    @param {string} [header_class] - Additional classes for the accordion header (default: 'py-3 lg:py-3')
+    @param {string} [content_class] - Additional classes for the content area (default: 'font-medium text-current')
+    @param {boolean} [styled_content] - Whether to render content via the richtext snippet (default: false)
+    @param {string} [faq_accordion_bg] - Background color value used when faq_style is enabled
+{% enddoc %}
+
+{%- liquid
+    assign title_class = title_class | default: 'text-heading text-current'
+    assign title_tag = title_tag | default: 'h4'
+
+    assign icon_style = icon_style | default: 'chevron'
+    assign faq_style = faq_style | default: false, allow_false: true
+
+    assign header_class = header_class | default: 'py-3 lg:py-3'
+    assign header_class = 'group/button peer flex w-full cursor-pointer items-center justify-between space-x-6 text-left ' | append: header_class
+
+    assign content_class = content_class | default: 'font-medium text-current'
+    assign content_class = 'overflow-hidden ' | append: content_class
+
+    assign styled_content = styled_content | default: false, allow_false: true
+-%}
+
+{%- if content and title -%}
+    <accordion-component
+        class="{{ class }}{% if faq_style %} block{% endif %}"
+        data-group="{{- group | default: section.id -}}"
+    >
+        <div
+            aria-expanded="{{ active | default: false }}"
+            aria-controls="{{- title | append: '-' | append: section.id | handleize -}}"
+            class="{{- header_class -}}{% if faq_style %} px-4 lg:px-8 py-3 lg:py-5{% endif %}"
+            data-target="accordion-component.button"
+            {% if faq_style %}style="background-color: {{ faq_accordion_bg }};"{% endif %}
+        >
+            <{{ title_tag }} class="{{- title_class -}}">
+                {{- title -}}
+            </{{ title_tag }}>
+            <div class="relative transition-transform group-hover/button:scale-110 {% if icon_style == 'plus-minus' %}{% else %}group-aria-[expanded='true']/button:rotate-180{% endif %}">
+                {% if icon_style == 'plus-minus' %}
+                    <span class="block group-aria-[expanded='true']/button:hidden">
+                        {% render 'component.icon', type: 'plus', class: 'text-current w-4' %}
+                    </span>
+                    <span class="hidden group-aria-[expanded='true']/button:block">
+                        {% render 'component.icon', type: 'minus', class: 'text-current w-4' %}
+                    </span>
+                {% else %}
+                    {% render 'component.icon',
+                        type: 'chevron',
+                        class: 'text-current w-3 rotate-90'
+                    %}
+                {% endif %}
+            </div>
+        </div>
+        <div
+            id="{{- title | append: '-' | append: section.id | handleize -}}"
+            class="grid grid-rows-[0fr] transition-all peer-aria-[expanded='true']:grid-rows-[1fr] {% if faq_style %}peer-aria-[expanded='true']:pt-6 peer-aria-[expanded='true']:pb-6 px-4 lg:px-8{% else %}peer-aria-[expanded='true']:pb-4{% endif %}"
+        >
+            <div
+                class="{{- content_class }} {% if styled_content %}[&_a]:text-red [&_a]:underline{% endif %}"
+            >
+                {% if styled_content %}
+                    {% render 'richtext', content: content %}
+                {% else %}
+                    {{- content -}}
+                {% endif %}
+            </div>
+        </div>
+    </accordion-component>
+{%- endif -%}

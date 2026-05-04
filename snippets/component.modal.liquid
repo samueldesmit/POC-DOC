@@ -1,0 +1,123 @@
+{% doc %}
+    The snippet is used to set the colors for the section. Render it after the first div in the section.
+
+    @param {string} [data_id] - The id of the modal
+    @param {string} [open_button] - The capture of the liquid html of the open modal button
+    @param {string} [content] - The capture of the liquid html of the content of the modal
+    @param {string} [content_class] - The class of the content of the modal
+    @param {boolean} [is_popup] - Whether the modal is a popup or not
+    @param {boolean} [is_drawer] - Whether the modal is a drawer or not
+    @param {boolean} [is_top_zero] - Wether modal starts from top zero of the page
+    @param {boolean} [drawer_from_right] - Whether the drawer slides in from the right (default: false, slides from left)
+    @param {string} [attributes] - The attributes of the modal
+    @param {string} [open_button_class] - The class of the open button
+    @param {boolean} [blur] - Whether to blur the backdrop or not
+    @param {boolean} [desktop_popup_mobile_drawer] - Whether to apply desktop and mobile styles
+    @param {string} [modal_dialog_class] - Custom z-index class for the modal dialog container (default: 'z-90')
+    @param {string} [backdrop_extra_class] - Additional classes for the backdrop positioning
+    @param {boolean} [hide_backdrop] - Whether to hide the backdrop entirely (default: false)
+    @param {string} [modal_group] - Group name for modals that should close each other when opened (e.g. 'header')
+    @param {string} [icon_type] - Icon type identifier rendered inside the open button (default: '')
+    @param {boolean} [icon] - Whether to render an icon inside the open button (default: false)
+    @param {string} [extra_content_container_class] - Extra classes appended to the content container (default: '')
+    @param {string} [open_button_aria_label] - Accessible label for the open modal button
+
+    @example
+    {%- render 'component.modal',
+        data_id: 'country-language-selector',
+        open_button: open_button,
+        content: localization_form,
+        content_class: 'text-secondary',
+        attributes: '',
+        is_popup: true,
+        is_drawer: false,
+        blur: true
+    -%}
+{% enddoc %}
+
+{%- liquid
+    assign is_drawer = is_drawer | default: false, allow_false: true
+    assign is_popup = is_popup | default: false, allow_false: true
+    assign drawer_from_right = drawer_from_right | default: false, allow_false: true
+    assign desktop_popup_mobile_drawer = desktop_popup_mobile_drawer | default: false, allow_false: true
+    assign open_button_class = open_button_class | default: ''
+    assign icon_type = icon_type | default: ''
+    assign icon = icon | default: false, allow_false: true
+    assign hide_backdrop = hide_backdrop | default: false, allow_false: true
+    assign extra_content_container_class = extra_content_container_class | default: ''
+    assign modal_dialog_class = modal_dialog_class | default: 'z-90'
+    assign content_container_class = ''
+    if is_popup
+        assign content_container_class = 'w-[min(100%,20rem)] scale-75 rounded-md bg-white opacity-0 transition-all ease-out data-[leave]:scale-75 data-[open]:scale-100 data-[open]:opacity-100 data-[leave]:duration-75 data-[open]:duration-150 data-[leave]:ease-in-out p-8' | append: ' ' | append: content_class
+    endif
+    if is_drawer
+        if drawer_from_right
+            assign content_container_class = 'h-full w-full translate-x-full data-[open]:translate-x-0 data-[leave]:duration-300 duration-300 ease-out pointer-events-auto bg-white' | append: ' ' | append: content_class
+        else
+            assign content_container_class = 'h-full w-full -translate-x-full data-[open]:translate-x-0 data-[leave]:duration-300 duration-300 ease-out pointer-events-auto bg-white' | append: ' ' | append: content_class
+        endif
+    endif
+    if desktop_popup_mobile_drawer
+        assign content_container_class = 'h-full w-full -translate-x-full data-[open]:translate-x-0 data-[leave]:duration-300 duration-300 ease-out pointer-events-auto bg-white lg:h-auto lg:translate-x-0 lg:scale-75 lg:rounded-md lg:opacity-0 lg:transition-all lg:ease-out lg:data-[leave]:scale-75 lg:data-[open]:scale-100 lg:data-[open]:opacity-100 lg:data-[leave]:duration-75 lg:data-[open]:duration-150 lg:data-[leave]:ease-in-out ' | append: ' ' | append: content_class
+    endif
+    if is_top_zero
+        assign content_container_class = 'h-full w-full -translate-x-full data-[open]:translate-x-0 data-[leave]:duration-300 duration-300 ease-out pointer-events-auto bg-white lg:h-auto lg:translate-x-0 lg:scale-75 lg:rounded-md lg:opacity-0 lg:transition-all lg:ease-out lg:data-[leave]:scale-75 lg:data-[open]:scale-100 lg:data-[open]:opacity-100 lg:data-[leave]:duration-75 lg:data-[open]:duration-150 lg:data-[leave]:ease-in-out ' | append: ' ' | append: content_class
+    endif
+
+    assign modal_group = modal_group | default: ''
+    assign backdrop_extra_class = backdrop_extra_class | default: ''
+    assign backdrop_class = 'absolute inset-0 -z-10 bg-surface-200/30 opacity-0 data-[open]:opacity-100 data-[leave]:duration-75 data-[open]:duration-150'
+    if blur
+        assign backdrop_class = backdrop_class | append: ' backdrop-blur-sm'
+    endif
+    if backdrop_extra_class != ''
+        assign backdrop_class = backdrop_class | append: ' ' | append: backdrop_extra_class
+    endif
+-%}
+
+{% # Open Button %}
+{% if open_button != blank or icon %}
+    <modal-toggle
+        target="{{ data_id }}"
+    >
+        <button
+            type="button"
+            {% if open_button_aria_label != blank %}aria-label="{{ open_button_aria_label }}"{% endif %}
+            class="flex items-center cursor-pointer gap-x-2 {{ open_button_class }}"
+        >
+            {{ open_button }}
+            {% if icon %}
+                {% render 'component.icon',
+                    type: icon_type,
+                    class: 'text-current w-4'
+                %}
+            {% endif %}
+        </button>
+    </modal-toggle>
+{% endif %}
+
+<modal-dialog
+    data-id="{{ data_id }}"
+    {% if modal_group != '' %}data-modal-group="{{ modal_group }}"{% endif %}
+    class="fixed inset-0 isolate {{ modal_dialog_class }} hidden {% if is_drawer and drawer_from_right %}place-items-end{% else %}place-items-center{% endif %} [--leave-duration:75] data-[leave]:pointer-events-none data-[visible]:grid w-full{% if hide_backdrop %} pointer-events-none{% endif %}"
+>
+    {%- # Backdrop -%}
+    {% if hide_backdrop != true %}
+        <modal-toggle
+            target="{{ data_id }}"
+            aria-hidden="true"
+            class="{{ backdrop_class }}"
+        ></modal-toggle>
+    {% endif %}
+    {%- # Content -%}
+    <div
+        role="dialog"
+        aria-modal="true"
+        {{ attributes }}
+        aria-labelledby="{{ data_id }}-title"
+        data-target="modal-dialog.content"
+        class="{{ content_container_class }} {{ extra_content_container_class }}"
+    >
+        {{ content }}
+    </div>
+</modal-dialog>

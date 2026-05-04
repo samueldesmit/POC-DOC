@@ -1,0 +1,30 @@
+{%- doc -%}
+    Renders price
+
+    Accepts:
+    - current_variant: {Object} Current variant object
+
+    Optional:
+    - class: {String} Additional classes to add to the container
+    - price_class: {String} Additional classes to add to the price
+    - compare_at_price_class: {String} Additional classes to add to the compare at price
+
+    Usage:
+      {%- render 'component.price', current_variant: current_variant, class: 'flex gap-x-2' -%}
+
+    @param {object} [current_variant] - Current variant object providing price and compare_at_price
+    @param {string} [class] - Additional classes to add to the container
+    @param {string} [price_class] - Additional classes to add to the price element
+    @param {string} [compare_at_price_class] - Additional classes to add to the compare-at price element
+{%- enddoc -%}
+
+<div class="flex flex-row gap-1 {{ class }}">
+    <span class="{{ price_class }}">
+        {{- current_variant.price | money -}}
+    </span>
+    {%- if current_variant.compare_at_price > current_variant.price -%}
+        <span class="line-through text-surface-400 {{ compare_at_price_class }}">
+            {{- current_variant.compare_at_price | money -}}
+        </span>
+    {%- endif -%}
+</div>

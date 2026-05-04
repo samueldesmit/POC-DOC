@@ -1,0 +1,77 @@
+{% assign text_classes = 'text-[12px] text-secondary lg:text-[13px] font-normal leading-[130%] tracking-[0em]' %}
+
+<ul class=" flex gap-2 lg:gap-x-4 items-center flex-wrap">
+    {% if product.metafields.custom.country != blank
+        and product.metafields.custom.region != blank
+    %}
+        <li class="flex items-center gap-1">
+            {% if product.metafields.custom.country_object != blank %}
+                <span>
+                    {{
+                        product.metafields.custom.country_object.value.flag_image
+                        | image_url: width: 8, height: 8
+                        | image_tag: class: 'rounded-full'
+                    }}
+                </span>
+            {% endif %}
+            <p class="{{ text_classes }}">
+                {{ product.metafields.custom.country }},
+                {{ product.metafields.custom.region }}
+            </p>
+        </li>
+    {% endif %}
+
+    {% if product.metafields.custom.country != blank
+        and product.metafields.custom.region == blank
+    %}
+        <li class="flex items-center gap-1">
+            {% if product.metafields.custom.country_object != blank %}
+                <span>
+                    {{
+                        product.metafields.custom.country_object.value.flag_image
+                        | image_url: width: 8, height: 8
+                        | image_tag: class: 'rounded-full'
+                    }}
+                </span>
+            {% endif %}
+            <p class="{{ text_classes }}">
+                {{ product.metafields.custom.country }}
+            </p>
+        </li>
+    {% endif %}
+    {% if product.metafields.custom.region != blank
+        and product.metafields.custom.country == blank
+    %}
+        <li class="flex items-center gap-1">
+            <span
+                class="w-2 h-2 rounded-full bg-secondary/50"
+            >
+            </span>
+            <p class="{{ text_classes }}">
+                {{ product.metafields.custom.region }}
+            </p>
+        </li>
+    {% endif %}
+    {% if product.metafields.custom.grape != blank %}
+        <li class="flex items-center gap-2">
+            <span
+                class="w-2 h-2 rounded-full bg-secondary/50"
+            >
+            </span>
+            <p class="{{ text_classes }}">
+                {{ product.metafields.custom.grape }}
+            </p>
+        </li>
+    {% endif %}
+    {% if product.metafields.custom.taste != blank %}
+        <li class="flex items-center gap-2">
+            <span
+                class="w-2 h-2 rounded-full bg-secondary/50"
+            >
+            </span>
+            <p class="{{ text_classes }}">
+                {{ product.metafields.custom.taste }}
+            </p>
+        </li>
+    {% endif %}
+</ul>

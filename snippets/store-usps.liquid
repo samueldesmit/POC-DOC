@@ -1,0 +1,31 @@
+<div class="flex flex-col gap-y-4">
+    <ul class="flex gap-x-2 justify-between text-primary font-inter font-light text-[13px] leading-[130%] tracking-[0em]">
+        {% if block.settings.usps_1 != blank %}
+            <li>
+                {{ block.settings.usps_1 }}
+            </li>
+        {% endif %}
+        {% if block.settings.usps_2 != blank %}
+            <li>
+                {{ block.settings.usps_2 }}
+            </li>
+        {% endif %}
+        {% if block.settings.usps_3 != blank %}
+            <li>
+                {{ block.settings.usps_3 }}
+            </li>
+        {% endif %}
+    </ul>
+    {% if block.settings.usps_contact != blank %}
+        <div class="bg-primary-background/10 p-5">
+            <div class="text-secondary text-[13px] flex items-start gap-2 font-inter font-light leading-[130%] tracking-[0em]">
+                {% if block.settings.usps_contact_show_icon %}
+                    {% render 'component.icon', type: 'contact-square' %}
+                {% endif %}
+                <div class="inline-richtext [&_p]:m-0">
+                    {{ block.settings.usps_contact }}
+                </div>
+            </div>
+        </div>
+    {% endif %}
+</div>

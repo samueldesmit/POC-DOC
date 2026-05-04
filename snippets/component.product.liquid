@@ -1,0 +1,205 @@
+{% doc %}
+    Renders the product item with image, title, price, and optional add to cart functionality.
+
+    @param {object} product - The product object (required)
+    @param {boolean} [eager] - Eager load first product image (default: false)
+    @param {object} [current_variant] - The current variant object (default: product.selected_or_first_available_variant)
+    @param {boolean} [add_to_cart] - Show add to cart button (default: false)
+    @param {boolean} [product_link] - Changes article image and description wrappers into links (default: false)
+    @param {string} [class] - CSS classes for the product card (default: '')
+
+    @example
+    {%- render 'component.product',
+        product: product,
+        eager: true,
+        add_to_cart: true
+    -%}
+{% enddoc %}
+
+{%- liquid
+    if eager
+        assign loading = 'eager'
+    else
+        assign loading = 'lazy'
+    endif
+
+    assign current_variant = current_variant | default: product.selected_or_first_available_variant
+    assign add_to_cart = add_to_cart | default: false
+    assign product_tag_link = 'div'
+
+    if product_link
+        assign product_tag_link = 'a'
+    endif
+-%}
+
+<plp-product-card
+    id="current-variant-{{ current_variant.id }}"
+    class="relative group/plp h-full"
+    data-product-handle="{{ product.handle }}"
+    data-variant-id="{{ current_variant.id }}"
+    data-variants="
+        [
+          {%- for variant in product.variants -%}
+            {
+              'variantId': {{ variant.id }},
+              {%- for option in variant.options -%}
+                '{{ product.options[forloop.index0] | downcase }}': '{{ option | escape }}'{% unless forloop.last %},{% endunless %}
+              {%- endfor -%}
+            }{% unless forloop.last %},{% endunless %}
+          {%- endfor -%}
+        ]
+    "
+>
+    <div
+        class="pointer-events-none hidden absolute top-0 left-0 w-full aspect-square px-6 py-7 md:p-14 z-30 items-center justify-center group-data-[loading]/plp:flex"
+        aria-hidden="true"
+    >
+        <div class="rounded-full p-3 animate-atc-tick-pop">
+            {%- render 'component.icon',
+                type: 'atc_tick',
+                class: 'atc-tick text-[#47805B] group-data-[loading]/plp:stroke-[2] group-data-[loading]/plp:[stroke-dasharray:164] group-data-[loading]/plp:[stroke-dashoffset:164] group-data-[loading]/plp:animate-[atcTickDraw_350ms_ease-out_forwards] group-data-[loading]/plp:[animation-delay:80ms]'
+            -%}
+        </div>
+    </div>
+    <div class="block gap-4 transition duration-500 group-data-[loading]/plp:opacity-50 group-data-[loading]/plp:cursor-not-allowed group-data-[loading]/plp:pointer-events-none h-full">
+        <div
+            class="product-card__link group relative"
+        >
+            {% if add_to_cart == true %}
+                {% liquid
+                    if current_variant.available == false
+                        assign disabled = true
+                    else
+                        assign disabled = false
+                    endif
+                %}
+                {%- form 'product',
+                    product,
+                    class: 'absolute top-0 right-0 z-20'
+                -%}
+                    <input
+                        type="hidden"
+                        name="id"
+                        value="{{ current_variant.id }}"
+                    >
+                    <add-to-cart
+                        class="cursor-pointer relative"
+                        productId="{{ current_variant.id }}"
+                    >
+                        <button
+                            type="button"
+                            data-atc-button
+                            {% if disabled %}
+                                disabled
+                            {% endif %}
+                            class="relative flex items-center justify-center w-9 h-9 rounded-full bg-white border border-primary text-primary cursor-pointer disabled:opacity-50"
+                            aria-label="{{ 'products.product.add_to_cart' | t | default: 'Add to cart' }}"
+                        >
+                            <span class="atc-icon">
+                                {%- render 'component.icon',
+                                    type: 'cart_drawer',
+                                    class: 'w-4 h-4'
+                                -%}
+                            </span>
+                            <span class="button-spinner hidden absolute inset-0 flex items-center justify-center">
+                                <svg
+                                    class="w-4 h-4 animate-spin"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                >
+                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3"></circle>
+                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+                                </svg>
+                            </span>
+                        </button>
+                    </add-to-cart>
+                {%- endform -%}
+            {% endif %}
+            <div class="relative bg-white aspect-[312/259] w-full">
+                <a
+                    class="absolute inset-0 z-10"
+                    href="{{- product.url -}}"
+                    aria-label="{{- product.title -}}"
+                ></a>
+                {%- if settings.show_awards_on_card
+                    and product.metafields.custom.awards.value != blank
+                -%}
+                    <div class="absolute top-2 left-2 lg:top-3 lg:left-3 z-20 pointer-events-none">
+                        {% render 'component.awards',
+                            awards_metafield: product.metafields.custom.awards.value,
+                            class: 'flex flex-col gap-2',
+                            class_source: 'text-[8px]'
+                        %}
+                    </div>
+                {%- endif -%}
+                {%- if product.tags contains 'exclusive-collection' -%}
+                    <div class="absolute top-2 right-2 lg:top-3 lg:right-3 z-20 pointer-events-none">
+                        {% render 'component.badge' %}
+                    </div>
+                {%- endif -%}
+                {% if product.featured_image != blank %}
+                    <responsive-media class="{{ class }} aspect-square w-full {% if product.images[1] %} lg:group-hover:opacity-0 transition-opacity duration-300 {% endif %} isolation-auto">
+                        {{-
+                            current_variant.featured_image
+                            | default: product.featured_image
+                            | image_url: width: 1024
+                            | image_tag:
+                                sizes: '(max-width: 1024px) 100vw, 50vw',
+                                class: 'w-full object-contain isolation-auto',
+                                loading: loading,
+                                alt: product.title
+                        -}}
+                    </responsive-media>
+                    {%- if product.images[1] -%}
+                        <responsive-media class="absolute aspect-square w-full inset-0 flex items-start justify-center opacity-0 transition-opacity duration-300 lg:group-hover:opacity-100 {{ class }} isolation-auto">
+                            {{-
+                                product.images[1]
+                                | image_url: width: 1024
+                                | image_tag:
+                                    sizes: '(max-width: 1024px) 100vw, 50vw',
+                                    class: 'w-full object-contain isolation-auto',
+                                    loading: loading,
+                                    alt: product.title
+                            -}}
+                        </responsive-media>
+                    {%- endif -%}
+                {% else %}
+                    <div class="w-full flex items-center justify-center text-white aspect-square">
+                        {{
+                            'image'
+                            | placeholder_svg_tag: 'placeholder-svg w-full h-full bg-gray-100 text-white aspect-square'
+                        }}
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="flex flex-col justify-center items-center text-center w-full mt-4">
+            {% if product.metafields.custom.winery != blank %}
+                <span
+                    class="text-primary text-[11px] lg:text-[12px] uppercase tracking-[0.08em] mb-1"
+                >
+                    {{-
+                        product.metafields.custom.winery.value.title
+                        | escape
+                    -}}
+                </span>
+            {% endif %}
+            <{{ product_tag_link }}
+                class="product-card__content"
+                href="{{- current_variant.url -}}"
+            >
+                <p class="font-cormorant-garamond text-base lg:text-[20px] text-primary! mb-3 md:mb-4">
+                    {{- product.title -}}
+                </p>
+            </{{ product_tag_link }}>
+            <div class="flex flex-col items-center gap-1">
+                {%- render 'component.price',
+                    current_variant: current_variant,
+                    class: 'font-semibold text-primary text-[12px]'
+                -%}
+            </div>
+        </div>
+    </div>
+</plp-product-card>

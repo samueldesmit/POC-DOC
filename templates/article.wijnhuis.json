@@ -1,0 +1,294 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "breadcrumbs_NFwm68": {
+      "type": "breadcrumbs",
+      "name": "Breadcrumbs",
+      "settings": {
+        "visibility_audience": "everyone",
+        "custom_parent_url": "",
+        "custom_parent_title": "",
+        "custom_current_title": "",
+        "section_styling": true,
+        "mobile_padding": "py-2",
+        "desktop_padding": "lg:py-4",
+        "mobile_margin": "mb-0",
+        "desktop_margin": "lg:mb-0",
+        "background": "#ffffff",
+        "primary_text_color": "#000000"
+      }
+    },
+    "richtext_HKUFw9": {
+      "type": "richtext",
+      "blocks": {
+        "heading_DEyrqg": {
+          "type": "heading",
+          "settings": {
+            "heading": "{{ article.title }}",
+            "font_family": "font-cormorant-garamond",
+            "font_weight": "600",
+            "mobile_font_size": "40px",
+            "desktop_font_size": "52px",
+            "margin_bottom": "14px"
+          }
+        }
+      },
+      "block_order": [
+        "heading_DEyrqg"
+      ],
+      "name": "Richtext",
+      "settings": {
+        "visibility_audience": "everyone",
+        "section_styling": true,
+        "container": true,
+        "content_alignment": "text-center",
+        "mobile_padding": "py-0",
+        "desktop_padding": "lg:py-4",
+        "mobile_margin": "mb-0",
+        "desktop_margin": "lg:mb-0",
+        "background": "#ffffff",
+        "primary_text_color": "#000000",
+        "secondary_text_color": "#000000",
+        "animation_style": "fade-in"
+      }
+    },
+    "winery_selection_rttQdh": {
+      "type": "winery-selection",
+      "blocks": {
+        "winery_BejxxF": {
+          "type": "winery",
+          "settings": {
+            "article": "{{ article }}",
+            "show_winery_video": true,
+            "show_winery_logo": true,
+            "show_winery_name": false,
+            "show_winery_button": false,
+            "button_style": "primary",
+            "button_url": "",
+            "extra_button_text": "",
+            "extra_button_url": "",
+            "extra_button_style": "secondary",
+            "enable_overlay": false,
+            "overlay_type": "gradient",
+            "mobile_gradient": "linear-gradient(180deg, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.3) 100%)",
+            "desktop_gradient": "linear-gradient(180deg, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.3) 100%)",
+            "overlay_opacity": 30
+          }
+        }
+      },
+      "block_order": [
+        "winery_BejxxF"
+      ],
+      "name": "Winery Selection",
+      "settings": {
+        "visibility_audience": "everyone",
+        "view_all_wineries_url": "/blogs/wijnhuizen",
+        "section_styling": false,
+        "mobile_padding": "py-0",
+        "desktop_padding": "lg:py-0",
+        "mobile_margin": "mb-0",
+        "desktop_margin": "lg:mb-0",
+        "background": "#ffffff",
+        "primary_text_color": "#ffffff",
+        "secondary_text_color": "#a08735",
+        "primary_button_color": "rgba(0,0,0,0)",
+        "primary_button_text_color": "#ffffff",
+        "secondary_button_color": "#000000",
+        "secondary_button_text_color": "#ffffff",
+        "section_title": "Discover our exclusive wineries",
+        "aspect_ratio_desktop": "lg:aspect-[1340/584]",
+        "aspect_ratio_mobile": "aspect-[375/307]",
+        "make_section_full_width": true,
+        "autoplay_slider": false,
+        "slider_interval": 5000,
+        "animation_style": "fade-in"
+      }
+    },
+    "main": {
+      "type": "main-article",
+      "settings": {
+        "section_styling": true,
+        "mobile_padding": "py-6",
+        "desktop_padding": "lg:py-8",
+        "background": "#ffffff",
+        "primary_text_color": "#000000"
+      }
+    },
+    "text_image_LPgHUt": {
+      "type": "text-image",
+      "name": "Text with Image",
+      "settings": {
+        "visibility_audience": "everyone",
+        "section_styling": true,
+        "mobile_padding": "py-6",
+        "desktop_padding": "lg:py-8",
+        "mobile_margin": "mb-0",
+        "desktop_margin": "lg:mb-0",
+        "divider_color": "#b19e5e",
+        "background": "#ffffff",
+        "primary_text_color": "#000000",
+        "primary_button_color": "rgba(0,0,0,0)",
+        "primary_button_text_color": "#000000",
+        "secondary_button_color": "#000000",
+        "secondary_button_text_color": "#ffffff",
+        "winery_article": "{{ article }}",
+        "image": "{{ section.settings.winery_article.metafields.custom.extra_image.value }}",
+        "image_aspect_ratio": "aspect-square",
+        "image_position": "left",
+        "mobile_image_position": "up",
+        "text_alignment": "left",
+        "heading": "{{ section.settings.winery_article.metafields.custom.extra_title.value }}",
+        "heading_size": "lg",
+        "text": "<p>{{ section.settings.winery_article.metafields.custom.extra_description | metafield_tag }}</p>",
+        "button_text": "Button text",
+        "button_url": "#",
+        "button_style": "primary",
+        "animation_style": "split-sides"
+      }
+    },
+    "product_hightlight_TxG77t": {
+      "type": "product-hightlight",
+      "name": "Product Highlight",
+      "settings": {
+        "visibility_audience": "everyone",
+        "section_styling": false,
+        "mobile_padding": "py-0",
+        "desktop_padding": "lg:py-4",
+        "mobile_margin": "mb-0",
+        "desktop_margin": "lg:mb-0",
+        "background": "#ffffff",
+        "primary_text_color": "#000000",
+        "primary_button_color": "#a08735",
+        "primary_button_text_color": "#ffffff",
+        "secondary_button_color": "#000000",
+        "secondary_button_text_color": "#ffffff",
+        "button_style": "primary",
+        "arrow_border_color": "#a08735",
+        "show_border": true,
+        "product_list": "{{ article.metafields.custom.show_case_products.value }}",
+        "animation_style": "none"
+      }
+    },
+    "winery_selection_HN6cgr": {
+      "type": "winery-selection",
+      "blocks": {
+        "winery_B8Jebi": {
+          "type": "winery",
+          "settings": {
+            "article": "{{ article }}",
+            "show_winery_video": false,
+            "show_winery_logo": false,
+            "show_winery_name": false,
+            "show_winery_button": false,
+            "button_style": "primary",
+            "button_url": "",
+            "extra_button_text": "",
+            "extra_button_url": "",
+            "extra_button_style": "secondary",
+            "enable_overlay": false,
+            "overlay_type": "gradient",
+            "mobile_gradient": "linear-gradient(180deg, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.3) 100%)",
+            "desktop_gradient": "linear-gradient(180deg, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.3) 100%)",
+            "overlay_opacity": 30
+          }
+        }
+      },
+      "block_order": [
+        "winery_B8Jebi"
+      ],
+      "name": "Winery Selection",
+      "settings": {
+        "visibility_audience": "everyone",
+        "view_all_wineries_url": "/blogs/wijnhuizen",
+        "section_styling": true,
+        "mobile_padding": "py-6",
+        "desktop_padding": "lg:py-8",
+        "mobile_margin": "mb-0",
+        "desktop_margin": "lg:mb-0",
+        "background": "#ffffff",
+        "primary_text_color": "#000000",
+        "secondary_text_color": "#a08735",
+        "primary_button_color": "rgba(0,0,0,0)",
+        "primary_button_text_color": "#000000",
+        "secondary_button_color": "#000000",
+        "secondary_button_text_color": "#000000",
+        "section_title": "Discover our exclusive wineries",
+        "aspect_ratio_desktop": "lg:aspect-[1340/584]",
+        "aspect_ratio_mobile": "aspect-[375/584]",
+        "make_section_full_width": false,
+        "autoplay_slider": false,
+        "slider_interval": 5000,
+        "animation_style": "image-zoom"
+      }
+    },
+    "product_slider_eYxVUq": {
+      "type": "product-slider",
+      "name": "Product Slider",
+      "settings": {
+        "visibility_audience": "everyone",
+        "section_styling": false,
+        "mobile_padding": "py-0",
+        "desktop_padding": "lg:py-4",
+        "mobile_margin": "mb-0",
+        "desktop_margin": "lg:mb-0",
+        "background": "#ffffff",
+        "primary_text_color": "#282828",
+        "secondary_text_color": "#c02b2b",
+        "primary_button_color": "#cfdadd",
+        "primary_button_text_color": "#282828",
+        "secondary_button_color": "#000000",
+        "secondary_button_text_color": "#ffffff",
+        "collection": "alle-wijnen",
+        "product_list": [],
+        "text": "Subtitle",
+        "title": "<h2>De bestsellers van deze maand</h2>",
+        "button_text": "BEKIJK ZE ALLEMAAL",
+        "button_url": "",
+        "button_style": "primary",
+        "animation_style": "stagger-up"
+      }
+    },
+    "blog_posts_highlight_MyPPbJ": {
+      "type": "blog-posts-highlight",
+      "name": "Blog Slider",
+      "settings": {
+        "visibility_audience": "everyone",
+        "section_styling": true,
+        "mobile_padding": "py-0",
+        "desktop_padding": "lg:py-0",
+        "mobile_margin": "mb-12",
+        "desktop_margin": "lg:mb-12",
+        "background": "#ffffff",
+        "primary_button_color": "rgba(0,0,0,0)",
+        "primary_button_text_color": "#282828",
+        "secondary_button_color": "#000000",
+        "secondary_button_text_color": "#ffffff",
+        "blog": "wijnblogs",
+        "title": "Exclusive access for true wine lovers",
+        "button_text": "Read all articles",
+        "button_url": "shopify://blogs/wijnblogs",
+        "button_style": "primary",
+        "animation_style": "stagger-up"
+      }
+    }
+  },
+  "order": [
+    "breadcrumbs_NFwm68",
+    "richtext_HKUFw9",
+    "winery_selection_rttQdh",
+    "main",
+    "text_image_LPgHUt",
+    "product_hightlight_TxG77t",
+    "winery_selection_HN6cgr",
+    "product_slider_eYxVUq",
+    "blog_posts_highlight_MyPPbJ"
+  ]
+}

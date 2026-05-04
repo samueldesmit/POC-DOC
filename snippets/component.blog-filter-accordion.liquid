@@ -1,0 +1,93 @@
+{%- comment -%}
+    Renders a blog filter accordion with search functionality
+
+    Accepts:
+    - filter_label: {String} Translation key for the filter label (e.g., 'sections.main_blog.filter_winery')
+    - search_placeholder: {String} Translation key for the search placeholder (e.g., 'sections.main_blog.search_placeholder')
+    - items: {Array} Array of items to display (articles, countries, or regions)
+    - item_handles: {Array} Optional array of handles for building tagged URLs (for countries/regions)
+    - blog_url: {String} Blog URL for building tagged URLs
+    - filter_type: {String} Type of filter: 'winery', 'country', or 'region'
+    - wrapper_class: {String} Optional class for the wrapper div
+
+    Usage:
+    {% render 'component.blog-filter-accordion',
+        filter_label: 'sections.main_blog.filter_winery',
+        search_placeholder: 'sections.main_blog.search_placeholder',
+        items: blog.articles,
+        blog_url: blog.url,
+        filter_type: 'winery'
+    %}
+{%- endcomment -%}
+
+{%- liquid
+    assign wrapper_class = wrapper_class | default: 'relative z-10 has-[button[aria-expanded=true]]:z-20'
+-%}
+
+<div class="{{ wrapper_class }}">
+    <accordion-component
+        class="block"
+        data-group="blog-filter"
+    >
+        <button
+            type="button"
+            class="group/button peer w-full flex items-center justify-between px-4 py-3 text-sm font-normal text-primary bg-white cursor-pointer border border-brand-400/50 aria-expanded:rounded-b-none aria-expanded:border-b-0 after:content-[''] after:absolute after:bottom-0 after:left-4 after:right-4 after:h-px after:bg-brand-400/50 after:opacity-0 aria-expanded:after:opacity-100 relative"
+            data-target="accordion-component.button"
+            aria-expanded="false"
+        >
+            <span class="pr-2">
+                {{- filter_label | t -}}
+            </span>
+            {% render 'component.icon',
+                type: 'chevron',
+                class: 'size-3 rotate-90 transition-transform duration-200 group-aria-[expanded=true]/button:rotate-270'
+            %}
+        </button>
+        <div
+            class="absolute left-0 right-0 top-[calc(100%-1px)] bg-white border border-brand-400/50 border-t-0 grid grid-rows-[0fr] peer-aria-[expanded=true]:grid-rows-[1fr] transition-[grid-template-rows] duration-200"
+        >
+            <div class="overflow-hidden">
+                <blog-filter>
+                    <div class="p-3 border-b border-brand-400/50">
+                        <div class="relative">
+                            <div class="absolute left-0 top-0 bottom-0 flex items-center pl-3 pointer-events-none">
+                                {% render 'component.icon',
+                                    type: 'search',
+                                    class: 'size-4 text-brand-400'
+                                %}
+                            </div>
+                            <input
+                                type="text"
+                                data-target="blog-filter.search"
+                                placeholder="{{- search_placeholder | t -}}"
+                                class="w-full pl-10 pr-3 py-2 text-[16px] border-0 border-b border-brand-400/50 placeholder:text-brand-400 placeholder:font-thin focus:outline-none focus:ring-0 focus:border-b focus:border-brand-400/50"
+                            >
+                        </div>
+                    </div>
+                    <ul
+                        data-target="blog-filter.list"
+                        class="p-3 flex flex-col gap-1 max-h-64 overflow-y-auto"
+                    >
+                        {%- for item in items -%}
+                            {%- assign item_index = forloop.index0 -%}
+                            {%- assign item_url = item_handles[item_index] -%}
+                            {%- if item != blank -%}
+                                <li
+                                    class="p-2 text-sm text-primary blog-filter-item"
+                                    data-search-value="{{ item | downcase }}"
+                                >
+                                    <a
+                                        href="{%- if filter_type == 'winery' -%}{{ item_url }}{%- else -%}{{ blog_url }}/tagged/{{ item_url }}{%- endif -%}"
+                                        class="block hover:underline"
+                                    >
+                                        {{ item }}
+                                    </a>
+                                </li>
+                            {%- endif -%}
+                        {%- endfor -%}
+                    </ul>
+                </blog-filter>
+            </div>
+        </div>
+    </accordion-component>
+</div>

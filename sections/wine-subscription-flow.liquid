@@ -1,0 +1,556 @@
+{% liquid
+    assign s = section.settings
+    assign section_id = 'section-' | append: section.id
+
+    assign show_section = true
+
+    if s.visibility_audience == 'premium_only'
+        assign show_section = false
+        if customer
+            if customer.tags contains 'premium-club'
+                assign show_section = true
+            endif
+        endif
+    elsif s.visibility_audience == 'non_premium_only'
+        if customer
+            if customer.tags contains 'premium-club'
+                assign show_section = false
+            endif
+        endif
+    endif
+%}
+
+{% if show_section %}
+<div
+    class="{{ s.mobile_margin }} {{ s.desktop_margin }} bg-background"
+    id="{{ section_id }}"
+>
+    {% render 'section-colors', current_section: section %}
+    <div class="{{ s.mobile_padding }} {{ s.desktop_padding }} container">
+        <wine-subscription-flow
+            data-draft-order-tag="{{ s.draft_order_tag | default: 'subscription' }}"
+            data-login-url="{{ routes.storefront_login_url }}"
+            {% if customer %}
+                data-customer-id="{{ customer.id }}"
+            {% endif %}
+        >
+            {%- comment -%} Step Indicator {%- endcomment -%}
+            {% capture step_circle_classes %}step-circle min-w-[34px] h-[34px] lg:min-w-10 lg:h-10 rounded-full flex items-center justify-center font-cormorant-garamond text-[24px] lg:text-[30px] leading-none text-white bg-secondary/50 relative cursor-pointer transition-all duration-300 hover:scale-105 [&.active]:bg-secondary{% endcapture %}
+            {% capture step_line_classes %}step-line w-[35px] lg:w-20 h-0.5 bg-secondary/50 transition-colors duration-300 [&.active]:bg-secondary{% endcapture %}
+            {% capture side_line_classes %}w-[490px] h-px bg-secondary/50 hidden lg:block{% endcapture %}
+
+            <div class="flex items-center justify-center gap-3 mb-8 lg:mb-12">
+                <div class="{{ side_line_classes }}"></div>
+
+                <button
+                    type="button"
+                    class="{{ step_circle_classes }} active"
+                    data-step-nav="0"
+                    aria-label="Step 1: Select wines"
+                >
+                    <span class="mb-1 lg:mb-2">1</span>
+                </button>
+                <div
+                    class="{{ step_line_classes }}"
+                    data-line="0"
+                ></div>
+
+                <button
+                    type="button"
+                    class="{{ step_circle_classes }}"
+                    data-step-nav="1"
+                    aria-label="Step 2: Login or register"
+                >
+                    <span class="mb-1 lg:mb-2">2</span>
+                </button>
+                <div
+                    class="{{ step_line_classes }}"
+                    data-line="1"
+                ></div>
+
+                <button
+                    type="button"
+                    class="{{ step_circle_classes }}"
+                    data-step-nav="2"
+                    aria-label="Step 3: Confirm subscription"
+                >
+                    <span class="mb-1 lg:mb-3">3</span>
+                </button>
+
+                <div class="{{ side_line_classes }}"></div>
+            </div>
+
+            {%- comment -%} Step Content via Splide {%- endcomment -%}
+            {%- comment -%} Hide splide instantly if restoring to a later step to prevent flash of step 1 {%- endcomment -%}
+            <script>
+                try {
+                    var _ws = JSON.parse(
+                        localStorage.getItem('wine-subscription-state'),
+                    );
+                    if (
+                        _ws &&
+                        _ws.currentStep > 0 &&
+                        Date.now() - _ws.timestamp < 86400000
+                    ) {
+                        document.write(
+                            '<style>[data-subscription-splide]{opacity:0}</style>',
+                        );
+                    }
+                } catch (e) {}
+            </script>
+            <splide-section
+                data-subscription-splide
+                data-splide-per-page-mobile="1"
+                data-splide-per-page-desktop="1"
+                data-splide-gap-mobile="2rem"
+                data-splide-gap-desktop="2rem"
+                data-splide-keyboard="false"
+                data-splide-drag="false"
+                data-splide-wheel="false"
+                data-splide-type="fade"
+                data-splide-speed="450"
+            >
+                <div class="splide">
+                    <div class="splide__track">
+                        <ul class="splide__list">
+                            {%- comment -%} Step 1: Wine Selection {%- endcomment -%}
+                            {% render 'wine-subscription-step-1',
+                                s: s,
+                                subscription: s.subscription
+                            %}
+                            {%- comment -%} Step 2: Login/Register {%- endcomment -%}
+                            {% render 'wine-subscription-step-2', s: s %}
+                            {%- comment -%} Step 3: Confirmation {%- endcomment -%}
+                            {% render 'wine-subscription-step-3', s: s %}
+                        </ul>
+                    </div>
+                </div>
+            </splide-section>
+        </wine-subscription-flow>
+    </div>
+</div>
+
+<style>
+    /* Drive opacity from is-active so backward fade transitions can't get stuck
+       with inverted inline opacity from Splide. */
+    wine-subscription-flow .splide__slide {
+        transition: opacity 300ms ease;
+    }
+    wine-subscription-flow .splide__slide:not(.is-active) {
+        pointer-events: none !important;
+        visibility: hidden !important;
+        opacity: 0 !important;
+    }
+    wine-subscription-flow .splide__slide.is-active {
+        pointer-events: auto !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+    }
+</style>
+{% endif %}
+
+{% schema %}
+{
+    "name": "Wine Subscription Flow",
+    "tag": "section",
+    "settings": [
+        {
+            "type": "header",
+            "content": "Visibility"
+        },
+        {
+            "type": "select",
+            "id": "visibility_audience",
+            "label": "Visibility (audience)",
+            "options": [
+                {
+                    "value": "everyone",
+                    "label": "Everyone"
+                },
+                {
+                    "value": "premium_only",
+                    "label": "Only premium-club customers"
+                },
+                {
+                    "value": "non_premium_only",
+                    "label": "Only non premium-club customers"
+                }
+            ],
+            "default": "everyone"
+        },
+        {
+            "type": "header",
+            "content": "Documentation for this section",
+            "info": "Click [here](https://strix-net.atlassian.net/wiki/x/GgAS8g) for more information."
+        },
+        {
+            "type": "header",
+            "content": "Subscription Data"
+        },
+        {
+            "type": "metaobject",
+            "id": "subscription",
+            "label": "Subscription",
+            "metaobject_type": "subscription",
+            "info": "Select the subscription metaobject containing wine categories and products"
+        },
+        {
+            "type": "text",
+            "id": "draft_order_tag",
+            "label": "Draft order tag",
+            "default": "subscription",
+            "info": "Tag that will be added to the draft order when submitted (max 40 characters)"
+        },
+        {
+            "type": "header",
+            "content": "Step 1 - Wine Selection"
+        },
+        {
+            "type": "text",
+            "id": "step1_title",
+            "label": "Title",
+            "default": "Kies uw wijn"
+        },
+        {
+            "type": "richtext",
+            "id": "step1_subtitle",
+            "label": "Subtitle"
+        },
+        {
+            "type": "text",
+            "id": "step1_all_wines_label",
+            "label": "All wines filter label",
+            "default": "Alle wijnen"
+        },
+        {
+            "type": "url",
+            "id": "step1_back_url",
+            "label": "Back button URL",
+            "info": "Where the back button on step 1 navigates to"
+        },
+        {
+            "type": "text",
+            "id": "step1_back_button",
+            "label": "Back button text",
+            "default": "Terug"
+        },
+        {
+            "type": "text",
+            "id": "step1_continue_button",
+            "label": "Continue button text",
+            "default": "Doorgaan"
+        },
+        {
+            "type": "text",
+            "id": "step1_error_no_wines",
+            "label": "Error - no wines selected",
+            "default": "Selecteer minimaal één wijn om door te gaan"
+        },
+        {
+            "type": "header",
+            "content": "Step 2 - Login"
+        },
+        {
+            "type": "text",
+            "id": "step2_title",
+            "label": "Title",
+            "default": "Uw gegevens"
+        },
+        {
+            "type": "text",
+            "id": "step2_subtitle_existing",
+            "label": "Subtitle - existing customer",
+            "default": "Al klant bij The Wine List?"
+        },
+        {
+            "type": "text",
+            "id": "step2_sign_in_button",
+            "label": "Sign in button text",
+            "default": "Inloggen met account"
+        },
+        {
+            "type": "text",
+            "id": "step2_subtitle_new",
+            "label": "Subtitle - new customer",
+            "default": "Nog geen klant bij The Wine List?"
+        },
+        {
+            "type": "text",
+            "id": "step2_create_account_link",
+            "label": "Create account link text",
+            "default": "Maak een nieuw klantaccount aan."
+        },
+        {
+            "type": "text",
+            "id": "step2_logged_in_text",
+            "label": "Logged in text",
+            "info": "Shown before the customer email",
+            "default": "U bent ingelogd als"
+        },
+        {
+            "type": "text",
+            "id": "step2_back_button",
+            "label": "Back button text",
+            "default": "Terug"
+        },
+        {
+            "type": "text",
+            "id": "step2_continue_button",
+            "label": "Continue button text",
+            "default": "Doorgaan"
+        },
+        {
+            "type": "text",
+            "id": "step2_error_fields",
+            "label": "Error - missing fields",
+            "default": "Vul alle verplichte velden in"
+        },
+        {
+            "type": "text",
+            "id": "step2_error_login_required",
+            "label": "Error - login required",
+            "default": "Log in of maak een account aan om door te gaan"
+        },
+        {
+            "type": "header",
+            "content": "Step 3 - Confirmation"
+        },
+        {
+            "type": "text",
+            "id": "step3_title",
+            "label": "Title",
+            "default": "Bevestig uw inschrijving"
+        },
+        {
+            "type": "text",
+            "id": "step3_wines_label",
+            "label": "Selected wines label",
+            "default": "Geselecteerde wijnen:"
+        },
+        {
+            "type": "text",
+            "id": "step3_customer_info_label",
+            "label": "Customer information label",
+            "default": "Klantgegevens:"
+        },
+        {
+            "type": "text",
+            "id": "step3_back_button",
+            "label": "Back button text",
+            "default": "Terug"
+        },
+        {
+            "type": "text",
+            "id": "step3_confirm_button",
+            "label": "Confirm button text",
+            "default": "Bevestig inschrijving"
+        },
+        {
+            "type": "text",
+            "id": "step3_success_title",
+            "label": "Success title",
+            "default": "Bedankt!"
+        },
+        {
+            "type": "textarea",
+            "id": "step3_success_message",
+            "label": "Success message",
+            "default": "Uw inschrijving is bevestigd. We nemen binnenkort contact met u op met verdere details."
+        },
+        {
+            "type": "textarea",
+            "id": "step3_error_submit",
+            "label": "Submit error message",
+            "default": "Er is een fout opgetreden bij het indienen van uw inschrijving. Probeer het opnieuw."
+        },
+        {
+            "type": "header",
+            "content": "Section Styling"
+        },
+        {
+            "type": "checkbox",
+            "id": "section_styling",
+            "label": "Add styling to section",
+            "info": "If enabled this shows the settings to set the color scheme, spacing, and margin for the section.",
+            "default": false
+        },
+        {
+            "type": "header",
+            "content": "Section Spacing",
+            "visible_if": "{{ section.settings.section_styling == true }}"
+        },
+        {
+            "type": "select",
+            "id": "mobile_padding",
+            "label": "Mobile padding",
+            "visible_if": "{{ section.settings.section_styling == true }}",
+            "options": [
+                {
+                    "value": "py-0",
+                    "label": "None"
+                },
+                {
+                    "value": "py-2",
+                    "label": "S - 8px"
+                },
+                {
+                    "value": "py-4",
+                    "label": "M - 16px"
+                },
+                {
+                    "value": "py-6",
+                    "label": "L - 24px"
+                },
+                {
+                    "value": "py-8",
+                    "label": "XL - 32px"
+                },
+                {
+                    "value": "py-10",
+                    "label": "2XL - 40px"
+                },
+                {
+                    "value": "py-12",
+                    "label": "3XL - 48px"
+                },
+                {
+                    "value": "py-16",
+                    "label": "4XL - 64px"
+                }
+            ],
+            "default": "py-0"
+        },
+        {
+            "type": "select",
+            "id": "desktop_padding",
+            "label": "Desktop padding",
+            "visible_if": "{{ section.settings.section_styling == true }}",
+            "options": [
+                {
+                    "value": "lg:py-0",
+                    "label": "None"
+                },
+                {
+                    "value": "lg:py-2",
+                    "label": "S - 8px"
+                },
+                {
+                    "value": "lg:py-4",
+                    "label": "M - 16px"
+                },
+                {
+                    "value": "lg:py-6",
+                    "label": "L - 24px"
+                },
+                {
+                    "value": "lg:py-8",
+                    "label": "XL - 32px"
+                },
+                {
+                    "value": "lg:py-10",
+                    "label": "2XL - 40px"
+                },
+                {
+                    "value": "lg:py-12",
+                    "label": "3XL - 48px"
+                },
+                {
+                    "value": "lg:py-16",
+                    "label": "4XL - 64px"
+                }
+            ],
+            "default": "lg:py-0"
+        },
+        {
+            "type": "header",
+            "content": "Section Margin",
+            "visible_if": "{{ section.settings.section_styling == true }}"
+        },
+        {
+            "type": "select",
+            "id": "mobile_margin",
+            "label": "Mobile Section margin",
+            "visible_if": "{{ section.settings.section_styling == true }}",
+            "options": [
+                { "value": "mb-0", "label": "None" },
+                { "value": "mb-4", "label": "Small - 16px" },
+                { "value": "mb-8", "label": "Medium - 32px" },
+                { "value": "mb-12", "label": "Large - 48px" }
+            ],
+            "default": "mb-0"
+        },
+        {
+            "type": "select",
+            "id": "desktop_margin",
+            "label": "Desktop Section margin",
+            "visible_if": "{{ section.settings.section_styling == true }}",
+            "options": [
+                { "value": "lg:mb-0", "label": "None" },
+                { "value": "lg:mb-8", "label": "Small - 32px" },
+                { "value": "lg:mb-12", "label": "Medium - 48px" },
+                { "value": "lg:mb-16", "label": "Large - 64px" }
+            ],
+            "default": "lg:mb-0"
+        },
+        {
+            "type": "header",
+            "content": "Colors",
+            "visible_if": "{{ section.settings.section_styling == true }}"
+        },
+        {
+            "type": "color",
+            "id": "background",
+            "label": "Section background color",
+            "default": "#FFFFFF",
+            "visible_if": "{{ section.settings.section_styling == true }}"
+        },
+        {
+            "type": "color",
+            "id": "primary_text_color",
+            "label": "Primary text color",
+            "default": "#000000",
+            "visible_if": "{{ section.settings.section_styling == true }}"
+        },
+        {
+            "type": "color",
+            "id": "secondary_text_color",
+            "label": "Accent color (steps, tabs)",
+            "default": "#A08735",
+            "visible_if": "{{ section.settings.section_styling == true }}"
+        },
+        {
+            "type": "color",
+            "id": "primary_button_color",
+            "label": "Primary button background",
+            "default": "#06061C",
+            "visible_if": "{{ section.settings.section_styling == true }}"
+        },
+        {
+            "type": "color",
+            "id": "primary_button_text_color",
+            "label": "Primary button text",
+            "default": "#ffffff",
+            "visible_if": "{{ section.settings.section_styling == true }}"
+        },
+        {
+            "type": "color",
+            "id": "secondary_button_color",
+            "label": "Secondary button border",
+            "default": "#000000",
+            "visible_if": "{{ section.settings.section_styling == true }}"
+        },
+        {
+            "type": "color",
+            "id": "secondary_button_text_color",
+            "label": "Secondary button text",
+            "default": "#000000",
+            "visible_if": "{{ section.settings.section_styling == true }}"
+        },
+    ],
+    "presets": [
+        {
+            "name": "Wine Subscription Flow"
+        }
+    ]
+}
+{% endschema %}

@@ -1,0 +1,257 @@
+{%- liquid
+    assign s = section.settings
+    assign has_mobile_image = false
+    if s.mobile_image != blank
+        assign has_mobile_image = true
+    endif
+-%}
+
+{% render 'section-colors', current_section: section %}
+
+<div
+    id="section-{{ section.id }}"
+    class="relative"
+>
+    <responsive-media
+        class="h-full w-full aspect-[375/650] lg:aspect-[1440/600]"
+        data-visible
+    >
+        {% if has_mobile_image %}
+            <div class="hidden lg:block h-full w-full">
+        {% endif %}
+
+        {% if s.image != blank %}
+            {{
+                s.image
+                | image_url: width: 1920
+                | image_tag:
+                    class: 'object-cover w-full h-full',
+                    loading: 'eager',
+                    fetchpriority: 'high',
+                    widths: '375,750,1100,1440,1920',
+                    sizes: '100vw'
+            -}}
+        {% else %}
+            <div class="h-full w-full flex items-center justify-center bg-surface-100">
+                {{
+                    'image'
+                    | placeholder_svg_tag: 'placeholder-svg w-full h-full bg-gray-100 text-white'
+                }}
+            </div>
+        {% endif %}
+
+        {% if has_mobile_image %}
+            </div>
+            <div class="lg:hidden h-full w-full">
+                {{
+                    s.mobile_image
+                    | image_url: width: 750
+                    | image_tag:
+                        class: 'object-cover w-full h-full',
+                        loading: 'eager',
+                        fetchpriority: 'high',
+                        widths: '375,750',
+                        sizes: '100vw'
+                -}}
+            </div>
+        {% endif %}
+
+        {% if s.enable_overlay %}
+            {% if s.overlay_type == 'color' %}
+                <div class="absolute inset-0 bg-black" style="opacity: {{ s.overlay_opacity | divided_by: 100.0 }};"></div>
+            {% elsif s.mobile_gradient != blank
+                and s.desktop_gradient != blank
+            %}
+                {% render 'component.gradient',
+                    mobile_bg: s.mobile_gradient,
+                    desktop_bg: s.desktop_gradient,
+                    mobile_visible: true,
+                    desktop_visible: true
+                %}
+            {% endif %}
+        {% endif %}
+    </responsive-media>
+
+    <div class="absolute inset-0 h-full flex items-center justify-center z-10">
+        <div class="container">
+            <div class="flex flex-col items-center text-center w-full max-w-[500px] lg:max-w-[600px] mx-auto space-y-4 font-light">
+                {% if s.title != blank %}
+                    <div class="text-primary text-[30px] lg:text-[55px] leading-[120%] font-cormorant-garamond font-bold lg:font-semibold">
+                        {{ s.title }}
+                    </div>
+                {% endif %}
+
+                {% if s.text != blank %}
+                    <p class="font-normal text-secondary text-[16px] lg:text-[18px] tracking-[-0.022em] lg:tracking-normal leading-[150%]">
+                        {{ s.text }}
+                    </p>
+                {% endif %}
+
+                {% if s.button_text != blank %}
+                    {% render 'component.button',
+                        label: s.button_text,
+                        title: s.button_text,
+                        href: routes.root_url,
+                        class: 'items-center justify-center',
+                        type: 'button',
+                        aria_label: s.button_text,
+                        style: s.button_style,
+                        size: 'medium',
+                        icon: '',
+                        icon_position: '',
+                        icon_class: '',
+                        css_variables: '',
+                        disabled: false,
+                        loading: false,
+                        translate: false
+                    %}
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+{% schema %}
+{
+    "name": "Main 404",
+    "tag": "section",
+    "class": "section_main-404",
+    "settings": [
+        {
+            "type": "header",
+            "content": "Background Image"
+        },
+        {
+            "id": "image",
+            "type": "image_picker",
+            "label": "Background image (desktop)"
+        },
+        {
+            "id": "mobile_image",
+            "type": "image_picker",
+            "label": "Background image (mobile)",
+            "info": "Optional: upload a different image for mobile. Falls back to desktop image if empty."
+        },
+        {
+            "type": "header",
+            "content": "Overlay"
+        },
+        {
+            "type": "checkbox",
+            "id": "enable_overlay",
+            "default": true,
+            "label": "Enable overlay"
+        },
+        {
+            "type": "select",
+            "id": "overlay_type",
+            "label": "Overlay type",
+            "options": [
+                {
+                    "value": "gradient",
+                    "label": "Gradient"
+                },
+                {
+                    "value": "color",
+                    "label": "Color overlay"
+                }
+            ],
+            "default": "gradient",
+            "visible_if": "{{ section.settings.enable_overlay == true }}"
+        },
+        {
+            "type": "color_background",
+            "id": "mobile_gradient",
+            "label": "Gradient [Mobile]",
+            "info": "Click on color-picker to adjust gradient colors, direction and opacity",
+            "default": "linear-gradient(180deg, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.4) 100%)",
+            "visible_if": "{{ section.settings.enable_overlay == true and section.settings.overlay_type == 'gradient' }}"
+        },
+        {
+            "type": "color_background",
+            "id": "desktop_gradient",
+            "label": "Gradient [Desktop]",
+            "info": "Click on color-picker to adjust gradient colors, direction and opacity",
+            "default": "linear-gradient(180deg, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.4) 100%)",
+            "visible_if": "{{ section.settings.enable_overlay == true and section.settings.overlay_type == 'gradient' }}"
+        },
+        {
+            "type": "range",
+            "id": "overlay_opacity",
+            "label": "Overlay opacity",
+            "min": 0,
+            "max": 100,
+            "step": 5,
+            "unit": "%",
+            "default": 30,
+            "visible_if": "{{ section.settings.enable_overlay == true and section.settings.overlay_type == 'color' }}"
+        },
+        {
+            "type": "header",
+            "content": "Colors"
+        },
+        {
+            "type": "color",
+            "id": "primary_text_color",
+            "label": "Title color",
+            "default": "#FFFFFF"
+        },
+        {
+            "type": "color",
+            "id": "secondary_text_color",
+            "label": "Text color",
+            "default": "#FFFFFF"
+        },
+        {
+            "type": "color",
+            "id": "secondary_button_color",
+            "label": "Button background color",
+            "default": "rgba(0,0,0,0)"
+        },
+        {
+            "type": "color",
+            "id": "secondary_button_text_color",
+            "label": "Button text color",
+            "default": "#FFFFFF"
+        },
+        {
+            "type": "header",
+            "content": "Content"
+        },
+        {
+            "type": "text",
+            "id": "title",
+            "label": "Title",
+            "default": "Pagina niet gevonden"
+        },
+        {
+            "type": "textarea",
+            "id": "text",
+            "label": "Text",
+            "default": "Sorry, de pagina die je zocht bestaat niet of is verplaatst."
+        },
+        {
+            "type": "text",
+            "id": "button_text",
+            "label": "Button text",
+            "default": "Terug naar homepagina"
+        },
+        {
+            "type": "select",
+            "id": "button_style",
+            "label": "Button style",
+            "options": [
+                {
+                    "value": "primary",
+                    "label": "Primary"
+                },
+                {
+                    "value": "secondary",
+                    "label": "Secondary"
+                }
+            ],
+            "default": "secondary"
+        }
+    ]
+}
+{% endschema %}

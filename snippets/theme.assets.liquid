@@ -1,0 +1,23 @@
+{%- liquid
+    # This snippet includes your JavaScript and CSS assets, serving them with a prefix or from the Vite development server. Add it to the <head> of your layout file.
+
+    echo live_reload_script
+
+    assign main_css = 'index.css' | asset_url
+    assign main_js = 'main.js' | asset_url
+    assign global_js = 'global.js' | asset_url
+
+    # CSS
+    # theme-check-disable
+    echo main_css | stylesheet_tag: preload: true
+    # theme-check-enable
+
+    # JavaScript
+
+    # Global
+    echo '<script type="module" src="' | append: global_js | append: '" defer></script>'
+
+    # Main
+    echo '<link rel="modulepreload" href="' | append: main_js | append: '" crossorigin>'
+    echo '<script type="module" src="' | append: main_js | append: '" defer></script>'
+-%}

@@ -1,0 +1,101 @@
+{% liquid
+    assign class = class
+    assign read_more = 'blogs.article.read_more' | t
+
+    assign blog_handle = article.handle | split: '/' | first
+    assign blog_title = blogs[blog_handle].title
+
+    assign article_excerpt = article.excerpt | default: article.excerpt_or_content
+%}
+{% if grid_of_two_start %}
+    {% if forloop.index == 1 or forloop.index == 2 %}
+        {% assign span_class = true %}
+    {% else %}
+        {% assign span_class = false %}
+    {% endif %}
+{% else %}
+    {% assign span_class = false %}
+{% endif %}
+
+<article
+    class="relative group {{ class -}} {% if span_class %}md:col-span-2 {% else %}md:col-span-1{% endif %}"
+>
+    <responsive-media class="w-full mb-5 aspect-[270/312]  {% if span_class %} md:aspect-[656/360] {% else %} md:aspect-[312/360]{% endif %} overflow-hidden relative">
+        {%- if article.image != blank -%}
+            {{-
+                article.image
+                | image_url: height: 520
+                | image_tag:
+                    class: 'w-full h-full object-cover transition-transform duration-300 ease-in-out group-hover:scale-101'
+            -}}
+        {%- else -%}
+            <div class="h-full w-full flex items-center justify-center text-white">
+                {{
+                    'image'
+                    | placeholder_svg_tag: 'placeholder-svg w-full h-full bg-gray-100 text-white'
+                }}
+            </div>
+        {%- endif -%}
+        <div class="loading-overlay absolute inset-0 bg-white/80 z-20">
+            <div class="absolute inset-0 flex items-center justify-center">
+                <div
+                    class="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin"
+                ></div>
+            </div>
+        </div>
+    </responsive-media>
+
+    <div class="flex flex-col p-2 relative">
+        <div class="loading-overlay absolute inset-0 bg-white/80 z-30"></div>
+        {% if blog_title != blank %}
+            <p
+                class="
+                                                                                uppercase font-inter text-[12px] mb-[2px] tracking-[0.05em] font-normal
+                "
+            >
+                {{ blog_title }}
+            </p>
+        {% endif %}
+        {% render 'component.heading',
+            tag: 'h3',
+            variant: 'lg',
+            content: article.title,
+            class: 'text-primary font-cormorant-garamond text-[20px] mb-4 font-medium
+'
+        %}
+        <div
+            class="
+                                                                text-primary heading-xs line-clamp-3 mb-3 font-inter leading-[150%] font-normal
+            "
+        >
+            {{- article_excerpt | strip_html -}}
+        </div>
+    </div>
+
+    {% render 'component.button',
+        label: read_more,
+        title: read_more,
+        href: '',
+        class: 'inline-flex gap-3 items-center text-primary text-[12px] !font-normal tracking-[0.05em]',
+        id: read_more,
+        attributes: '',
+        type: 'button',
+        name: read_more,
+        aria_label: read_more,
+        aria_describedby: read_more,
+        style: 'link',
+        size: '',
+        icon: 'full_long_arrow',
+        icon_position: 'left',
+        icon_class: 'w-4 h-4',
+        css_variables: '',
+        disabled: false,
+        loading: false,
+        translate: false
+    %}
+    <a
+        class="absolute inset-0 z-10"
+        href="{{- article.url -}}"
+        aria-label="{{- article.title | escape -}}"
+    ></a>
+</article>

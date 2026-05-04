@@ -1,0 +1,337 @@
+{%- unless template == 'cart' -%}
+    {% capture cart_drawer_content %}
+        <div class="flex h-full flex-col">
+            <cart-form
+                class="group/cart-form flex h-full flex-col overflow-hidden"
+                data-section-id="{{ section.id }}"
+            >
+                {%- comment -%} Header {%- endcomment -%}
+                <header class="flex items-center justify-between px-6 pt-8 pb-2">
+                    <p class="flex items-baseline gap-2" id="cart-drawer-title">
+                        <span class="font-cormorant-garamond text-[1.0625rem] font-semibold leading-3 text-surface-500 md:text-xl md:font-normal">
+                            {{- 'cart.drawer.title' | t -}}
+                        </span>
+                        <span class="text-sm leading-3 text-surface-500 md:text-[0.9375rem]">
+                            {%- if cart.item_count == 0 -%}
+                                {{- 'cart.drawer.item_count.zero' | t -}}
+                            {%- elsif cart.item_count == 1 -%}
+                                {{- 'cart.drawer.item_count.one' | t: count: cart.item_count -}}
+                            {%- else -%}
+                                {{- 'cart.drawer.item_count.other' | t: count: cart.item_count -}}
+                            {%- endif -%}
+                        </span>
+                    </p>
+                    <modal-toggle target="cart-drawer">
+                        <button
+                            aria-label="{{- 'accessibility.close_cart' | t -}}"
+                            type="button"
+                            class="grid cursor-pointer place-items-center p-1"
+                        >
+                            {% render 'component.icon', type: 'close', class: 'size-5 text-surface-500' %}
+                        </button>
+                    </modal-toggle>
+                </header>
+                <div
+                    data-loading
+                    class="pointer-events-none absolute left-0 top-0 z-20 h-full w-full bg-white opacity-0 transition duration-500 data-[active]:pointer-events-auto data-[active]:opacity-80"
+                ></div>
+
+                {%- if cart.item_count > 0 and cart.requires_shipping -%}
+                    <div class="px-6 pb-4">
+                        {%- render 'cart-free-shipping-threshold', cart: cart, custom_threshold: section.settings.free_shipping_threshold_amount -%}
+                    </div>
+                {%- endif -%}
+
+                {%- comment -%} Cart Items {%- endcomment -%}
+                <cart-items class="relative grow overflow-auto px-6">
+                    <div class="divide-y divide-surface-200/30 border-y border-surface-200/30">
+                        {%- for item in cart.items -%}
+                            <cart-item
+                                data-key="{{ item.key }}"
+                                data-index="{{ forloop.index }}"
+                                data-target="cart-items.item"
+                                class="block"
+                            >
+                                <article class="grid grid-cols-[5rem_minmax(0,_1fr)] gap-4 py-4">
+                                    <a href="{{ item.product.url }}" class="overflow-hidden">
+                                        <responsive-media
+                                            class="aspect-[3/4] w-full before:bg-transparent"
+                                            data-visible
+                                        >
+                                            {{
+                                                item.image
+                                                | image_url: width: 200
+                                                | image_tag: class: 'object-contain w-full h-full mix-blend-multiply', alt: item.product.title
+                                            -}}
+                                        </responsive-media>
+                                    </a>
+                                    {%- render 'cart-item-form' with item as item -%}
+                                </article>
+                            </cart-item>
+                        {%- endfor -%}
+                    </div>
+
+                    {%- comment -%} Empty State {%- endcomment -%}
+                    {%- if cart.empty? %}
+                        <div
+                            class="flex h-full flex-col items-center justify-center py-16"
+                            data-target="cart-items.empty"
+                        >
+                            <p class="mb-6 text-[0.9375rem] text-surface-500">
+                                {{- 'cart.drawer.empty' | t -}}
+                            </p>
+                            {% render 'component.button',
+                                label: 'cart.drawer.continue_shopping',
+                                href: routes.all_products_collection_url,
+                                style: 'primary',
+                                size: 'medium',
+                                class: 'w-full justify-center',
+                                translate: true
+                            %}
+                        </div>
+                    {% else %}
+                        <template data-target="cart-items.empty"></template>
+                    {% endif -%}
+                </cart-items>
+
+                <footer
+                    class="flex flex-col empty:hidden"
+                    data-target="cart-form.footer"
+                >
+                    {%- if cart.item_count > 0 %}
+                        {%- if section.settings.show_add_discount_code -%}
+                            <div class="px-6 pt-4">
+                                <cart-discount-component
+                                    data-section-id="{{ section.id }}"
+                                    class="flex w-full flex-col gap-3"
+                                >
+                                    <form class="flex gap-[0.875rem]" onsubmit="return false;" aria-label="{{ 'cart.discount_code' | t }}">
+                                        <label for="discount-code-input" class="sr-only">{{ 'cart.discount_code' | t }}</label>
+                                        <input
+                                            id="discount-code-input"
+                                            type="text"
+                                            name="discount"
+                                            placeholder="{{ 'cart.discount_code' | t }}"
+                                            class="min-w-0 flex-1 border border-[#63666F]/30 bg-transparent px-4 py-4 font-inter text-[0.9375rem] font-normal leading-[130%] text-[#63666F] placeholder:text-[#63666F] focus:border-[#63666F] focus:outline-none"
+                                            autocomplete="off"
+                                            autocapitalize="off"
+                                            autocorrect="off"
+                                            spellcheck="false"
+                                        >
+                                        {% render 'component.button',
+                                            label: 'cart.apply',
+                                            type: 'submit',
+                                            style: 'secondary',
+                                            size: 'medium',
+                                            class: 'text-center items-center',
+                                            translate: true
+                                        %}
+                                    </form>
+                                    {%- comment -%} Applied discount codes {%- endcomment -%}
+                                    {%- if cart.discount_applications.size > 0 -%}
+                                        <div class="flex flex-wrap gap-2">
+                                            {%- for discount in cart.discount_applications -%}
+                                                {%- if discount.type == 'discount_code' -%}
+                                                    <button
+                                                        type="button"
+                                                        class="cart-discount__pill-remove inline-flex cursor-pointer items-center gap-1.5 rounded-full bg-surface-100 px-3 py-1 text-xs text-surface-500 transition-colors hover:bg-surface-300 hover:text-white"
+                                                        data-discount-code="{{ discount.title }}"
+                                                        aria-label="{{ 'cart.remove_discount' | t: code: discount.title }}"
+                                                    >
+                                                        <span>{{ discount.title }}</span>
+                                                        {%- render 'component.icon', type: 'close', class: 'size-2.5 shrink-0' -%}
+                                                    </button>
+                                                {%- endif -%}
+                                            {%- endfor -%}
+                                        </div>
+                                    {%- endif -%}
+
+                                    <div
+                                        class="hidden items-center gap-2 text-red-600"
+                                        role="alert"
+                                        ref="cartDiscountError"
+                                    >
+                                        <small class="hidden text-xs" ref="cartDiscountErrorDiscountCode"></small>
+                                        <small class="hidden text-xs" ref="cartDiscountErrorShipping">
+                                            {{ 'cart.shipping_discount_error' | t }}
+                                        </small>
+                                    </div>
+                                </cart-discount-component>
+                            </div>
+                        {%- endif -%}
+
+                        <div class="space-y-2 px-6 py-6">
+                            {%- if cart.cart_level_discount_applications.size > 0 -%}
+                                {%- for discount in cart.cart_level_discount_applications -%}
+                                    <p class="flex w-full justify-between text-[0.9375rem] font-normal leading-[130%] text-green-600">
+                                        <span>{{ 'cart.discount' | t }} ({{ discount.title }})</span>
+                                        <span>-{{ discount.total_allocated_amount | money }}</span>
+                                    </p>
+                                {%- endfor -%}
+                            {%- endif -%}
+
+                            {%- if cart.requires_shipping -%}
+                                {%- render 'cart.shipping-logic', custom_shipping_cost: section.settings.shipping_cost -%}
+                            {%- endif -%}
+
+                            <p class="flex w-full justify-between text-[1.0625rem] font-semibold leading-[130%] text-surface-500">
+                                <span>{{- 'cart.drawer.order_total' | t -}}</span>
+                                <span>{{- cart.total_price | money -}}</span>
+                            </p>
+                        </div>
+
+                        <div class="px-6 pb-2">
+                            {%- if section.settings.shipping_message != blank -%}
+                                <p class="text-[0.8125rem] leading-tight text-surface-500 mb-1">
+                                    {{- section.settings.shipping_message | escape -}}
+                                </p>
+                            {%- endif -%}
+                            {%- unless customer -%}
+                                <p class="text-[0.9375rem] leading-tight text-surface-200">
+                                    <a href="{{ routes.account_login_url }}" class="underline transition-colors hover:text-surface-500">
+                                        {{- 'cart.drawer.login_link' | t -}}
+                                    </a>
+                                    {{ 'cart.drawer.login_prompt' | t }}
+                                </p>
+                            {%- endunless -%}
+                        </div>
+
+                        <div class="space-y-2 px-6 pb-4">
+                            <form
+                                action="{{ routes.cart_url }}"
+                                method="post"
+                                class="group-data-[loading]/cart-form:pointer-events-none"
+                            >
+                                {% render 'component.button',
+                                    label: 'cart.drawer.checkout',
+                                    type: 'submit',
+                                    name: 'checkout',
+                                    style: 'primary',
+                                    size: 'medium',
+                                    class: 'w-full justify-center',
+                                    translate: true
+                                %}
+                            </form>
+                            {% if customer and customer.tags contains 'pay-on-invoice' %}
+                                {% assign label = 'cart.drawer.pay_on_invoice' | t %}
+                                {% assign success_message = 'cart.drawer.pay_on_invoice_success' | t %}
+                                {% assign email_message = 'cart.drawer.pay_on_invoice_email_message' | t %}
+                                {% assign safe_success = success_message | escape %}
+                                {% assign safe_email = email_message | escape %}
+                                {% assign button_attributes = 'data-success-message="' | append: safe_success | append: '" data-email-message="' | append: safe_email | append: '"' %}
+                                {% render 'component.button',
+                                    label: label,
+                                    style: 'secondary',
+                                    size: 'medium',
+                                    class: 'w-full justify-center',
+                                    id: 'webhook-test-button',
+                                    attributes: button_attributes
+                                %}
+                            {% endif %}
+                            {% render 'component.button',
+                                label: 'cart.drawer.view_cart',
+                                href: routes.cart_url,
+                                style: 'secondary',
+                                size: 'medium',
+                                class: 'w-full justify-center',
+                                translate: true
+                            %}
+                        </div>
+
+                        {%- if section.settings.show_payment_methods -%}
+                            <div class="px-6 pb-4">
+                                {% render 'component.payment-methods',
+                                    container_classes: 'flex flex-wrap items-center justify-center gap-3',
+                                    item_classes: ''
+                                %}
+                            </div>
+                        {%- endif -%}
+                    {% endif -%}
+                </footer>
+            </cart-form>
+        </div>
+    {% endcapture %}
+
+    {% capture cart_drawer_open_button %}
+        {% render 'component.icon', type: 'cart' %}
+    {% endcapture %}
+
+    {%- assign cart_open_label = 'accessibility.open_cart' | t | default: 'Open cart' -%}
+    {%- render 'component.modal',
+        data_id: 'cart-drawer',
+        open_button: cart_drawer_open_button,
+        open_button_aria_label: cart_open_label,
+        extra_content_container_class: 'w-[430px]! overflow-hidden! max-w-[95%]',
+        content: cart_drawer_content,
+        content_class: 'absolute right-0 ml-auto block h-full w-[90%] translate-x-full bg-white transition-transform duration-300 ease-out data-[open]:translate-x-0 data-[leave]:duration-150 data-[leave]:ease-in-out lg:w-[min(90%,_30rem)]',
+        is_popup: false,
+        is_drawer: true,
+        attributes: 'aria-label="Shopping cart"',
+        open_button_class: 'flex items-center cursor-pointer',
+        drawer_from_right: true,
+        desktop_popup_mobile_drawer: false,
+        blur: true,
+        is_top_zero: false,
+        modal_group: 'header'
+    -%}
+{% endunless %}
+
+{% schema %}
+{
+    "name": "Cart Drawer",
+    "settings": [
+        {
+            "type": "header",
+            "content": "Free Shipping Bar"
+        },
+        {
+            "type": "color",
+            "id": "free_shipping_bar_color",
+            "label": "Progress bar color",
+            "default": "#A08735"
+        },
+        {
+            "type": "color",
+            "id": "free_shipping_text_color",
+            "label": "Progress bar text color",
+            "default": "#A08735"
+        },
+        {
+            "type": "text",
+            "id": "free_shipping_threshold_amount",
+            "label": "Free shipping threshold amount (e.g. 50)",
+            "info": "Enter the minimum order amount for free shipping. Leave empty to use market metafield value."
+        },
+        {
+            "type": "text",
+            "id": "shipping_cost",
+            "label": "Shipping cost (e.g. 5.95)",
+            "info": "The shipping cost to display when the customer hasn't reached free shipping yet."
+        },
+        {
+            "type": "header",
+            "content": "Features"
+        },
+        {
+            "type": "checkbox",
+            "id": "show_add_discount_code",
+            "label": "Show discount code input",
+            "default": true
+        },
+        {
+            "type": "checkbox",
+            "id": "show_payment_methods",
+            "label": "Show payment method icons",
+            "default": true
+        },
+        {
+            "type": "textarea",
+            "id": "shipping_message",
+            "label": "Shipping message",
+            "default": "Order now and your order will be shipped today",
+            "info": "This message will be displayed above the checkout button. You can customise it per language and country."
+        }
+    ],
+    "blocks": []
+}
+{% endschema %}

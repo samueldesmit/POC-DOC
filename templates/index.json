@@ -1,0 +1,523 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "main": {
+      "type": "main-page",
+      "disabled": true,
+      "settings": {}
+    },
+    "hero_CNBLx7": {
+      "type": "hero",
+      "blocks": {
+        "hero_slide_dxTPg8": {
+          "type": "hero_slide",
+          "settings": {
+            "block_styling": false,
+            "primary_text_color": "#ffffff",
+            "secondary_text_color": "#ffffff",
+            "primary_button_color": "rgba(0,0,0,0)",
+            "primary_button_text_color": "#ffffff",
+            "secondary_button_color": "#000000",
+            "secondary_button_text_color": "#ffffff",
+            "video": "shopify://files/videos/Wine List video.mp4",
+            "enable_overlay": true,
+            "overlay_type": "color",
+            "mobile_gradient": "linear-gradient(0deg, rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2) 100%, rgba(0, 0, 0, 1) 100%)",
+            "desktop_gradient": "linear-gradient(0deg, rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2) 100%)",
+            "overlay_opacity": 15,
+            "text": "Een exclusieve collectie wijnen met diepgang, herkomst en karakter. Samengesteld voor liefhebbers van verfijning in het glas.",
+            "title": "<h1>Zorgvuldige selectie bijzondere wijnen</h1>",
+            "button_text": "Bekijk collectie",
+            "button_url": "shopify://collections/alle-wijnen",
+            "button_style": "primary"
+          }
+        }
+      },
+      "block_order": [
+        "hero_slide_dxTPg8"
+      ],
+      "name": "Hero",
+      "settings": {
+        "visibility_audience": "everyone",
+        "section_styling": true,
+        "mobile_margin": "mb-0",
+        "desktop_margin": "lg:mb-8",
+        "full_width_mobile": true,
+        "full_width_desktop": true,
+        "aspect_ratio_desktop": "lg:aspect-[1440/839]",
+        "aspect_ratio_mobile": "aspect-[375/650]",
+        "enable_autoplay": false,
+        "autoplay_interval": 5000,
+        "animation_style": "image-zoom"
+      }
+    },
+    "product_slider_njKcY4": {
+      "type": "product-slider",
+      "name": "Product Slider",
+      "settings": {
+        "visibility_audience": "everyone",
+        "section_styling": true,
+        "mobile_padding": "py-8",
+        "desktop_padding": "lg:py-4",
+        "mobile_margin": "mb-0",
+        "desktop_margin": "lg:mb-8",
+        "background": "#ffffff",
+        "primary_text_color": "#000000",
+        "secondary_text_color": "#000000",
+        "primary_button_color": "rgba(0,0,0,0)",
+        "primary_button_text_color": "#000000",
+        "secondary_button_color": "#000000",
+        "secondary_button_text_color": "#ffffff",
+        "collection": "alle-wijnen",
+        "product_list": [
+          "strix-champagne-18",
+          "strix-chardonnay-04",
+          "strix-cabernet-01"
+        ],
+        "text": "Net binnen",
+        "title": "<h2>De bestsellers van deze maand</h2>",
+        "button_text": "Bekijk ze allemaal",
+        "button_url": "shopify://collections/all",
+        "button_style": "primary",
+        "animation_style": "stagger-up"
+      }
+    },
+    "map_pQJtTx": {
+      "type": "map",
+      "blocks": {
+        "the_wine_list_app_wine_map_FtdzKX": {
+          "type": "shopify://apps/the-wine-list-app/blocks/wine-map/019ae3dd-6674-7fc2-b358-b1208d997143",
+          "settings": {
+            "mapbox_token": "",
+            "heading": "Ontdek wijnen per regio, proef de wereld.",
+            "description": "Reis door de wereld van wijn met onze kaart: ontdek waar uw favoriete wijnen vandaan komen en ontmoet de makers erachter.",
+            "accent_color": "#a08735",
+            "show_suggestions": true,
+            "suggestion_1": "Frankrijk",
+            "suggestion_2": "Bourgogne",
+            "suggestion_3": "Champagne",
+            "suggestion_4": "Toscane",
+            "suggestion_5": "Rioja",
+            "suggestion_6": "Italië",
+            "suggestion_7": "Provence",
+            "suggestion_8": "Chablis",
+            "suggestion_9": "Zuid-Afrika",
+            "suggestion_10": "Australië",
+            "suggestion_11": "Spanje",
+            "suggestion_12": "Portugal",
+            "suggestion_13": "Poggio al Cinghiale",
+            "suggestion_14": "",
+            "suggestion_15": "",
+            "placeholder_1": "",
+            "placeholder_2": "",
+            "placeholder_3": "",
+            "placeholder_4": "",
+            "placeholder_5": "",
+            "placeholder_6": "",
+            "placeholder_7": "",
+            "placeholder_8": "",
+            "placeholder_9": "",
+            "placeholder_10": ""
+          }
+        }
+      },
+      "block_order": [
+        "the_wine_list_app_wine_map_FtdzKX"
+      ],
+      "name": "Map Section",
+      "settings": {
+        "visibility_audience": "everyone",
+        "full_width_mobile": true,
+        "full_width_desktop": false,
+        "section_styling": true,
+        "mobile_padding": "py-0",
+        "desktop_padding": "lg:py-0",
+        "mobile_margin": "mb-0",
+        "desktop_margin": "lg:mb-0",
+        "background": "#ffffff",
+        "animation_style": "fade-in"
+      }
+    },
+    "winery_selection_dxyH4B": {
+      "type": "winery-selection",
+      "blocks": {
+        "winery_mFxjKb": {
+          "type": "winery",
+          "settings": {
+            "article": "wijnhuizen/tio-pepe",
+            "show_winery_video": true,
+            "show_winery_logo": true,
+            "show_winery_name": true,
+            "show_winery_button": true,
+            "button_style": "primary",
+            "button_url": "",
+            "extra_button_text": "",
+            "extra_button_url": "",
+            "extra_button_style": "secondary",
+            "enable_overlay": true,
+            "overlay_type": "gradient",
+            "mobile_gradient": "linear-gradient(180deg, rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2) 100%)",
+            "desktop_gradient": "linear-gradient(180deg, rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2) 100%)",
+            "overlay_opacity": 30
+          }
+        },
+        "winery_p4XyLn": {
+          "type": "winery",
+          "settings": {
+            "article": "wijnhuizen/chateau-ste-michelle",
+            "show_winery_video": true,
+            "show_winery_logo": true,
+            "show_winery_name": true,
+            "show_winery_button": true,
+            "button_style": "primary",
+            "button_url": "",
+            "extra_button_text": "test",
+            "extra_button_url": "shopify://blogs/wijnhuizen/vilarnau",
+            "extra_button_style": "secondary",
+            "enable_overlay": true,
+            "overlay_type": "gradient",
+            "mobile_gradient": "linear-gradient(180deg, rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2) 100%)",
+            "desktop_gradient": "linear-gradient(180deg, rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2) 100%)",
+            "overlay_opacity": 30
+          }
+        },
+        "winery_VK8Aw9": {
+          "type": "winery",
+          "settings": {
+            "article": "wijnhuizen/jean-marc-brocard",
+            "show_winery_video": true,
+            "show_winery_logo": true,
+            "show_winery_name": true,
+            "show_winery_button": true,
+            "button_style": "primary",
+            "button_url": "",
+            "extra_button_text": "",
+            "extra_button_url": "",
+            "extra_button_style": "secondary",
+            "enable_overlay": true,
+            "overlay_type": "gradient",
+            "mobile_gradient": "linear-gradient(180deg, rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2) 100%)",
+            "desktop_gradient": "linear-gradient(180deg, rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2) 100%)",
+            "overlay_opacity": 30
+          }
+        },
+        "winery_efF4kG": {
+          "type": "winery",
+          "settings": {
+            "article": "wijnhuizen/jean-marc-brocard",
+            "show_winery_video": true,
+            "show_winery_logo": true,
+            "show_winery_name": true,
+            "show_winery_button": true,
+            "button_style": "primary",
+            "button_url": "",
+            "extra_button_text": "",
+            "extra_button_url": "",
+            "extra_button_style": "secondary",
+            "enable_overlay": true,
+            "overlay_type": "gradient",
+            "mobile_gradient": "linear-gradient(180deg, rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2) 100%)",
+            "desktop_gradient": "linear-gradient(180deg, rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2) 100%)",
+            "overlay_opacity": 30
+          }
+        }
+      },
+      "block_order": [
+        "winery_mFxjKb",
+        "winery_p4XyLn",
+        "winery_VK8Aw9",
+        "winery_efF4kG"
+      ],
+      "name": "Winery Selection",
+      "settings": {
+        "visibility_audience": "everyone",
+        "view_all_wineries_url": "/blogs/wijnhuizen",
+        "section_styling": true,
+        "mobile_padding": "py-0",
+        "desktop_padding": "lg:py-6",
+        "mobile_margin": "mb-0",
+        "desktop_margin": "lg:mb-12",
+        "background": "#ffffff",
+        "primary_text_color": "#ffffff",
+        "secondary_text_color": "#b19e5e",
+        "primary_button_color": "rgba(0,0,0,0)",
+        "primary_button_text_color": "#ffffff",
+        "secondary_button_color": "#000000",
+        "secondary_button_text_color": "#ffffff",
+        "section_title": "Ontdek onze exclusieve wijnhuizen",
+        "aspect_ratio_desktop": "lg:aspect-[1344/783]",
+        "aspect_ratio_mobile": "aspect-[375/584]",
+        "make_section_full_width": false,
+        "autoplay_slider": false,
+        "slider_interval": 5000,
+        "animation_style": "fade-in"
+      }
+    },
+    "review_quote_m8C8Cb": {
+      "type": "review-quote",
+      "blocks": {
+        "review_quote_cFTNLe": {
+          "type": "review_quote",
+          "settings": {
+            "review_quote": "Bijzondere wijnen met een uitstekende prijs-kwaliteit verhouding.",
+            "review_author": "Mans, Utrecht"
+          }
+        },
+        "review_quote_tGd3hY": {
+          "type": "review_quote",
+          "settings": {
+            "review_quote": "Top wijn en goede service!",
+            "review_author": "Stef, den haag"
+          }
+        },
+        "review_quote_AW66X7": {
+          "type": "review_quote",
+          "settings": {
+            "review_quote": "Fijne webwinkel, snelle levering",
+            "review_author": "Marijke, den haag"
+          }
+        }
+      },
+      "block_order": [
+        "review_quote_cFTNLe",
+        "review_quote_tGd3hY",
+        "review_quote_AW66X7"
+      ],
+      "name": "Review Quote",
+      "settings": {
+        "visibility_audience": "everyone",
+        "section_styling": true,
+        "mobile_padding": "py-4",
+        "desktop_padding": "lg:py-4",
+        "mobile_margin": "mb-0",
+        "desktop_margin": "lg:mb-12",
+        "background": "#ffffff",
+        "primary_text_color": "#000000",
+        "secondary_text_color": "#a08735",
+        "use_xml_feed": true,
+        "title": "Customers rate us highly:",
+        "rating_number": "9.3",
+        "kiyoh_logo": "shopify://shop_images/KV_Kiyoh_RGB-1024x700.png",
+        "show_review_stars": true,
+        "autoplay": false,
+        "interval": 5,
+        "smooth_autoplay": false,
+        "auto_scroll_speed": 1,
+        "per_page_desktop": 3,
+        "per_page_mobile": 1.6,
+        "animation_style": "fade-in"
+      }
+    },
+    "text_image_kyLKJU": {
+      "type": "text-image",
+      "name": "Image and text",
+      "settings": {
+        "visibility_audience": "everyone",
+        "section_styling": true,
+        "mobile_padding": "py-0",
+        "desktop_padding": "lg:py-0",
+        "mobile_margin": "mb-8",
+        "desktop_margin": "lg:mb-12",
+        "divider_color": "#b19e5e",
+        "background": "#ffffff",
+        "primary_text_color": "#000000",
+        "primary_button_color": "rgba(0,0,0,0)",
+        "primary_button_text_color": "#000000",
+        "secondary_button_color": "#000000",
+        "secondary_button_text_color": "#ffffff",
+        "winery_article": "",
+        "image": "shopify://shop_images/Rectangle_46.png",
+        "image_aspect_ratio": "aspect-671/789",
+        "image_position": "left",
+        "mobile_image_position": "up",
+        "text_alignment": "left",
+        "heading": "Exclusieve toegang voor echte wijnliefhebbers",
+        "heading_size": "lg",
+        "text": "<p>Word lid van onze Wine Club en til je wijnbeleving naar een hoger niveau. Geniet van vroege toegang tot zeldzame releases, zorgvuldig samengestelde events en inzichten van experts. Leden ontvangen exclusieve voordelen, speciaal samengesteld voor echte wijnliefhebbers.</p>",
+        "button_text": "Neem deel",
+        "button_url": "shopify://pages/subscriptions",
+        "button_style": "primary",
+        "animation_style": "split-sides"
+      }
+    },
+    "product_slider_BwFNEd": {
+      "type": "product-slider",
+      "name": "Product Slider",
+      "settings": {
+        "visibility_audience": "everyone",
+        "section_styling": true,
+        "mobile_padding": "py-0",
+        "desktop_padding": "lg:py-0",
+        "mobile_margin": "mb-8",
+        "desktop_margin": "lg:mb-12",
+        "background": "#ffffff",
+        "primary_text_color": "#000000",
+        "secondary_text_color": "#000000",
+        "primary_button_color": "rgba(0,0,0,0)",
+        "primary_button_text_color": "#000000",
+        "secondary_button_color": "#000000",
+        "secondary_button_text_color": "#ffffff",
+        "collection": "alle-wijnen",
+        "product_list": [],
+        "text": "",
+        "title": "<h2>De bestsellers van deze maand</h2>",
+        "button_text": "Bekijk ze allemaal",
+        "button_url": "shopify://collections/all",
+        "button_style": "primary",
+        "animation_style": "stagger-up"
+      }
+    },
+    "blog_posts_highlight_ahEkMN": {
+      "type": "blog-posts-highlight",
+      "name": "Blog Slider",
+      "settings": {
+        "visibility_audience": "everyone",
+        "section_styling": true,
+        "mobile_padding": "py-0",
+        "desktop_padding": "lg:py-0",
+        "mobile_margin": "mb-8",
+        "desktop_margin": "lg:mb-12",
+        "background": "#ffffff",
+        "primary_button_color": "rgba(0,0,0,0)",
+        "primary_button_text_color": "#000000",
+        "secondary_button_color": "#000000",
+        "secondary_button_text_color": "#ffffff",
+        "blog": "wijnblogs",
+        "title": "Exclusieve toegang voor echte wijnliefhebbers",
+        "button_text": "Bekijk alle wijnblogs",
+        "button_url": "shopify://blogs/wijnblogs",
+        "button_style": "primary",
+        "animation_style": "stagger-up"
+      }
+    },
+    "instagram_slider_Wxhibk": {
+      "type": "instagram-slider",
+      "blocks": {
+        "instagram_slide_Dqctyb": {
+          "type": "instagram_slide",
+          "settings": {
+            "image": "shopify://shop_images/instagram_1.png",
+            "caption": "Message from the winelist",
+            "link": "",
+            "open_in_new_tab": true
+          }
+        },
+        "instagram_slide_6nykEe": {
+          "type": "instagram_slide",
+          "settings": {
+            "image": "shopify://shop_images/instagram_2.png",
+            "caption": "Message from the winelist",
+            "link": "",
+            "open_in_new_tab": true
+          }
+        },
+        "instagram_slide_7Bw3k4": {
+          "type": "instagram_slide",
+          "settings": {
+            "image": "shopify://shop_images/instagram_3.png",
+            "caption": "Message from the winelist",
+            "link": "",
+            "open_in_new_tab": true
+          }
+        },
+        "instagram_slide_DGaagC": {
+          "type": "instagram_slide",
+          "settings": {
+            "image": "shopify://shop_images/instagram_4.png",
+            "caption": "Message from the winelist",
+            "link": "",
+            "open_in_new_tab": true
+          }
+        },
+        "instagram_slide_iDK8gX": {
+          "type": "instagram_slide",
+          "settings": {
+            "image": "shopify://shop_images/instagram_5.png",
+            "caption": "Message from the winelist",
+            "link": "",
+            "open_in_new_tab": true
+          }
+        }
+      },
+      "block_order": [
+        "instagram_slide_Dqctyb",
+        "instagram_slide_6nykEe",
+        "instagram_slide_7Bw3k4",
+        "instagram_slide_DGaagC",
+        "instagram_slide_iDK8gX"
+      ],
+      "name": "Instagram Slider",
+      "settings": {
+        "visibility_audience": "everyone",
+        "section_styling": false,
+        "mobile_padding": "py-0",
+        "desktop_padding": "lg:py-0",
+        "mobile_margin": "mb-8",
+        "desktop_margin": "lg:mb-12",
+        "background": "#ffffff",
+        "primary_text_color": "#000000",
+        "title": "Wijn proeft beter wanneer je het deelt",
+        "handle": "thewinelistnl",
+        "link": "",
+        "aspect_ratio": "aspect-[267/334]",
+        "autoplay": false,
+        "interval": 5,
+        "gap_mobile": 8,
+        "gap_desktop": 12,
+        "per_page_desktop": 5,
+        "per_page_mobile": 2.2,
+        "animation_style": "stagger-up"
+      }
+    },
+    "sign_up_LY7Kq9": {
+      "type": "sign-up",
+      "name": "Sign Up",
+      "settings": {
+        "visibility_audience": "everyone",
+        "section_styling": false,
+        "mobile_padding": "py-6",
+        "desktop_padding": "lg:py-8",
+        "mobile_margin": "mb-0",
+        "desktop_margin": "lg:mb-12",
+        "background": "#ffffff",
+        "primary_text_color": "#000000",
+        "border_color": "#b19e5e",
+        "primary_button_color": "#000000",
+        "primary_button_text_color": "#ffffff",
+        "secondary_button_color": "#a08735",
+        "secondary_button_text_color": "#ffffff",
+        "title": "Directe toegang tot de wereld van verfijnde wijnen",
+        "description": "<p>Ontvang updates over ’s werelds meest uitzonderlijke wijnen.</p>",
+        "placeholder": "Emailadres",
+        "privacy_text": "Wij respecteren je gegevens en privacy. Uitschrijven kan op elk moment.",
+        "button_text": "Word lid",
+        "button_style": "primary",
+        "grid_of_two": false,
+        "border_top": false,
+        "border_bottom": false,
+        "animation_style": "fade-in"
+      }
+    }
+  },
+  "order": [
+    "main",
+    "hero_CNBLx7",
+    "product_slider_njKcY4",
+    "map_pQJtTx",
+    "winery_selection_dxyH4B",
+    "review_quote_m8C8Cb",
+    "text_image_kyLKJU",
+    "product_slider_BwFNEd",
+    "blog_posts_highlight_ahEkMN",
+    "instagram_slider_Wxhibk",
+    "sign_up_LY7Kq9"
+  ]
+}

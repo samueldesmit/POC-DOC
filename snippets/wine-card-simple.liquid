@@ -1,0 +1,73 @@
+{%- doc -%}
+  Expected behaviour: Renders a simple wine card displaying basic product info.
+  About: Display snippet for wine entries from subscription_subcategory_wine metaobjects.
+         Shows product image, title, price, and minimum_amount.
+         Includes data attributes for future JavaScript interaction.
+  Accepts:
+    - {object} wine_entry: Required. The wine metaobject entry from subscription.subscription_wines.value
+    - {string} class: Optional. Additional CSS classes for the card wrapper.
+  Usage:
+    {% render 'wine-card-simple', wine_entry: wines %}
+    {% render 'wine-card-simple', wine_entry: wines, class: 'col-span-2' %}
+
+  @param {object} [wine_entry] - Wine metaobject entry from subscription.subscription_wines.value
+  @param {string} [class] - Additional CSS classes for the card wrapper
+{%- enddoc -%}
+
+{%- liquid
+  # Extract product from wine entry
+  assign product = wine_entry.wine.value
+  assign minimum_amount = wine_entry.minimum_amount | default: 1
+
+  # Skip if no product found
+  if product == blank
+    break
+  endif
+
+  # Get product details
+  assign product_id = product.id
+  assign product_title = product.title
+  assign product_price = product.price | money
+  assign product_image = product.featured_image
+  assign product_vendor = product.vendor
+-%}
+
+<div
+  class="wine-card-simple flex flex-col gap-2 p-4 border border-gray-200 rounded {{ class }}"
+  data-product-id="{{ product_id }}"
+  data-product-title="{{ product_title | escape }}"
+  data-product-price="{{ product.price }}"
+  data-min-amount="{{ minimum_amount }}"
+>
+  {%- comment -%} Product Image {%- endcomment -%}
+  {%- if product_image -%}
+    <div class="aspect-square w-full overflow-hidden rounded bg-gray-100">
+      {{
+        product_image
+        | image_url: width: 400
+        | image_tag:
+            class: 'w-full h-full object-contain',
+            loading: 'lazy',
+            alt: product_title
+      }}
+    </div>
+  {%- else -%}
+    <div class="aspect-square w-full bg-gray-100 rounded flex items-center justify-center">
+      <span class="text-gray-400 text-sm">No image</span>
+    </div>
+  {%- endif -%}
+
+  {%- comment -%} Product Info {%- endcomment -%}
+  <div class="flex flex-col gap-1">
+    {%- if product_vendor != blank -%}
+      <span class="text-xs text-gray-500 uppercase tracking-wide">{{ product_vendor }}</span>
+    {%- endif -%}
+
+    <h3 class="text-sm font-medium text-primary line-clamp-2">{{ product_title }}</h3>
+
+    <div class="flex items-center justify-between gap-2">
+      <span class="text-sm font-semibold text-primary">{{ product_price }}</span>
+      <span class="text-xs text-gray-500">Min: {{ minimum_amount }}</span>
+    </div>
+  </div>
+</div>

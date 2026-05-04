@@ -1,0 +1,37 @@
+{% doc %}
+    Payment Methods Component
+    Displays a list of enabled payment methods for the current market.
+
+    @param {string} [container_classes] - CSS classes to apply to the ul container
+    @param {string} [item_classes] - CSS classes to apply to each payment method li item
+
+    @example
+    {% render 'component.payment-methods',
+        container_classes: 'flex flex-wrap gap-2',
+        item_classes: 'p-2 bg-gray-100 rounded'
+    %}
+{% enddoc %}
+
+{% liquid
+    assign market_payment_methods = localization.market.metafields.custom.payment_methods.value
+%}
+
+<ul
+    {% if container_classes %}
+        class="{{ container_classes }}"
+    {% endif %}
+>
+    {%- for payment_method in market_payment_methods -%}
+        <li
+            {% if item_classes %}
+                class="{{ item_classes }}"
+            {% endif %}
+        >
+            {{-
+                payment_method
+                | image_url: height: 24
+                | image_tag: class: 'h-6 w-auto', loading: 'lazy'
+            -}}
+        </li>
+    {%- endfor -%}
+</ul>

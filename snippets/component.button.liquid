@@ -1,0 +1,189 @@
+{% doc %}
+    Renders a button or link element with customizable styling and accessibility features.
+
+    @param {string} [label] - Alias for text parameter (for backward compatibility)
+    @param {string} [title] - Title attribute for the button (tooltip text)
+    @param {string} [href] - URL for link buttons (creates <a> instead of <button>)
+    @param {string} [class] - Additional CSS classes to apply to the button
+    @param {string} [id] - Unique identifier for the button element
+    @param {string} [attributes] - Additional HTML attributes (data-*, event handlers, etc.)
+    @param {string} [type] - Button type attribute (button, submit, reset) - default: button
+    @param {string} [name] - Name attribute for form buttons
+    @param {string} [aria_label] - Accessible label for screen readers
+    @param {string} [aria_describedby] - References element that describes the button
+    @param {string} [style] - Button style variant (primary, secondary, tertiary, link, custom) - default: primary
+    @param {string} [size] - Button size (small, medium, large) - default: medium
+    @param {string} [icon] - Icon name to render with the button
+    @param {string} [icon_position] - Icon position relative to text (left, right) - default: left
+    @param {string} [icon_class] - CSS classes for the icon element - default: w-2.5 h-2.5
+    @param {string} [css_variables] - Custom CSS variables to apply to the button
+    @param {boolean} [disabled] - Disable the button - default: false
+    @param {boolean} [loading] - Show loading state with spinner - default: false
+    @param {boolean} [translate] - Translate the label - default: false
+
+    @example
+    {% render 'component.button',
+        label: 'Complete Example',
+        title: 'This button demonstrates all available parameters',
+        href: '/example-page',
+        class: 'my-custom-class',
+        id: 'example-button-1',
+        attributes: '',
+        type: 'button',
+        name: 'example-button',
+        aria_label: 'Complete example button with all parameters',
+        aria_describedby: 'button-description',
+        style: 'primary',
+        size: 'large',
+        icon: 'arrow-right',
+        icon_position: 'right',
+        icon_class: 'w-4 h-4',
+        css_variables: '--custom-color: #ff0000; --custom-bg: #f0f0f0;',
+        disabled: false,
+        loading: false,
+        translate: false
+    %}
+{% enddoc %}
+
+{%- liquid
+    # Set default values
+    assign style = style | default: 'primary'
+    assign size = size | default: 'medium'
+    assign type = type | default: 'button'
+    assign icon_class = icon_class | default: 'w-2.5 h-2.5'
+    assign icon_position = icon_position | default: 'left'
+    assign disabled = disabled | default: false, allow_false: true
+    assign loading = loading | default: false, allow_false: true
+
+    # Build classes based on style
+    if style == 'custom'
+        # Add relative positioning for buttons that might need spinners
+        assign classes = class | append: ' relative' | strip
+    else
+        # Base classes
+        assign base_classes = 'flex cursor-pointer text-[14px] font-medium transition-colors duration-300 focus:outline-2 focus:outline-offset-2 disabled:cursor-not-allowed disabled:opacity-50 tracking-[0.00em] leading-[100%] '
+
+        # Style-specific classes
+        case style
+            when 'primary'
+                assign style_classes = 'border border-solid border-[var(--color-primary-border,rgba(0,0,0,0.15))] bg-primary-background text-primary-foreground focus:outline-primary-foreground hover:border-primary-foreground/100 '
+            when 'secondary'
+                assign style_classes = 'border border-solid border-[var(--color-secondary-border,rgba(0,0,0,0.15))] bg-secondary-background text-secondary-foreground focus:outline-secondary-foreground hover:border-secondary-foreground/100 '
+            when 'tertiary'
+                assign style_classes = 'border border-solid border-surface-300 bg-transparent text-surface-700 focus:outline-surface-400 '
+            when 'link'
+                assign style_classes = 'link-animation text-primary-foreground focus:outline-primary-foreground '
+        endcase
+
+        # Size-specific classes (only for non-link styles)
+        unless style == 'link'
+            case size
+                when 'small'
+                    assign size_classes = 'px-6 py-2 text-xs '
+                when 'large'
+                    assign size_classes = 'px-12 py-4 text-sm '
+                else
+                    assign size_classes = 'px-9 py-3 text-xs '
+            endcase
+        endunless
+
+        # Icon classes
+        if icon != blank
+            assign icon_classes = 'flex items-center justify-center gap-x-2'
+        endif
+
+        # Add relative positioning for buttons that might need spinners
+        assign relative_class = ' relative'
+
+        # Combine all classes
+        assign classes = base_classes | append: style_classes | append: size_classes | append: icon_classes | append: relative_class | append: ' ' | append: class | strip
+    endif
+
+    # Determine tag type and build attributes
+    if href != blank
+        assign tag = 'a'
+        assign tag_attributes = 'href="' | append: href | append: '"'
+    else
+        assign tag = 'button'
+        assign tag_attributes = 'type="' | append: type | append: '"'
+
+        if name != blank
+            assign tag_attributes = tag_attributes | append: ' name="' | append: name | append: '"'
+        endif
+
+        if disabled
+            assign tag_attributes = tag_attributes | append: ' disabled'
+        endif
+    endif
+
+    # Build additional attributes
+    assign additional_attributes = ''
+
+    # Unique identifier for the button - important for JavaScript targeting and form associations
+    if id != blank
+        assign additional_attributes = additional_attributes | append: ' id="' | append: id | append: '"'
+    endif
+
+    # Accessible label for screen readers - crucial for accessibility when button text isn't descriptive enough
+    if aria_label != blank
+        assign additional_attributes = additional_attributes | append: ' aria-label="' | append: aria_label | append: '"'
+    endif
+
+    # References element that describes the button - important for complex interactions and form validation
+    if aria_describedby != blank
+        assign additional_attributes = additional_attributes | append: ' aria-describedby="' | append: aria_describedby | append: '"'
+    endif
+
+    # Tooltip text shown on hover - provides additional context for users
+    if title != blank
+        assign additional_attributes = additional_attributes | append: ' title="' | append: title | append: '"'
+    endif
+
+    # Indicates button is in loading state - essential for screen readers to announce loading status
+    if loading
+        assign additional_attributes = additional_attributes | append: ' aria-busy="true"'
+    endif
+
+    # Custom attributes like data-* or event handlers - allows for flexible customization
+    if attributes != blank
+        assign additional_attributes = additional_attributes | append: ' ' | append: attributes
+    endif
+
+    if translate
+        assign label = label | t
+    endif
+-%}
+
+<{{ tag }}
+    class="{{- classes -}}"
+    {{ tag_attributes }}
+    {{ additional_attributes }}
+    {% if css_variables != blank %}
+        style="{{ css_variables }}"
+    {% endif %}
+>
+    {%- if icon != blank and icon_position == 'left' -%}
+        {% render 'component.icon', type: icon, class: icon_class %}
+    {%- endif -%}
+
+    {%- if label != blank -%}
+        {{- label -}}
+    {%- endif -%}
+
+    {%- if icon != blank and icon_position == 'right' -%}
+        {% render 'component.icon', type: icon, class: icon_class %}
+    {%- endif -%}
+
+    <span
+        class="button-spinner hidden absolute inset-0 flex items-center justify-center"
+        role="status"
+        aria-hidden="true"
+        style="background: inherit; border-radius: inherit; border: inherit;"
+    >
+        {% render 'component.icon',
+            type: 'spinner',
+            class: 'w-5 h-5 text-current animate-spin'
+        %}
+        <span class="sr-only">Loading...</span>
+    </span>
+</{{ tag }}>

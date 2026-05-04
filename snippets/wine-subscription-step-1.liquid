@@ -1,0 +1,325 @@
+{%- doc -%}
+    Wine Subscription Flow - Step 1: Wine Selection
+  Displays filter tabs (built from unique `category` values on the subscription's wine entries)
+  and wine grid with quantity controls.
+
+  @param {object} [s] - Section settings
+  @param {object} [subscription] - The selected subscription metaobject
+{%- enddoc -%}
+<li class="splide__slide w-full">
+    <div class="flex flex-col gap-5 lg:gap-10">
+        {%- comment -%} Title & Subtitle {%- endcomment -%}
+
+        {%- comment -%}
+            Build filter tabs from unique, non-blank `category` values on the subscription's wine entries
+        {%- endcomment -%}
+        {%- liquid
+            assign wine_entries = subscription.subscription_wines.value
+            assign raw_filter_names = wine_entries | map: 'category' | uniq
+            assign valid_filter_count = 0
+            for filter_name in raw_filter_names
+                unless filter_name == blank
+                    assign valid_filter_count = valid_filter_count | plus: 1
+                endunless
+            endfor
+        -%}
+
+        {%- comment -%} Filter Tabs – only show when there are multiple non-blank filter options {%- endcomment -%}
+        {% if valid_filter_count > 1 %}
+            <div class="filter-tabs-container">
+                {%- comment -%} Desktop: row layout {%- endcomment -%}
+                <div class="hidden lg:flex justify-center gap-5 px-12">
+                    <button
+                        type="button"
+                        class="filter-tab px-[30px] py-3 text-sm font-inter border border-secondary/50 transition-colors active"
+                        data-filter="all"
+                    >
+                        {{ s.step1_all_wines_label | default: 'Alle wijnen' }}
+                    </button>
+                    {% for filter_name in raw_filter_names %}
+                        {% unless filter_name == blank %}
+                            <button
+                                type="button"
+                                class="filter-tab px-[30px] py-3 text-sm font-inter border border-secondary/50 transition-colors"
+                                data-filter="{{ filter_name | handleize }}"
+                            >
+                                {{ filter_name }}
+                            </button>
+                        {% endunless %}
+                    {% endfor %}
+                </div>
+
+                {%- comment -%} Mobile: 2x2 grid layout {%- endcomment -%}
+                <div class="lg:hidden grid grid-cols-2 gap-2">
+                    <button
+                        type="button"
+                        class="filter-tab px-4 py-3 text-sm font-inter border border-secondary/50 transition-colors text-center active"
+                        data-filter="all"
+                    >
+                        {{ s.step1_all_wines_label | default: 'Alle wijnen' }}
+                    </button>
+                    {% for filter_name in raw_filter_names %}
+                        {% unless filter_name == blank %}
+                            <button
+                                type="button"
+                                class="filter-tab px-4 py-3 text-sm font-inter border border-secondary/50 transition-colors text-center"
+                                data-filter="{{ filter_name | handleize }}"
+                            >
+                                {{ filter_name }}
+                            </button>
+                        {% endunless %}
+                    {% endfor %}
+                </div>
+            </div>
+        {% endif %}
+        <div class="text-center space-y-3">
+            {% if s.step1_subtitle != blank %}
+                <h2 class="font-cormorant-garamond text-[30px] leading-[130%] text-primary font-semibold">
+                    {{ s.step1_title | default: 'Kies uw wijn' }}
+                </h2>
+            {% endif %}
+            {% if s.step1_subtitle != blank %}
+                <p class="font-inter text-[15px] leading-[130%] text-primary font-normal">
+                    {{ s.step1_subtitle }}
+                </p>
+            {% endif %}
+        </div>
+        {%- comment -%} Wine Grid {%- endcomment -%}
+        <div
+            class="wine-grid grid grid-cols-2 lg:grid-cols-4 gap-[14px] lg:gap-[14px]"
+            data-wine-grid
+        >
+            {% if subscription %}
+                {% for wine_entry in wine_entries %}
+                    {%- liquid
+                        assign filter_handle = wine_entry.category | handleize
+                        assign wine_product = wine_entry.wine.value
+                        assign min_amount_raw = wine_entry.minimum_amount | default: 0
+                        assign min_amount = min_amount_raw | plus: 0
+                        assign max_amount = 99
+                        assign increment_raw = wine_entry.increment | default: 1
+                        assign increment = increment_raw | plus: 0
+                        if increment <= 0
+                            assign increment = 1
+                        endif
+                    -%}
+
+                    {% if wine_product != blank %}
+                        <div
+                            class="wine-card flex flex-col pb-[10px] lg:pb-5"
+                            data-filter-category="{{ filter_handle }}"
+                            data-variant-id="{{ wine_product.variants.first.id }}"
+                            data-product-title="{{ wine_product.title | escape }}"
+                            data-product-price="{{ wine_product.price | money }}"
+                            data-product-image="{% if wine_product.featured_image %}{{ wine_product.featured_image | image_url: width: 120 }}{% endif %}"
+                            data-min-qty="{{ min_amount }}"
+                            data-max-qty="{{ max_amount }}"
+                            data-increment="{{ increment }}"
+                        >
+                            {%- comment -%} Product Image with Info Icon {%- endcomment -%}
+                            <div class="relative w-full h-[135px] lg:h-[271px] mb-4">
+                                {% if wine_product.featured_image %}
+                                    <img
+                                        src="{{ wine_product.featured_image | image_url: width: 326 }}"
+                                        srcset="
+                                            {{ wine_product.featured_image | image_url: width: 162 }} 162w,
+                                            {{ wine_product.featured_image | image_url: width: 326 }} 326w,
+                                            {{ wine_product.featured_image | image_url: width: 400 }} 400w
+                                        "
+                                        sizes="(max-width: 1024px) 162px, 326px"
+                                        width="{{ wine_product.featured_image.width }}"
+                                        height="{{ wine_product.featured_image.height }}"
+                                        alt="{{ wine_product.title | escape }}"
+                                        class="w-full h-full object-contain"
+                                        loading="lazy"
+                                    >
+                                {% else %}
+                                    {{
+                                        'image'
+                                        | placeholder_svg_tag: 'w-full h-full bg-gray-100'
+                                    }}
+                                {% endif %}
+
+                                {%- if settings.show_awards_on_card
+                                    and wine_product.metafields.custom.awards.value != blank
+                                -%}
+                                    <div class="absolute top-2 left-2 lg:top-3 lg:left-3 z-20 pointer-events-none">
+                                        {% render 'component.awards',
+                                            awards_metafield: wine_product.metafields.custom.awards.value,
+                                            class: 'flex flex-col gap-2'
+                                        %}
+                                    </div>
+                                {%- endif -%}
+
+                                {%- comment -%} Info Icon with Tooltip {%- endcomment -%}
+                                <div class="absolute bottom-2 right-2 lg:bottom-3 lg:right-3 group/info z-30">
+                                    <button
+                                        type="button"
+                                        class="w-5 h-5 lg:w-6 lg:h-6 rounded-full flex items-center justify-center cursor-pointer"
+                                        aria-label="More information about {{ wine_product.title | escape }}"
+                                    >
+                                        {% render 'component.icon',
+                                            type: 'info_circle',
+                                            class: 'w-5 h-5 lg:w-6 lg:h-6 text-secondary'
+                                        %}
+                                    </button>
+                                    <div class="absolute bottom-full right-0 mb-2 w-64 bg-white rounded-lg shadow-xl p-4 opacity-0 pointer-events-none group-hover/info:opacity-100 group-hover/info:pointer-events-auto transition-opacity z-30">
+                                        <p class="text-sm font-semibold mb-2">
+                                            {{ wine_product.title }}
+                                        </p>
+                                        {% if wine_product.description != blank
+                                        %}
+                                            <p class="text-xs text-gray-600">
+                                                {{
+                                                    wine_product.description
+                                                    | strip_html
+                                                    | truncate: 150
+                                                }}
+                                            </p>
+                                        {% endif %}
+                                        {% if min_amount > 0 %}
+                                            <p class="text-xs text-secondary mt-2">
+                                                {{
+                                                    'sections.wine_subscription.minimum_bottles'
+                                                    | t: count: min_amount
+                                                    | default: 'Minimum: 1 flessen'
+                                                }}
+                                            </p>
+                                        {% endif %}
+                                        {% if increment > 1 %}
+                                            <p class="text-xs text-secondary mt-2">
+                                                {{
+                                                    'sections.wine_subscription.increment_bottles'
+                                                    | t: count: increment
+                                                    | default: 'Bestelbaar per 1 flessen'
+                                                }}
+                                            </p>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+
+                            {%- comment -%} Wine Details {%- endcomment -%}
+                            <div class="flex flex-col items-center text-center gap-[2px] px-[10px]">
+                                {%- comment -%} Winery Name {%- endcomment -%}
+                                {% if wine_product.vendor != blank %}
+                                    <span class="text-[11px] lg:text-[12px] font-inter uppercase tracking-[0.05em] text-primary leading-[1.5]">
+                                        {{ wine_product.vendor }}
+                                    </span>
+                                {% endif %}
+
+                                {%- comment -%} Wine Name {%- endcomment -%}
+                                <span class="font-cormorant-garamond text-[16px] lg:text-[20px] leading-[1.5] text-primary font-medium mb-4">
+                                    {{ wine_product.title }}
+                                </span>
+                            </div>
+
+                            {%- comment -%} Price {%- endcomment -%}
+                            <div class="flex justify-center items-center px-[10px] mt-auto">
+                                <span class="text-[12px] font-inter font-semibold uppercase tracking-[0.05em] text-[#0C0027] leading-[1.5]">
+                                    {{ wine_product.price | money }}
+                                </span>
+                            </div>
+
+                            {%- comment -%} Quantity Controls {%- endcomment -%}
+                            <div class="flex items-center justify-center border border-[#63666F] h-[43px] mt-4 mx-auto">
+                                <button
+                                    type="button"
+                                    class="qty-btn w-10 h-12 flex items-center justify-center text-primary disabled:opacity-30 transition-opacity"
+                                    data-qty-minus="{{ wine_product.variants.first.id }}"
+                                    disabled
+                                    aria-label="Decrease quantity"
+                                >
+                                    {% render 'component.icon',
+                                        type: 'minus',
+                                        class: 'size-5'
+                                    %}
+                                </button>
+                                <span
+                                    class="w-10 h-12 flex items-center justify-center text-[15px] font-inter text-primary"
+                                    data-qty-display="{{ wine_product.variants.first.id }}"
+                                >
+                                    {{- min_amount | default: 0 -}}
+                                </span>
+                                <button
+                                    type="button"
+                                    class="qty-btn w-10 h-12 flex items-center justify-center text-primary disabled:opacity-30 transition-opacity"
+                                    data-qty-plus="{{ wine_product.variants.first.id }}"
+                                    aria-label="Increase quantity"
+                                >
+                                    {% render 'component.icon',
+                                        type: 'plus',
+                                        class: 'size-5'
+                                    %}
+                                </button>
+                            </div>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            {% else %}
+                <p class="col-span-full text-center text-gray-500 py-8">
+                    {{
+                        'sections.wine_subscription.no_subscription'
+                        | t
+                        | default: 'Please select a subscription in the section settings.'
+                    }}
+                </p>
+            {% endif %}
+        </div>
+
+        {%- comment -%} Error Message {%- endcomment -%}
+        <p
+            class="text-red-600 text-sm text-center hidden"
+            data-error-wines
+        >
+            {{
+                s.step1_error_no_wines
+                | default: 'Selecteer minimaal één wijn om door te gaan'
+            }}
+        </p>
+
+        {%- comment -%} Navigation Buttons {%- endcomment -%}
+        <div class="flex justify-center lg:justify-between gap-3 lg:gap-2 w-full max-w-[488px] mx-auto">
+            <a
+                href="{{ s.step1_back_url | default: '/' }}"
+                class="flex-1 lg:w-[240px] h-[46px] flex items-center justify-center border text-sm font-inter transition-colors hover:opacity-80 cursor-pointer"
+                style="border-color: var(--color-secondary-background, #000000); color: var(--color-secondary-foreground, #000000);"
+            >
+                {{ s.step1_back_button | default: 'Terug' }}
+            </a>
+            <button
+                type="button"
+                class="flex-1 lg:w-[240px] h-[46px] flex items-center justify-center text-sm font-inter transition-colors hover:opacity-90 cursor-pointer"
+                style="background-color: var(--color-primary-background, #06061C); color: var(--color-primary-foreground, #ffffff);"
+                data-next-step
+            >
+                {{ s.step1_continue_button | default: 'Doorgaan' }}
+            </button>
+        </div>
+    </div>
+</li>
+
+<style>
+    .filter-tab {
+        color: #000000;
+        background: transparent;
+        cursor: pointer;
+    }
+    .filter-tab.active {
+        background: #a08735;
+        color: #ffffff;
+        border-color: #a08735;
+    }
+    .filter-tab:not(.active):hover {
+        background: rgba(160, 135, 53, 0.1);
+    }
+    .wine-card[data-hidden='true'] {
+        display: none;
+    }
+    .qty-btn {
+        cursor: pointer;
+    }
+    .qty-btn:disabled {
+        cursor: not-allowed;
+    }
+</style>

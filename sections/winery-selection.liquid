@@ -1,0 +1,981 @@
+{% liquid
+    assign s = section.settings
+    assign section_id = 'section-' | append: section.id
+    assign blocks_count = section.blocks.size
+
+    assign show_section = true
+
+    if s.visibility_audience == 'premium_only'
+        assign show_section = false
+        if customer
+            if customer.tags contains 'premium-club'
+                assign show_section = true
+            endif
+        endif
+    elsif s.visibility_audience == 'non_premium_only'
+        if customer
+            if customer.tags contains 'premium-club'
+                assign show_section = false
+            endif
+        endif
+    endif
+%}
+
+{% if show_section %}
+    <div
+        id="{{ section_id }}"
+        class="{{ s.mobile_margin }} {{ s.desktop_margin }} {%  unless s.make_section_full_width %} container px-0 lg:px-12 {% endunless %} bg-background"
+    >
+        {% render 'section-colors', current_section: section %}
+        <div
+            class="{{ s.mobile_padding }} {{ s.desktop_padding }} "
+        >
+            {% if s.animation_style != blank and s.animation_style != 'none' -%}
+                <gsap-section data-animation="{{ s.animation_style }}">
+            {%- endif %}
+            {% liquid
+                if s.autoplay_slider != false
+                    assign slider_type = 'loop'
+                else
+                    assign slider_type = 'slide'
+                endif
+            %}
+            {% if blocks_count > 1 %}
+                <div class="relative w-full">
+                    <splide-section
+                        data-splide-per-page-desktop="1"
+                        data-splide-per-page-mobile="1"
+                        data-splide-type="{{ slider_type }}"
+                        data-splide-autoplay="{{ s.autoplay_slider }}"
+                        data-splide-interval="{{ s.slider_interval }}"
+                        data-splide-pause-on-hover="false"
+                        {% if s.autoplay_slider != true %}
+                            data-splide-arrows="true"
+                        {% endif %}
+                    >
+                        <div class="w-full relative splide">
+                            <div class="w-full h-full overflow-hidden splide__track">
+                                <ul class="splide__list relative">
+                                    {% for block in section.blocks %}
+                                        {% liquid
+                                            assign b = block.settings
+                                        %}
+
+                                        <li class="splide__slide h-full w-full relative {{ s.aspect_ratio_mobile }} {{ s.aspect_ratio_desktop }} bg-background max-h-[92dvh]">
+                                            {% if b.article.metafields.custom.winery_video
+                                                    != blank
+                                                and b.show_winery_video != false
+                                            %}
+                                                <responsive-media
+                                                    class="h-full w-full"
+                                                    data-visible
+                                                >
+                                                    {{
+                                                        b.article.metafields.custom.winery_video.value
+                                                        | video_tag:
+                                                            class: 'object-cover w-full h-full',
+                                                            autoplay: true,
+                                                            muted: true,
+                                                            loop: true,
+                                                            playsinline: true
+                                                    -}}
+                                                    {% if b.enable_overlay %}
+                                                        {% if b.overlay_type
+                                                                == 'color'
+                                                        %}
+                                                            <div
+                                                                class="absolute inset-0 bg-black"
+                                                                style="opacity: {{ b.overlay_opacity | divided_by: 100.0 }};"
+                                                            ></div>
+                                                        {% elsif b.mobile_gradient
+                                                                != blank
+                                                            and b.desktop_gradient
+                                                                != blank
+                                                        %}
+                                                            {% render 'component.gradient',
+                                                                mobile_bg: b.mobile_gradient,
+                                                                desktop_bg: b.desktop_gradient,
+                                                                mobile_visible: true,
+                                                                desktop_visible: true
+                                                            %}
+                                                        {% endif %}
+                                                    {% endif %}
+                                                </responsive-media>
+                                            {% elsif b.article.image != blank %}
+                                                <responsive-media
+                                                    class="h-full w-full"
+                                                    data-visible
+                                                >
+                                                    {{
+                                                        b.article.image
+                                                        | image_url: width: 1440
+                                                        | image_tag:
+                                                            class: 'object-cover w-full h-full'
+                                                    -}}
+                                                    {% if b.enable_overlay %}
+                                                        {% if b.overlay_type
+                                                                == 'color'
+                                                        %}
+                                                            <div
+                                                                class="absolute inset-0 bg-black"
+                                                                style="opacity: {{ b.overlay_opacity | divided_by: 100.0 }};"
+                                                            ></div>
+                                                        {% elsif b.mobile_gradient
+                                                                != blank
+                                                            and b.desktop_gradient
+                                                                != blank
+                                                        %}
+                                                            {% render 'component.gradient',
+                                                                mobile_bg: b.mobile_gradient,
+                                                                desktop_bg: b.desktop_gradient,
+                                                                mobile_visible: true,
+                                                                desktop_visible: true
+                                                            %}
+                                                        {% endif %}
+                                                    {% endif %}
+                                                </responsive-media>
+                                            {% else %}
+                                                <div class="h-full w-full flex items-center justify-center text-white">
+                                                    {{
+                                                        'image'
+                                                        | placeholder_svg_tag: 'placeholder-svg w-full h-full bg-gray-100 text-white'
+                                                    }}
+                                                </div>
+                                            {% endif %}
+                                            <div
+                                                class="absolute bottom-0 left-0 w-full h-full flex flex-col items-center justify-start px-10 pb-10 pt-20 text-primary"
+                                            >
+                                                <span class="uppercase text-[15px] lg:text-[17px] text-center mb-[6px] font-inter leading-[150%] tracking-[5%]">
+                                                    {{ s.section_title }}
+                                                </span>
+                                                {% if b.article.title != blank
+                                                    and b.show_winery_name
+                                                        != false
+                                                %}
+                                                    <h3
+                                                        class="text-[30px] lg:text-[55px] font-cormorant-garamond font-medium text-center leading-[120%] tracking-[2%] mb-[31px]"
+                                                    >
+                                                        {{ b.article.title }}
+                                                    </h3>
+                                                {% endif %}
+                                                {% if b.article.metafields.custom.winery_logo_white
+                                                        != blank
+                                                    and b.show_winery_logo
+                                                        != false
+                                                %}
+                                                    <responsive-media
+                                                        class=" max-w-[10rem] mb-[34px] isolation-auto"
+                                                        data-visible
+                                                    >
+                                                        {{
+                                                            b.article.metafields.custom.winery_logo_white
+                                                            | image_url:
+                                                                width: 1440
+                                                            | image_tag:
+                                                                class: 'object-contain h-full isolation-auto
+'
+                                                        -}}
+                                                    </responsive-media>
+                                                {% endif %}
+
+                                                {% liquid
+                                                    assign button_label = 'sections.winery_selection.view_winery' | t: title: b.article.title | default: 'View Winery'
+                                                %}
+
+                                                <div class="flex flex-col items-stretch gap-3">
+                                                    {% if b.show_winery_button
+                                                            != false
+                                                    %}
+                                                        {% if b.button_url
+                                                                != blank
+                                                        %}
+                                                            {% assign button_url = b.button_url %}
+                                                        {% else %}
+                                                            {% assign button_url = b.article.url %}
+                                                        {% endif %}
+                                                        {% render 'component.button',
+                                                            label: button_label,
+                                                            title: button_label,
+                                                            href: button_url,
+                                                            type: 'button',
+                                                            name: button_label,
+                                                            aria_label: button_label,
+                                                            aria_describedby: '',
+                                                            style: b.button_style,
+                                                            class: 'w-full justify-center whitespace-nowrap'
+                                                        %}
+                                                    {% endif %}
+                                                    {% if b.extra_button_text
+                                                            != blank
+                                                        and b.extra_button_url
+                                                            != blank
+                                                    %}
+                                                        {% render 'component.button',
+                                                            label: b.extra_button_text,
+                                                            title: b.extra_button_text,
+                                                            href: b.extra_button_url,
+                                                            type: 'button',
+                                                            name: b.extra_button_text,
+                                                            aria_label: b.extra_button_text,
+                                                            aria_describedby: '',
+                                                            style: b.extra_button_style,
+                                                            class: 'w-full justify-center whitespace-nowrap'
+                                                        %}
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                            <div class="absolute bottom-0 left-0 w-full flex lg:hidden">
+                                                <button
+                                                    type="button"
+                                                    class="text-primary lg:text-secondary px-8 py-5  w-full"
+                                                    aria-label="{{ block.settings.article.title }}"
+                                                >
+                                                    {{ block.settings.article.title }}
+                                                </button>
+                                            </div>
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                            {% if s.autoplay_slider != false %}
+                                <div class="splide__progress">
+                                    <div class="splide__progress__bar"></div>
+                                </div>
+                            {% endif %}
+                            {% if s.autoplay_slider != true %}
+                                <div class="absolute bottom-5 left-0 w-full flex lg:hidden justify-center px-7">
+                                    {% render 'component.splide-arrows',
+                                        container_class: 'flex items-center justify-between w-full ',
+                                        style: 'custom',
+                                        show_pagination: false,
+                                        pagination_total: section.blocks.size,
+                                        button_base_class: 'text-primary'
+                                    %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        <div
+                            class="absolute bottom-3 inset-x-0 w-auto hidden lg:flex z-10 winery-navigation justify-between"
+                            data-section-id="{{ section.id }}"
+                        >
+                            {% for block in section.blocks %}
+                                {% liquid
+                                    assign slide_index = forloop.index0
+                                %}
+                                {% if block.settings.article.title != blank %}
+                                    <button
+                                        type="button"
+                                        class="winery-nav-dot {% if forloop.first %}active{% endif %} text-primary hover:cursor-pointer px-2 py-2 mx-5"
+                                        data-slide-index="{{ slide_index }}"
+                                        aria-label="{{ block.settings.article.title }}"
+                                    >
+                                        {{ block.settings.article.title }}
+                                    </button>
+                                {% else %}
+                                    <button
+                                        type="button"
+                                        class="winery-nav-dot {% if forloop.first %}active{% endif %} text-primary hover:cursor-pointer px-2 py-2 mx-5"
+                                        data-slide-index="{{ slide_index }}"
+                                        aria-label="Winery"
+                                    >
+                                        Winery
+                                    </button>
+                                {% endif %}
+                            {% endfor %}
+                            <a
+                                type="button"
+                                class="text-primary hover:cursor-pointer px-8 py-2 hidden lg:flex items-center gap-2 "
+                                aria-label="{{ 'sections.winery_selection.view_all' | t | default: 'View all wineries' }}"
+                                href="{{ s.view_all_wineries_url | default: '/blogs/wijnhuizen' }}"
+                            >
+                                {{ 'sections.winery_selection.view_all' | t -}}
+                                {%- render 'component.icon',
+                                    type: 'full_long_arrow',
+                                    class: 'w-4 h-4'
+                                %}
+                            </a>
+                        </div>
+                    </splide-section>
+                </div>
+            {% else %}
+                {% for block in section.blocks %}
+                    {% liquid
+                        assign b = block.settings
+                    %}
+                    <div class="relative h-full w-full {{ s.aspect_ratio_mobile }} {{ s.aspect_ratio_desktop }} bg-background max-h-[92dvh] overflow-hidden">
+                        {% if b.article.metafields.custom.winery_video != blank
+                            and b.show_winery_video != false
+                        %}
+                            <responsive-media
+                                class="h-full w-full"
+                                data-visible
+                            >
+                                {{
+                                    b.article.metafields.custom.winery_video.value
+                                    | video_tag:
+                                        class: 'object-cover w-full h-full',
+                                        autoplay: true,
+                                        muted: true,
+                                        loop: true,
+                                        playsinline: true
+                                -}}
+                                {% if b.enable_overlay %}
+                                    {% if b.overlay_type == 'color' %}
+                                        <div
+                                            class="absolute inset-0 bg-black"
+                                            style="opacity: {{ b.overlay_opacity | divided_by: 100.0 }};"
+                                        ></div>
+                                    {% elsif b.mobile_gradient != blank
+                                        and b.desktop_gradient != blank
+                                    %}
+                                        {% render 'component.gradient',
+                                            mobile_bg: b.mobile_gradient,
+                                            desktop_bg: b.desktop_gradient,
+                                            mobile_visible: true,
+                                            desktop_visible: true
+                                        %}
+                                    {% endif %}
+                                {% endif %}
+                            </responsive-media>
+                        {% elsif b.article.image != blank %}
+                            <responsive-media
+                                class="h-full w-full"
+                                data-visible
+                            >
+                                {{
+                                    b.article.image
+                                    | image_url: width: 1440
+                                    | image_tag:
+                                        class: 'object-cover w-full h-full'
+                                -}}
+                                {% if b.enable_overlay %}
+                                    {% if b.overlay_type == 'color' %}
+                                        <div
+                                            class="absolute inset-0 bg-black"
+                                            style="opacity: {{ b.overlay_opacity | divided_by: 100.0 }};"
+                                        ></div>
+                                    {% elsif b.mobile_gradient != blank
+                                        and b.desktop_gradient != blank
+                                    %}
+                                        {% render 'component.gradient',
+                                            mobile_bg: b.mobile_gradient,
+                                            desktop_bg: b.desktop_gradient,
+                                            mobile_visible: true,
+                                            desktop_visible: true
+                                        %}
+                                    {% endif %}
+                                {% endif %}
+                            </responsive-media>
+                        {% else %}
+                            <div class="h-full w-full flex items-center justify-center text-white">
+                                {{
+                                    'image'
+                                    | placeholder_svg_tag: 'placeholder-svg w-full h-full bg-gray-100 text-white'
+                                }}
+                            </div>
+                        {% endif %}
+                        <div class="absolute bottom-0 left-0 w-full h-full flex flex-col items-center justify-center p-10 text-primary gap-8 lg:gap-10">
+                            {% if b.article.metafields.custom.winery_logo_white
+                                    != blank
+                                and b.show_winery_logo != false
+                            %}
+                                <responsive-media
+                                    class="max-w-[10rem] isolation-auto"
+                                    data-visible
+                                >
+                                    {{
+                                        b.article.metafields.custom.winery_logo_white
+                                        | image_url: width: 1440
+                                        | image_tag:
+                                            class: 'object-contain  h-full isolation-auto'
+                                    -}}
+                                </responsive-media>
+                            {% endif %}
+                            {% if b.article.title != blank
+                                and b.show_winery_name != false
+                            %}
+                                <h3
+                                    class=" text-[40px] lg:text-[55px] font-cormorant-garamond text-center font-semibold mb-[31px]"
+                                >
+                                    {{ b.article.title }}
+                                </h3>
+                            {% endif %}
+                            {% liquid
+                                assign button_label = 'sections.winery_selection.view_winery' | t: title: b.article.title | default: 'View Winery'
+                            %}
+                            <div class="flex flex-col items-stretch gap-3">
+                                {% if b.show_winery_button != false %}
+                                    {% if b.button_url != blank %}
+                                        {% assign button_url = b.button_url %}
+                                    {% else %}
+                                        {% assign button_url = b.article.url %}
+                                    {% endif %}
+                                    {% render 'component.button',
+                                        label: button_label,
+                                        title: button_label,
+                                        href: button_url,
+                                        type: 'button',
+                                        name: button_label,
+                                        aria_label: button_label,
+                                        aria_describedby: '',
+                                        style: b.button_style,
+                                        class: 'w-full justify-center whitespace-nowrap'
+                                    %}
+                                {% endif %}
+                                {% if b.extra_button_text != blank
+                                    and b.extra_button_url != blank
+                                %}
+                                    {% render 'component.button',
+                                        label: b.extra_button_text,
+                                        title: b.extra_button_text,
+                                        href: b.extra_button_url,
+                                        type: 'button',
+                                        name: b.extra_button_text,
+                                        aria_label: b.extra_button_text,
+                                        aria_describedby: '',
+                                        style: b.extra_button_style,
+                                        class: 'w-full justify-center whitespace-nowrap'
+                                    %}
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% endif %}
+            {% if s.animation_style != blank and s.animation_style != 'none' -%}
+                </gsap-section>
+            {%- endif %}
+        </div>
+    </div>
+{% endif %}
+
+{% schema %}
+{
+    "name": "Winery Selection",
+    "tag": "section",
+    "class": "section-winery-selection",
+    "settings": [
+        {
+            "type": "header",
+            "content": "Visibility"
+        },
+        {
+            "type": "select",
+            "id": "visibility_audience",
+            "label": "Visibility (audience)",
+            "options": [
+                {
+                    "value": "everyone",
+                    "label": "Everyone"
+                },
+                {
+                    "value": "premium_only",
+                    "label": "Only premium-club customers"
+                },
+                {
+                    "value": "non_premium_only",
+                    "label": "Only non premium-club customers"
+                }
+            ],
+            "default": "everyone"
+        },
+        {
+            "type": "header",
+            "content": "Documentation for this section",
+            "info": "Click [here](https://strix-net.atlassian.net/wiki/spaces/TWL/pages/3720183810/Section+Winery+Selection) for more information."
+        },
+        {
+            "type": "text",
+            "id": "view_all_wineries_url",
+            "label": "View all wineries link",
+            "default": "/blogs/wijnhuizen",
+            "info": "URL for the \"View all\" wineries link in the slider navigation (e.g. /blogs/wijnhuizen)."
+        },
+        {
+            "type": "header",
+            "content": "Section Styling"
+        },
+        {
+            "type": "checkbox",
+            "id": "section_styling",
+            "label": "Add styling to section",
+            "info": "If enabled this shows the settings to set the color scheme, spacing, and margin for the section.",
+            "default": false
+        },
+        {
+            "type": "header",
+            "content": "Section Color Scheme",
+            "visible_if": "{{ section.settings.section_styling == true }}"
+        },
+        {
+            "type": "header",
+            "content": "Section Spacing",
+            "visible_if": "{{ section.settings.section_styling == true }}"
+        },
+        {
+            "type": "select",
+            "id": "mobile_padding",
+            "label": "Mobile padding",
+            "visible_if": "{{ section.settings.section_styling == true }}",
+            "options": [
+                {
+                    "value": "py-0",
+                    "label": "None"
+                },
+                {
+                    "value": "py-2",
+                    "label": "S - 8px"
+                },
+                {
+                    "value": "py-4",
+                    "label": "M - 16px"
+                },
+                {
+                    "value": "py-6",
+                    "label": "L - 24px"
+                },
+                {
+                    "value": "py-8",
+                    "label": "XL - 32px"
+                },
+                {
+                    "value": "py-10",
+                    "label": "2XL - 40px"
+                },
+                {
+                    "value": "py-12",
+                    "label": "3XL - 48px"
+                },
+                {
+                    "value": "py-16",
+                    "label": "4XL - 64px"
+                }
+            ],
+            "default": "py-0"
+        },
+        {
+            "type": "select",
+            "id": "desktop_padding",
+            "label": "Desktop padding",
+            "visible_if": "{{ section.settings.section_styling == true }}",
+            "options": [
+                {
+                    "value": "lg:py-0",
+                    "label": "None"
+                },
+                {
+                    "value": "lg:py-2",
+                    "label": "S - 8px"
+                },
+                {
+                    "value": "lg:py-4",
+                    "label": "M - 16px"
+                },
+                {
+                    "value": "lg:py-6",
+                    "label": "L - 24px"
+                },
+                {
+                    "value": "lg:py-8",
+                    "label": "XL - 32px"
+                },
+                {
+                    "value": "lg:py-10",
+                    "label": "2XL - 40px"
+                },
+                {
+                    "value": "lg:py-12",
+                    "label": "3XL - 48px"
+                },
+                {
+                    "value": "lg:py-16",
+                    "label": "4XL - 64px"
+                }
+            ],
+            "default": "lg:py-0"
+        },
+        {
+            "type": "header",
+            "content": "Section Margin",
+            "visible_if": "{{ section.settings.section_styling == true }}"
+        },
+        {
+            "type": "select",
+            "id": "mobile_margin",
+            "label": "Mobile Section margin",
+            "visible_if": "{{ section.settings.section_styling == true }}",
+            "options": [
+                {
+                    "value": "mb-0",
+                    "label": "None"
+                },
+                {
+                    "value": "mb-4",
+                    "label": "Small - 16px"
+                },
+                {
+                    "value": "mb-8",
+                    "label": "Medium - 32px"
+                },
+                {
+                    "value": "mb-12",
+                    "label": "Large - 48px"
+                }
+            ],
+            "default": "mb-0"
+        },
+        {
+            "type": "select",
+            "id": "desktop_margin",
+            "label": "Desktop Section margin",
+            "visible_if": "{{ section.settings.section_styling == true }}",
+            "options": [
+                {
+                    "value": "lg:mb-0",
+                    "label": "None"
+                },
+                {
+                    "value": "lg:mb-8",
+                    "label": "Small - 32px"
+                },
+                {
+                    "value": "lg:mb-12",
+                    "label": "Medium - 48px"
+                },
+                {
+                    "value": "lg:mb-16",
+                    "label": "Large - 64px"
+                }
+            ],
+            "default": "lg:mb-0"
+        },
+        {
+            "type": "header",
+            "content": "Colors",
+            "visible_if": "{{ section.settings.section_styling == true }}"
+        },
+        {
+            "type": "color",
+            "id": "background",
+            "label": "Section background color",
+            "default": "#FFFFFF",
+            "visible_if": "{{ section.settings.section_styling == true }}"
+        },
+        {
+            "type": "color",
+            "id": "primary_text_color",
+            "label": "Primary text color",
+            "default": "#000000",
+            "visible_if": "{{ section.settings.section_styling == true }}"
+        },
+        {
+            "type": "color",
+            "id": "secondary_text_color",
+            "label": "Secondary text color",
+            "default": "#A08735",
+            "visible_if": "{{ section.settings.section_styling == true }}"
+        },
+        {
+            "type": "color",
+            "id": "primary_button_color",
+            "label": "Primary button background color",
+            "default": "#ffffff00",
+            "visible_if": "{{ section.settings.section_styling == true }}"
+        },
+        {
+            "type": "color",
+            "id": "primary_button_text_color",
+            "label": "Primary button text color",
+            "default": "#000000",
+            "visible_if": "{{ section.settings.section_styling == true }}"
+        },
+        {
+            "type": "color",
+            "id": "secondary_button_color",
+            "label": "Secondary button background color",
+            "default": "#000000",
+            "visible_if": "{{ section.settings.section_styling == true }}"
+        },
+        {
+            "type": "color",
+            "id": "secondary_button_text_color",
+            "label": "Secondary button text color",
+            "default": "#FFFFFF",
+            "visible_if": "{{ section.settings.section_styling == true }}"
+        },
+        {
+            "type": "text",
+            "id": "section_title",
+            "label": "Section title",
+            "default": "Discover our exclusive wineries"
+        },
+        {
+            "type": "select",
+            "id": "aspect_ratio_desktop",
+            "label": "Aspect ratio desktop",
+            "options": [
+                {
+                    "value": "lg:aspect-[1344/783]",
+                    "label": "Large"
+                },
+                {
+                    "value": "lg:aspect-[1340/584]",
+                    "label": "Medium"
+                },
+                {
+                    "value": "lg:aspect-[1340/382]",
+                    "label": "Small"
+                }
+            ],
+            "default": "lg:aspect-[1344/783]"
+        },
+        {
+            "type": "select",
+            "id": "aspect_ratio_mobile",
+            "label": "Aspect ratio mobile",
+            "options": [
+                {
+                    "value": "aspect-[375/700]",
+                    "label": "Large"
+                },
+                {
+                    "value": "aspect-[375/584]",
+                    "label": "Medium"
+                },
+                {
+                    "value": "aspect-[375/307]",
+                    "label": "Small"
+                }
+            ],
+            "default": "aspect-[375/700]"
+        },
+        {
+            "type": "checkbox",
+            "id": "make_section_full_width",
+            "label": "Make section full width",
+            "default": false
+        },
+        {
+            "type": "header",
+            "content": "Slider Settings"
+        },
+
+        {
+            "type": "checkbox",
+            "id": "autoplay_slider",
+            "default": false,
+            "label": "Autoplay slider"
+        },
+        {
+            "type": "range",
+            "id": "slider_interval",
+            "label": "Slider interval",
+            "default": 5000,
+            "min": 100,
+            "max": 9900,
+            "step": 100
+        },
+        {
+            "type": "header",
+            "content": "Animation"
+        },
+        {
+            "type": "select",
+            "id": "animation_style",
+            "label": "Scroll animation",
+            "info": "Adds a subtle entrance animation when the section scrolls into view.",
+            "options": [
+                { "value": "none", "label": "None" },
+                { "value": "fade-up", "label": "Fade up" },
+                { "value": "fade-in", "label": "Fade in" },
+                { "value": "slide-in-left", "label": "Slide in from left" },
+                { "value": "slide-in-right", "label": "Slide in from right" },
+                { "value": "image-zoom", "label": "Image zoom" }
+            ],
+            "default": "none"
+        }
+    ],
+    "max_blocks": 4,
+    "blocks": [
+        {
+            "type": "winery",
+            "name": "Winery",
+            "settings": [
+                {
+                    "type": "article",
+                    "id": "article",
+                    "label": "Select a winery"
+                },
+                {
+                    "type": "checkbox",
+                    "id": "show_winery_video",
+                    "default": true,
+                    "label": "Show winery video"
+                },
+                {
+                    "type": "checkbox",
+                    "id": "show_winery_logo",
+                    "default": true,
+                    "label": "Show winery logo"
+                },
+                {
+                    "type": "checkbox",
+                    "id": "show_winery_name",
+                    "default": true,
+                    "label": "Show winery name"
+                },
+                {
+                    "type": "checkbox",
+                    "id": "show_winery_button",
+                    "default": true,
+                    "label": "Show button"
+                },
+                {
+                    "type": "select",
+                    "id": "button_style",
+                    "label": "Button style",
+                    "options": [
+                        {
+                            "value": "primary",
+                            "label": "Primary"
+                        },
+                        {
+                            "value": "secondary",
+                            "label": "Secondary"
+                        }
+                    ],
+                    "default": "primary"
+                },
+                {
+                    "type": "url",
+                    "id": "button_url",
+                    "label": "Override button url"
+                },
+                {
+                    "type": "header",
+                    "content": "Extra Button"
+                },
+                {
+                    "type": "text",
+                    "id": "extra_button_text",
+                    "label": "Extra button text"
+                },
+                {
+                    "type": "url",
+                    "id": "extra_button_url",
+                    "label": "Extra button url"
+                },
+                {
+                    "type": "select",
+                    "id": "extra_button_style",
+                    "label": "Extra button style",
+                    "options": [
+                        {
+                            "value": "primary",
+                            "label": "Primary"
+                        },
+                        {
+                            "value": "secondary",
+                            "label": "Secondary"
+                        }
+                    ],
+                    "default": "secondary"
+                },
+                {
+                    "type": "checkbox",
+                    "id": "enable_overlay",
+                    "default": false,
+                    "label": "Enable overlay"
+                },
+                {
+                    "type": "select",
+                    "id": "overlay_type",
+                    "label": "Overlay type",
+                    "options": [
+                        {
+                            "value": "gradient",
+                            "label": "Gradient"
+                        },
+                        {
+                            "value": "color",
+                            "label": "Color overlay"
+                        }
+                    ],
+                    "default": "gradient",
+                    "visible_if": "{{ block.settings.enable_overlay == true }}"
+                },
+                {
+                    "type": "color_background",
+                    "id": "mobile_gradient",
+                    "label": "Gradient [Mobile]",
+                    "info": "Click on color-picker to adjust gradient colors, direction and opacity",
+                    "default": "linear-gradient(180deg, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.3) 100%)",
+                    "visible_if": "{{ block.settings.enable_overlay == true and block.settings.overlay_type == 'gradient' }}"
+                },
+                {
+                    "type": "color_background",
+                    "id": "desktop_gradient",
+                    "label": "Gradient [Desktop]",
+                    "info": "Click on color-picker to adjust gradient colors, direction and opacity",
+                    "default": "linear-gradient(180deg, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.3) 100%)",
+                    "visible_if": "{{ block.settings.enable_overlay == true and block.settings.overlay_type == 'gradient' }}"
+                },
+                {
+                    "type": "range",
+                    "id": "overlay_opacity",
+                    "label": "Overlay opacity",
+                    "min": 0,
+                    "max": 100,
+                    "step": 5,
+                    "unit": "%",
+                    "default": 30,
+                    "visible_if": "{{ block.settings.enable_overlay == true and block.settings.overlay_type == 'color' }}"
+                }
+            ]
+        }
+    ],
+    "presets": [
+        {
+            "name": "Winery Selection",
+            "blocks": [
+                {
+                    "type": "winery",
+                    "settings": {
+                        "show_winery_logo": true,
+                        "show_winery_name": true,
+                        "show_winery_button": true,
+                        "enable_overlay": false
+                    }
+                },
+                {
+                    "type": "winery",
+                    "settings": {
+                        "show_winery_logo": true,
+                        "show_winery_name": true,
+                        "show_winery_button": true,
+                        "enable_overlay": false
+                    }
+                },
+                {
+                    "type": "winery",
+                    "settings": {
+                        "show_winery_logo": true,
+                        "show_winery_name": true,
+                        "show_winery_button": true,
+                        "enable_overlay": false
+                    }
+                },
+                {
+                    "type": "winery",
+                    "settings": {
+                        "show_winery_logo": true,
+                        "show_winery_name": true,
+                        "show_winery_button": true,
+                        "enable_overlay": false
+                    }
+                }
+            ]
+        }
+    ]
+}
+{% endschema %}

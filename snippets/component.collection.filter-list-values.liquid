@@ -1,0 +1,48 @@
+<ul>
+    {%- for value in sorted_values -%}
+        {%- liquid
+            assign input_id = 'Filter-' | append: value.param_name | escape | append: '-' | append: forloop.index
+
+            assign swatch_value = null
+            if value.swatch.image
+                assign image_url = value.swatch.image | image_url: width: 50
+                assign swatch_value = 'url(' | append: image_url | append: ')'
+                assign swatch_focal_point = value.swatch.image.presentation.focal_point
+            elsif value.swatch.color
+                assign swatch_value = 'rgb(' | append: value.swatch.color.rgb | append: ')'
+            endif
+            if swatch_value
+                assign input_class = 'peer appearance-none border-0 checked:border border-foreground h-5 w-[22px] relative disabled:opacity-40 after:transition after:duration-100 after:ease-in-out'
+            else
+                assign input_class = 'peer appearance-none border border-foreground h-5 w-[22px] relative after:absolute after:left-1.5 after:top-0.5 after:w-[6px] after:h-[11px] after:border-r-2 after:border-b-2 after:border-foreground disabled:opacity-40 after:rotate-45 after:opacity-0 checked:after:opacity-100 after:transition after:duration-100 after:ease-in-out'
+            endif
+        -%}
+        <li class="flex gap-x-3 items-center font-inter text-sm font-normal leading-tight has-[:checked]:bg-brand-400/10 {{ list_class }}">
+            <input
+                data-target="filters-form.input"
+                {% if swatch_value %}
+                    style="background: {{ swatch_value }}; background-position: {{ swatch_focal_point }}; background-size: cover;"
+                {% endif %}
+                id="{{- input_id -}}"
+                class="{{- input_class -}}"
+                type="checkbox"
+                name="{{- value.param_name -}}"
+                value="{{- value.value -}}"
+                {% if value.active %}
+                    checked
+                {% endif %}
+
+                {% if value.count == 0 and value.active == false %}
+                    disabled
+                {% endif %}
+            >
+            <label
+                class="cursor-pointer peer-disabled:cursor-default peer-disabled:opacity-40 flex gap-1 w-full"
+                for="{{- input_id -}}"
+            >
+                <span>{{ value.label }}</span>
+                <span class="text-surface-400" data-filter-count>({{ value.count }})</span>
+            </label>
+        </li>
+    {%- endfor -%}
+</ul>

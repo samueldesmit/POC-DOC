@@ -1,0 +1,325 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "main": {
+      "type": "main-page",
+      "disabled": true,
+      "settings": {}
+    },
+    "breadcrumbs_fJUKnd": {
+      "type": "breadcrumbs",
+      "name": "Breadcrumbs",
+      "settings": {
+        "visibility_audience": "everyone",
+        "custom_parent_url": "/",
+        "custom_parent_title": "",
+        "custom_current_title": "",
+        "section_styling": true,
+        "mobile_padding": "py-2",
+        "desktop_padding": "lg:py-2",
+        "mobile_margin": "mb-0",
+        "desktop_margin": "lg:mb-0",
+        "background": "#ffffff",
+        "primary_text_color": "#000000"
+      }
+    },
+    "richtext_cyJr6B": {
+      "type": "richtext",
+      "blocks": {
+        "heading_KFDXcT": {
+          "type": "heading",
+          "settings": {
+            "heading": "Over ons",
+            "font_family": "font-cormorant-garamond",
+            "font_weight": "600",
+            "mobile_font_size": "40px",
+            "desktop_font_size": "52px",
+            "margin_bottom": "0px"
+          }
+        }
+      },
+      "block_order": [
+        "heading_KFDXcT"
+      ],
+      "name": "Richtext",
+      "settings": {
+        "visibility_audience": "everyone",
+        "section_styling": true,
+        "container": true,
+        "content_alignment": "text-center",
+        "mobile_padding": "py-4",
+        "desktop_padding": "lg:py-0",
+        "mobile_margin": "mb-4",
+        "desktop_margin": "lg:mb-8",
+        "background": "#ffffff",
+        "primary_text_color": "#06061c",
+        "secondary_text_color": "#06061c",
+        "animation_style": "fade-in"
+      }
+    },
+    "hero_YfigKc": {
+      "type": "hero",
+      "blocks": {
+        "hero_slide_WC9Jb9": {
+          "type": "hero_slide",
+          "settings": {
+            "block_styling": false,
+            "primary_text_color": "#282828",
+            "secondary_text_color": "#282828",
+            "primary_button_color": "#ffffff",
+            "primary_button_text_color": "#282828",
+            "secondary_button_color": "#000000",
+            "secondary_button_text_color": "#ffffff",
+            "image": "shopify://shop_images/12148541_3840_2160_25fps_1_1_1.png",
+            "enable_overlay": false,
+            "overlay_type": "gradient",
+            "mobile_gradient": "linear-gradient(180deg, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.3) 100%)",
+            "desktop_gradient": "linear-gradient(180deg, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.3) 100%)",
+            "overlay_opacity": 30,
+            "text": "",
+            "title": "",
+            "button_text": "",
+            "button_url": "/home",
+            "button_style": "primary"
+          }
+        }
+      },
+      "block_order": [
+        "hero_slide_WC9Jb9"
+      ],
+      "name": "Hero",
+      "settings": {
+        "visibility_audience": "everyone",
+        "section_styling": false,
+        "mobile_margin": "mb-0",
+        "desktop_margin": "lg:mb-0",
+        "full_width_mobile": true,
+        "full_width_desktop": true,
+        "aspect_ratio_desktop": "lg:aspect-[1440/450]",
+        "aspect_ratio_mobile": "aspect-[375/350]",
+        "enable_autoplay": true,
+        "autoplay_interval": 5000,
+        "animation_style": "image-zoom"
+      }
+    },
+    "richtext_9JVAcB": {
+      "type": "richtext",
+      "blocks": {
+        "heading_AJEHWA": {
+          "type": "heading",
+          "settings": {
+            "heading": "Verfijnde wijnen, persoonlijk geselecteerd",
+            "font_family": "font-cormorant-garamond",
+            "font_weight": "600",
+            "mobile_font_size": "30px",
+            "desktop_font_size": "30px",
+            "margin_bottom": "14px"
+          }
+        },
+        "text_AjiX9t": {
+          "type": "text",
+          "settings": {
+            "text": "<p>Met persoonlijk advies en de service van onze wijnexperts helpen wij je nog meer te genieten van ’s werelds mooiste wijnen. Dankzij onze nauwe relaties met de beste wijnhuizen en producenten ter wereld beschikken wij over een indrukwekkende collectie van meer dan 500 wijnen. Al onze wijnen komen rechtstreeks van de bron en worden onder optimale omstandigheden op voorraad gehouden, zodat wij ze snel bij je kunnen leveren.</p>",
+            "font_family": "font-inter",
+            "font_weight": "400",
+            "mobile_font_size": "16px",
+            "desktop_font_size": "16px",
+            "margin_bottom": "14px"
+          }
+        }
+      },
+      "block_order": [
+        "heading_AJEHWA",
+        "text_AjiX9t"
+      ],
+      "name": "Richtext",
+      "settings": {
+        "visibility_audience": "everyone",
+        "section_styling": true,
+        "container": true,
+        "content_alignment": "text-left",
+        "mobile_padding": "py-6",
+        "desktop_padding": "lg:py-8",
+        "mobile_margin": "mb-0",
+        "desktop_margin": "lg:mb-0",
+        "background": "#ffffff",
+        "primary_text_color": "#000000",
+        "secondary_text_color": "#000000",
+        "animation_style": "fade-in"
+      }
+    },
+    "text_image_qktdDC": {
+      "type": "text-image",
+      "name": "Text with Image",
+      "settings": {
+        "visibility_audience": "everyone",
+        "section_styling": true,
+        "mobile_padding": "py-0",
+        "desktop_padding": "lg:py-0",
+        "mobile_margin": "mb-0",
+        "desktop_margin": "lg:mb-0",
+        "divider_color": "#b19e5e",
+        "background": "#ffffff",
+        "primary_text_color": "#000000",
+        "primary_button_color": "rgba(0,0,0,0)",
+        "primary_button_text_color": "#000000",
+        "secondary_button_color": "#000000",
+        "secondary_button_text_color": "#ffffff",
+        "winery_article": "",
+        "image": "shopify://shop_images/Rectangle_46.png",
+        "image_aspect_ratio": "aspect-square",
+        "image_position": "left",
+        "mobile_image_position": "up",
+        "text_alignment": "left",
+        "heading": "Waarom The Wine List?",
+        "heading_size": "lg",
+        "text": "<p>Ons assortiment<br/>Exclusieve registraties<br/>Onze smaakgarantie<br/>Ons spaarprogramma<br/>Verkrijgbaar bij toprestaurants<br/>Persoonlijk advies<br/>Wijnen uit alle belangrijke wijnregio’s<br/>Premium waters van S.Pellegrino<br/>Bezoek aan het wijnhuis</p>",
+        "button_text": "",
+        "button_url": "#",
+        "button_style": "primary",
+        "animation_style": "split-sides"
+      }
+    },
+    "richtext_DeBx7z": {
+      "type": "richtext",
+      "blocks": {
+        "heading_UNBkG6": {
+          "type": "heading",
+          "settings": {
+            "heading": "Wijnen uit alle belangrijke wijnregio’s",
+            "font_family": "font-cormorant-garamond",
+            "font_weight": "600",
+            "mobile_font_size": "30px",
+            "desktop_font_size": "30px",
+            "margin_bottom": "14px"
+          }
+        },
+        "text_aRq6Mt": {
+          "type": "text",
+          "settings": {
+            "text": "<p>Onze selectie is zorgvuldig samengesteld uit de beste producenten uit de belangrijkste wijnregio’s ter wereld. Van klassieke wijnlanden zoals Frankrijk, Spanje, Duitsland en Italië, maar ook uit “nieuwe wijnlanden” zoals Chili, Argentinië, Nieuw-Zeeland, de Verenigde Staten en Australië. Soms van een klein boutique-wijndomein, dan weer van een gerenommeerde wijnfamilie, maar altijd van topkwaliteit.</p>",
+            "font_family": "font-inter",
+            "font_weight": "400",
+            "mobile_font_size": "16px",
+            "desktop_font_size": "16px",
+            "margin_bottom": "14px"
+          }
+        }
+      },
+      "block_order": [
+        "heading_UNBkG6",
+        "text_aRq6Mt"
+      ],
+      "name": "Richtext",
+      "settings": {
+        "visibility_audience": "everyone",
+        "section_styling": true,
+        "container": true,
+        "content_alignment": "text-left",
+        "mobile_padding": "py-6",
+        "desktop_padding": "lg:py-8",
+        "mobile_margin": "mb-0",
+        "desktop_margin": "lg:mb-0",
+        "background": "#ffffff",
+        "primary_text_color": "#000000",
+        "secondary_text_color": "#000000",
+        "animation_style": "fade-in"
+      }
+    },
+    "image_tiles_firtaJ": {
+      "type": "image-tiles",
+      "blocks": {
+        "tile_VzGNrB": {
+          "type": "tile",
+          "settings": {
+            "image": "shopify://shop_images/Rectangle_46_2.png",
+            "title": "Ons assortiment",
+            "description": "Met persoonlijk advies en de service van onze wijnexperts helpen wij je nog meer te genieten van ’s werelds mooiste wijnen."
+          }
+        },
+        "tile_yD7AbB": {
+          "type": "tile",
+          "settings": {
+            "image": "shopify://shop_images/Rectangle_46_3.png",
+            "title": "Onze smaakgarantie",
+            "description": "Het assortiment omvat alle toonaangevende wijnregio’s en wijnstijlen, gemaakt door de beste wijnmakers van de regio."
+          }
+        },
+        "tile_TkqM93": {
+          "type": "tile",
+          "settings": {
+            "image": "shopify://shop_images/Rectangle_46_4.png",
+            "title": "Persoonlijk advies",
+            "description": "Wil je persoonlijk advies over wijn- en spijscombinaties, het opbouwen van je wijncollectie of simpelweg het vinden van de perfecte wijn voor jou?"
+          }
+        }
+      },
+      "block_order": [
+        "tile_VzGNrB",
+        "tile_yD7AbB",
+        "tile_TkqM93"
+      ],
+      "name": "Image Tiles",
+      "settings": {
+        "visibility_audience": "everyone",
+        "section_styling": true,
+        "mobile_padding": "py-0",
+        "desktop_padding": "lg:py-4",
+        "mobile_margin": "mb-12",
+        "desktop_margin": "lg:mb-12",
+        "background": "#ffffff",
+        "primary_text_color": "#000000",
+        "secondary_text_color": "#000000",
+        "animation_style": "stagger-up"
+      }
+    },
+    "sign_up_HgxjLb": {
+      "type": "sign-up",
+      "name": "Sign Up",
+      "settings": {
+        "visibility_audience": "everyone",
+        "section_styling": true,
+        "mobile_padding": "py-10",
+        "desktop_padding": "lg:py-10",
+        "mobile_margin": "mb-8",
+        "desktop_margin": "lg:mb-12",
+        "background": "#ffffff",
+        "primary_text_color": "#000000",
+        "border_color": "#b19e5e",
+        "primary_button_color": "#000000",
+        "primary_button_text_color": "#ffffff",
+        "secondary_button_color": "#000000",
+        "secondary_button_text_color": "#ffffff",
+        "title": "Direct access to the world of fine wine",
+        "description": "<p>Get insider updates on the world’s most exceptional wines, before anyone else.</p>",
+        "placeholder": "Email Address",
+        "privacy_text": "We respect your data and privacy. Unsubscribe anytime.",
+        "button_text": "Sign Up",
+        "button_style": "primary",
+        "grid_of_two": false,
+        "border_top": false,
+        "border_bottom": false,
+        "animation_style": "fade-in"
+      }
+    }
+  },
+  "order": [
+    "main",
+    "breadcrumbs_fJUKnd",
+    "richtext_cyJr6B",
+    "hero_YfigKc",
+    "richtext_9JVAcB",
+    "text_image_qktdDC",
+    "richtext_DeBx7z",
+    "image_tiles_firtaJ",
+    "sign_up_HgxjLb"
+  ]
+}

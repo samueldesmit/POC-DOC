@@ -1,0 +1,71 @@
+<meta
+    itemprop="name"
+    content="{{ product.title }}{% unless product.has_only_default_variant %} - {{ product.selected_or_first_available_variant.title }}{% endunless %}"
+>
+<meta
+    itemprop="url"
+    content="{{ shop.url }}{{ product.selected_or_first_available_variant.url }}"
+>
+<meta
+    itemprop="brand"
+    content="{{ product.vendor }}"
+>
+<meta
+    itemprop="image"
+    content="{{ shop.url }}{{ product.selected_or_first_available_variant.featured_image  | image_url: width: 600, height: 600 }}"
+>
+<meta
+    itemprop="description"
+    content="{{ product.description | strip_html | escape }}"
+>
+
+<script type="application/ld+json">
+    {
+      "@context": "http://schema.org/",
+      "@type": "Product",
+      "name": "{{ product.title }}",
+      "url": "{{ shop.url }}{{ product.selected_or_first_available_variant.url }}",
+      "image": "{{ product.featured_image | image_url: width: 600 }}",
+      "description": "{{ product.description | strip_html | escape }}",
+      "brand": {
+        "@type": "Thing",
+        "name": "{{ product.vendor }}"
+      },
+      "offers": [
+        {
+          "@type": "Offer",
+          "availability": "http://schema.org/{% if product.selected_or_first_available_variant.available %}InStock{% else %}OutOfStock{% endif %}",
+          "price": {{ product.selected_or_first_available_variant.price | divided_by: 100.00 }},
+          "priceCurrency": "{{ shop.currency }}",
+          "url": "{{ shop.url }}{{ product.selected_or_first_available_variant.url }}",
+          "itemOffered": {
+            "@type": "Product",
+            "name": "{{ product.title }}",
+            "sku": "{{ product.selected_or_first_available_variant.sku }}",
+            "image": "{{ shop.url }}{{ product.selected_or_first_available_variant.featured_image | image_url: width: 600, height: 600 }}",
+            "description": "{{ product.description | strip_html | escape }}",
+            "brand": {
+              "@type": "Thing",
+              "name": "{{ product.vendor }}"
+            }
+          }
+        }
+      ]
+    }
+</script>
+
+<script
+    type="application/json"
+    id="variant-data"
+>
+    {
+      "variants": [{% for variant in product.variants %}{
+        "id": {{ variant.id }},
+        "title": {{ variant.title | json }},
+        "image": {% if variant.image %}{{ variant.image | image_url: width: 500 | json }}{% else %}null{% endif %},
+        "available": {{ variant.available }},
+        "price": {{ variant.price }},
+        "compare_at_price": {% if variant.compare_at_price != blank %}{{ variant.compare_at_price }}{% else %}null{% endif %}
+      }{% if forloop.last != true %},{% endif %}{% endfor %}]
+    }
+</script>

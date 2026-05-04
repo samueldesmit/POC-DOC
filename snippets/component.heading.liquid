@@ -1,0 +1,80 @@
+{% liquid
+    assign base_classes = ' '
+
+    case variant
+        when '2xl'
+            assign variant_classes = 'heading-2xl '
+        when 'xl'
+            assign variant_classes = 'heading-xl '
+        when 'lg'
+            assign variant_classes = 'heading-lg '
+        when 'md'
+            assign variant_classes = 'heading-md '
+        when 'sm'
+            assign variant_classes = 'heading-sm '
+        when 'xs'
+            assign variant_classes = 'heading-xs '
+        when '2xs'
+            assign variant_classes = 'heading-2xs '
+        when '3xs'
+            assign variant_classes = 'heading-3xs '
+    endcase
+%}
+
+{% assign classes = base_classes
+    | append: variant_classes
+    | append: ' '
+    | append: class
+%}
+
+{% case tag %}
+    {% when 'h1' %}
+        <h1
+            class="{{ classes }}"
+            {{ attributes }}
+        >
+            {{ content }}
+        </h1>
+    {% when 'h2' %}
+        <h2
+            class="{{ classes }}"
+            {{ attributes }}
+        >
+            {{ content }}
+        </h2>
+    {% when 'h3' %}
+        <h3
+            class="{{ classes }}"
+            {{ attributes }}
+        >
+            {{ content }}
+        </h3>
+    {% when 'h4' %}
+        <h4
+            class="{{ classes }}"
+            {{ attributes }}
+        >
+            {{ content }}
+        </h4>
+    {% when 'h5' %}
+        <h5
+            class="{{ classes }}"
+            {{ attributes }}
+        >
+            {{ content }}
+        </h5>
+    {% when 'h6' %}
+        <h6
+            class="{{ classes }}"
+            {{ attributes }}
+        >
+            {{ content }}
+        </h6>
+    {% else %}
+        <h2
+            class="{{ classes }}"
+            {{ attributes }}
+        >
+            {{ content }}
+        </h2>
+{% endcase %}

@@ -1,0 +1,255 @@
+{%- liquid
+    assign s = section.settings
+    assign section_id = 'section-' | append: section.id
+    assign is_transparent = false
+
+    assign show_section = true
+
+    if s.visibility_audience == 'premium_only'
+        assign show_section = false
+        if customer
+            if customer.tags contains 'premium-club'
+                assign show_section = true
+            endif
+        endif
+    elsif s.visibility_audience == 'non_premium_only'
+        if customer
+            if customer.tags contains 'premium-club'
+                assign show_section = false
+            endif
+        endif
+    endif
+
+    if request.page_type == 'index'
+        assign bg_color = s.background_home
+        assign text_color = s.text_color_home
+        # Automatically enable overlay on desktop when background is transparent
+        if bg_color == blank or bg_color == 'rgba(0,0,0,0)' or bg_color == 'rgba(0, 0, 0, 0)' or bg_color == '#00000000' or bg_color == 'transparent'
+            assign is_transparent = true
+            assign bg_color = 'transparent'
+        endif
+        # Check if color has alpha channel with 0 opacity
+        if bg_color contains 'rgba' and bg_color contains ', 0)' or bg_color contains ',0)'
+            assign is_transparent = true
+            assign bg_color = 'transparent'
+        endif
+        assign is_overlay = is_transparent
+    else
+        assign bg_color = s.background
+        assign text_color = s.text_color
+        assign is_overlay = false
+    endif
+-%}
+{% if show_section %}
+{%- if section.blocks.size > 0 -%}
+    <div
+        id="{{ section_id }}"
+        class="announcement-bar {{ s.desktop_padding }} {{ s.mobile_padding }} w-full {% unless is_transparent %}bg-background{% endunless %} text-primary {% if is_overlay %}announcement-bar--overlay{% endif %}"
+        style="background-color: {{ bg_color }}; --color-background: {{ bg_color }}; --color-primary: {{ text_color }};"
+        data-announcement-bar
+        {% if is_overlay %}
+            data-overlay
+        {% endif %}
+    >
+        <splide-section
+            data-splide-type="loop"
+            data-splide-per-page-desktop="1"
+            data-splide-per-page-mobile="1"
+            data-splide-autoplay="true"
+            data-splide-interval="{{ s.slider_speed | times: 1000 }}"
+            class="container flex justify-between items-center"
+        >
+            <section class="splide w-full">
+                <div class="h-full overflow-hidden splide__track w-full">
+                    <ul class="flex h-full splide__list w-full">
+                        {%- for block in section.blocks -%}
+                            {% assign b = block.settings %}
+                            <li
+                                class="splide__slide flex h-full items-center justify-center font-inter text-[0.6875rem] leading-tight"
+                            >
+                                <a
+                                    href="{{ b.link | default: '#' }}"
+                                    aria-label="{{ b.text }}"
+                                >
+                                    {{ b.text }}
+                                </a>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </section>
+        </splide-section>
+    </div>
+{%- endif -%}
+{% endif %}
+{% schema %}
+{
+    "name": "Announcement Bar",
+    "class": "announcement-bar-section",
+    "enabled_on": {
+        "groups": ["header"]
+    },
+    "limit": 1,
+    "settings": [
+        {
+            "type": "header",
+            "content": "Visibility"
+        },
+        {
+            "type": "select",
+            "id": "visibility_audience",
+            "label": "Visibility (audience)",
+            "options": [
+                {
+                    "value": "everyone",
+                    "label": "Everyone"
+                },
+                {
+                    "value": "premium_only",
+                    "label": "Only premium-club customers"
+                },
+                {
+                    "value": "non_premium_only",
+                    "label": "Only non premium-club customers"
+                }
+            ],
+            "default": "everyone"
+        },
+        {
+            "type": "header",
+            "content": "Documentation for this section",
+            "info": "Click [here](https://strix-net.atlassian.net/wiki/spaces/TWL/pages/3747250191/Section+Announcement+Bar} for more information."
+        },
+        {
+            "type": "header",
+            "content": "Slider"
+        },
+        {
+            "type": "range",
+            "id": "slider_speed",
+            "label": "Slider speed",
+            "info": "Seconds each announcement is shown before auto-advancing.",
+            "min": 1,
+            "max": 15,
+            "step": 1,
+            "unit": "s",
+            "default": 5
+        },
+        {
+            "type": "header",
+            "content": "Section Spacing"
+        },
+        {
+            "type": "select",
+            "id": "mobile_padding",
+            "label": "Mobile padding",
+            "options": [
+                { "value": "py-0", "label": "None" },
+                { "value": "py-2", "label": "S - 8px" },
+                { "value": "py-4", "label": "M - 16px" },
+                { "value": "py-6", "label": "L - 24px" },
+                { "value": "py-8", "label": "XL - 32px" },
+                { "value": "py-10", "label": "2XL - 40px" },
+                { "value": "py-12", "label": "3XL - 48px" },
+                { "value": "py-16", "label": "4XL - 64px" }
+            ],
+            "default": "py-0"
+        },
+        {
+            "type": "select",
+            "id": "desktop_padding",
+            "label": "Desktop padding",
+            "options": [
+                { "value": "lg:py-0", "label": "None" },
+                { "value": "lg:py-2", "label": "S - 8px" },
+                { "value": "lg:py-4", "label": "M - 16px" },
+                { "value": "lg:py-6", "label": "L - 24px" },
+                { "value": "lg:py-8", "label": "XL - 32px" },
+                { "value": "lg:py-10", "label": "2XL - 40px" },
+                { "value": "lg:py-12", "label": "3XL - 48px" },
+                { "value": "lg:py-16", "label": "4XL - 64px" }
+            ],
+            "default": "lg:py-0"
+        },
+        {
+            "type": "header",
+            "content": "Homepage Colors"
+        },
+        {
+            "type": "color",
+            "id": "background_home",
+            "label": "Background (Homepage)",
+            "info": "Leave blank for transparent",
+            "default": "#00000000"
+        },
+        {
+            "type": "color",
+            "id": "background",
+            "label": "Background (Regular pages)",
+            "default": "#06061C"
+        },
+        {
+            "type": "color",
+            "id": "text_color_home",
+            "label": "Text color (Homepage)",
+            "default": "#FFFFFF"
+        },
+        {
+            "type": "color",
+            "id": "text_color",
+            "label": "Text color (Regular pages)",
+            "default": "#FFFFFF"
+        }
+    ],
+    "blocks": [
+        {
+            "type": "announcement",
+            "name": "Announcement",
+            "settings": [
+                {
+                    "type": "header",
+                    "content": "Content"
+                },
+                {
+                    "type": "text",
+                    "id": "text",
+                    "label": "Text"
+                },
+                {
+                    "type": "url",
+                    "id": "link",
+                    "label": "Link url"
+                }
+            ]
+        }
+    ],
+    "presets": [
+        {
+            "name": "Announcement bar",
+            "blocks": [
+                {
+                    "type": "announcement",
+                    "settings": {
+                        "text": "Announcement 1",
+                        "link": "#"
+                    }
+                },
+                {
+                    "type": "announcement",
+                    "settings": {
+                        "text": "Announcement 2",
+                        "link": "#"
+                    }
+                },
+                {
+                    "type": "announcement",
+                    "settings": {
+                        "text": "Announcement 3",
+                        "link": "#"
+                    }
+                }
+            ]
+        }
+    ]
+}
+{% endschema %}

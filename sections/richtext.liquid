@@ -1,0 +1,666 @@
+{%- liquid
+    assign s = section.settings
+    assign section_id = 'section-' | append: section.id
+
+    assign show_section = true
+
+    if s.visibility_audience == 'premium_only'
+        assign show_section = false
+        if customer
+            if customer.tags contains 'premium-club'
+                assign show_section = true
+            endif
+        endif
+    elsif s.visibility_audience == 'non_premium_only'
+        if customer
+            if customer.tags contains 'premium-club'
+                assign show_section = false
+            endif
+        endif
+    endif
+-%}
+
+{% if show_section %}
+<div
+    id="{{ section_id }}"
+    class="{{ s.mobile_margin }} {{ s.desktop_margin }} bg-background"
+>
+    {% render 'section-colors', current_section: section %}
+    {% if s.animation_style != blank and s.animation_style != 'none' -%}
+        <gsap-section data-animation="{{ s.animation_style }}">
+    {%- endif %}
+    <div
+        class="{{ s.mobile_padding }} {{ s.desktop_padding }} {% if s.container %}container{% else %}container-small{% endif %} [&_a]:underline {{ s.content_alignment }}"
+    >
+        {%- for block in section.blocks -%}
+            {% assign b = block.settings %}
+            {%- case block.type -%}
+                {%- when 'heading' -%}
+                    {% if b.heading != blank %}
+                        {% style %}
+                            #heading-{{ block.id }} {
+                                font-size: {{ b.mobile_font_size }};
+                                font-weight: {{ b.font_weight }};
+                                margin-bottom: {{ b.margin_bottom }};
+                            }
+                            @media (min-width: 1024px) {
+                                #heading-{{ block.id }} {
+                                    font-size: {{ b.desktop_font_size }};
+                                }
+                            }
+                        {% endstyle %}
+                        <h2
+                            id="heading-{{ block.id }}"
+                            {{ block.shopify_attributes }}
+                            class="{{ b.font_family }} text-primary tracking-[-0.88px]"
+                        >
+                            {{ b.heading }}
+                        </h2>
+                    {% endif %}
+                {%- when 'text' -%}
+                    {% if b.text != blank %}
+                        {% style %}
+                            #text-{{ block.id }} {
+                                font-size: {{ b.mobile_font_size }};
+                                font-weight: {{ b.font_weight }};
+                                margin-bottom: {{ b.margin_bottom }};
+                            }
+                            #text-{{ block.id }}:last-child {
+                                margin-bottom: 0;
+                            }
+                            @media (min-width: 1024px) {
+                                #text-{{ block.id }} {
+                                    font-size: {{ b.desktop_font_size }};
+                                }
+                            }
+                        {% endstyle %}
+                        <div
+                            id="text-{{ block.id }}"
+                            {{ block.shopify_attributes }}
+                            class="{{ b.font_family }} space-y-5 [&_ol]:list-decimal [&_ol]:pl-5 [&_ul]:list-disc [&_ul]:pl-5 [&_h1]:headline-lg [&_h2]:headline-md [&_h3]:headline-md [&_h4]:headline-sm [&_h5]:headline-sm [&_h6]:headline-sm text-secondary"
+                        >
+                            {{ b.text }}
+                        </div>
+                    {% endif %}
+            {%- endcase -%}
+        {%- endfor -%}
+    </div>
+    {% if s.animation_style != blank and s.animation_style != 'none' -%}
+        </gsap-section>
+    {%- endif %}
+</div>
+{% if template == 'article' %}
+    {% render 'schema.article' %}
+{% endif %}
+{% endif %}
+
+{% schema %}
+{
+    "name": "Richtext",
+    "tag": "section",
+    "class": "section-richtext",
+    "disabled_on": {
+        "groups": ["header", "footer"]
+    },
+    "settings": [
+        {
+            "type": "header",
+            "content": "Visibility"
+        },
+        {
+            "type": "select",
+            "id": "visibility_audience",
+            "label": "Visibility (audience)",
+            "options": [
+                {
+                    "value": "everyone",
+                    "label": "Everyone"
+                },
+                {
+                    "value": "premium_only",
+                    "label": "Only premium-club customers"
+                },
+                {
+                    "value": "non_premium_only",
+                    "label": "Only non premium-club customers"
+                }
+            ],
+            "default": "everyone"
+        },
+        {
+            "type": "header",
+            "content": "Documentation for this section",
+            "info": "Click [here](https://strix-net.atlassian.net/wiki/spaces/TWL/pages/3748462612/Section+Richtext) for more information."
+        },
+        {
+            "type": "header",
+            "content": "Section Styling"
+        },
+        {
+            "type": "checkbox",
+            "id": "section_styling",
+            "label": "Add styling to section",
+            "info": "If enabled this shows the settings to set the color scheme, spacing, and margin for the section.",
+            "default": false
+        },
+        {
+            "type": "checkbox",
+            "id": "container",
+            "label": "Full width container",
+            "default": true,
+            "visible_if": "{{ section.settings.section_styling == true }}"
+        },
+        {
+            "type": "select",
+            "id": "content_alignment",
+            "visible_if": "{{ section.settings.section_styling == true }}",
+            "options": [
+                {
+                    "value": "text-left",
+                    "label": "Left"
+                },
+                {
+                    "value": "text-center",
+                    "label": "Center"
+                },
+                {
+                    "value": "text-right",
+                    "label": "Right"
+                }
+            ],
+            "default": "text-left",
+            "label": "Content alignment"
+        },
+        {
+            "type": "header",
+            "content": "Section Spacing",
+            "visible_if": "{{ section.settings.section_styling == true }}"
+        },
+        {
+            "type": "select",
+            "id": "mobile_padding",
+            "label": "Mobile padding",
+            "visible_if": "{{ section.settings.section_styling == true }}",
+            "options": [
+                {
+                    "value": "py-0",
+                    "label": "None"
+                },
+                {
+                    "value": "py-2",
+                    "label": "S - 8px"
+                },
+                {
+                    "value": "py-4",
+                    "label": "M - 16px"
+                },
+                {
+                    "value": "py-6",
+                    "label": "L - 24px"
+                },
+                {
+                    "value": "py-8",
+                    "label": "XL - 32px"
+                },
+                {
+                    "value": "py-10",
+                    "label": "2XL - 40px"
+                },
+                {
+                    "value": "py-12",
+                    "label": "3XL - 48px"
+                },
+                {
+                    "value": "py-16",
+                    "label": "4XL - 64px"
+                }
+            ],
+            "default": "py-0"
+        },
+        {
+            "type": "select",
+            "id": "desktop_padding",
+            "label": "Desktop padding",
+            "visible_if": "{{ section.settings.section_styling == true }}",
+            "options": [
+                {
+                    "value": "lg:py-0",
+                    "label": "None"
+                },
+                {
+                    "value": "lg:py-2",
+                    "label": "S - 8px"
+                },
+                {
+                    "value": "lg:py-4",
+                    "label": "M - 16px"
+                },
+                {
+                    "value": "lg:py-6",
+                    "label": "L - 24px"
+                },
+                {
+                    "value": "lg:py-8",
+                    "label": "XL - 32px"
+                },
+                {
+                    "value": "lg:py-10",
+                    "label": "2XL - 40px"
+                },
+                {
+                    "value": "lg:py-12",
+                    "label": "3XL - 48px"
+                },
+                {
+                    "value": "lg:py-16",
+                    "label": "4XL - 64px"
+                }
+            ],
+            "default": "lg:py-0"
+        },
+        {
+            "type": "header",
+            "content": "Section Margin",
+            "visible_if": "{{ section.settings.section_styling == true }}"
+        },
+        {
+            "type": "select",
+            "id": "mobile_margin",
+            "label": "Mobile Section margin",
+            "visible_if": "{{ section.settings.section_styling == true }}",
+            "options": [
+                {
+                    "value": "mb-0",
+                    "label": "None"
+                },
+                {
+                    "value": "mb-4",
+                    "label": "Small - 16px"
+                },
+                {
+                    "value": "mb-8",
+                    "label": "Medium - 32px"
+                },
+                {
+                    "value": "mb-12",
+                    "label": "Large - 48px"
+                }
+            ],
+            "default": "mb-0"
+        },
+        {
+            "type": "select",
+            "id": "desktop_margin",
+            "label": "Desktop Section margin",
+            "visible_if": "{{ section.settings.section_styling == true }}",
+            "options": [
+                {
+                    "value": "lg:mb-0",
+                    "label": "None"
+                },
+                {
+                    "value": "lg:mb-8",
+                    "label": "Small - 32px"
+                },
+                {
+                    "value": "lg:mb-12",
+                    "label": "Medium - 48px"
+                },
+                {
+                    "value": "lg:mb-16",
+                    "label": "Large - 64px"
+                }
+            ],
+            "default": "lg:mb-0"
+        },
+        {
+            "type": "header",
+            "content": "Colors",
+            "visible_if": "{{ section.settings.section_styling == true }}"
+        },
+        {
+            "type": "color",
+            "id": "background",
+            "label": "Section background color",
+            "default": "#FFFFFF",
+            "visible_if": "{{ section.settings.section_styling == true }}"
+        },
+        {
+            "type": "color",
+            "id": "primary_text_color",
+            "label": "Primary text color",
+            "default": "#000000",
+            "visible_if": "{{ section.settings.section_styling == true }}"
+        },
+        {
+            "type": "color",
+            "id": "secondary_text_color",
+            "label": "Secondary text color",
+            "default": "#000000",
+            "visible_if": "{{ section.settings.section_styling == true }}"
+        },
+        {
+            "type": "header",
+            "content": "Animation"
+        },
+        {
+            "type": "select",
+            "id": "animation_style",
+            "label": "Scroll animation",
+            "info": "Adds a subtle entrance animation when the section scrolls into view.",
+            "options": [
+                { "value": "none", "label": "None" },
+                { "value": "fade-up", "label": "Fade up" },
+                { "value": "fade-in", "label": "Fade in" },
+                { "value": "slide-in-left", "label": "Slide in from left" },
+                { "value": "slide-in-right", "label": "Slide in from right" }
+            ],
+            "default": "none"
+        }
+    ],
+    "blocks": [
+        {
+            "type": "heading",
+            "name": "Heading",
+            "limit": 1,
+            "settings": [
+                {
+                    "type": "inline_richtext",
+                    "id": "heading",
+                    "default": "Talk about your brand",
+                    "label": "Heading"
+                },
+                {
+                    "type": "select",
+                    "id": "font_family",
+                    "label": "Font family",
+                    "options": [
+                        {
+                            "value": "font-cormorant-garamond",
+                            "label": "Cormorant Garamond"
+                        },
+                        {
+                            "value": "font-inter",
+                            "label": "Inter"
+                        }
+                    ],
+                    "default": "font-cormorant-garamond"
+                },
+                {
+                    "type": "select",
+                    "id": "font_weight",
+                    "label": "Font weight",
+                    "options": [
+                        {
+                            "value": "300",
+                            "label": "Light"
+                        },
+                        {
+                            "value": "400",
+                            "label": "Normal"
+                        },
+                        {
+                            "value": "500",
+                            "label": "Medium"
+                        },
+                        {
+                            "value": "600",
+                            "label": "Semibold"
+                        },
+                        {
+                            "value": "700",
+                            "label": "Bold"
+                        }
+                    ],
+                    "default": "600"
+                },
+                {
+                    "type": "select",
+                    "id": "mobile_font_size",
+                    "label": "Font size (mobile)",
+                    "options": [
+                        {
+                            "value": "20px",
+                            "label": "20px"
+                        },
+                        {
+                            "value": "24px",
+                            "label": "24px"
+                        },
+                        {
+                            "value": "30px",
+                            "label": "30px"
+                        },
+                        {
+                            "value": "40px",
+                            "label": "40px"
+                        },
+                        {
+                            "value": "52px",
+                            "label": "52px"
+                        }
+                    ],
+                    "default": "30px"
+                },
+                {
+                    "type": "select",
+                    "id": "desktop_font_size",
+                    "label": "Font size (desktop)",
+                    "options": [
+                        {
+                            "value": "24px",
+                            "label": "24px"
+                        },
+                        {
+                            "value": "30px",
+                            "label": "30px"
+                        },
+                        {
+                            "value": "40px",
+                            "label": "40px"
+                        },
+                        {
+                            "value": "52px",
+                            "label": "52px"
+                        },
+                        {
+                            "value": "64px",
+                            "label": "64px"
+                        }
+                    ],
+                    "default": "30px"
+                },
+                {
+                    "type": "select",
+                    "id": "margin_bottom",
+                    "label": "Margin bottom",
+                    "options": [
+                        {
+                            "value": "0px",
+                            "label": "None"
+                        },
+                        {
+                            "value": "8px",
+                            "label": "8px"
+                        },
+                        {
+                            "value": "14px",
+                            "label": "14px"
+                        },
+                        {
+                            "value": "20px",
+                            "label": "20px"
+                        },
+                        {
+                            "value": "28px",
+                            "label": "28px"
+                        },
+                        {
+                            "value": "40px",
+                            "label": "40px"
+                        }
+                    ],
+                    "default": "14px"
+                }
+            ]
+        },
+        {
+            "type": "text",
+            "name": "Text",
+            "settings": [
+                {
+                    "type": "richtext",
+                    "id": "text",
+                    "default": "<p>Share information about your brand with your customers. Describe a product, make announcements, or welcome customers to your store.</p>",
+                    "label": "Description"
+                },
+                {
+                    "type": "select",
+                    "id": "font_family",
+                    "label": "Font family",
+                    "options": [
+                        {
+                            "value": "font-inter",
+                            "label": "Inter"
+                        },
+                        {
+                            "value": "font-cormorant-garamond",
+                            "label": "Cormorant Garamond"
+                        }
+                    ],
+                    "default": "font-inter"
+                },
+                {
+                    "type": "select",
+                    "id": "font_weight",
+                    "label": "Font weight",
+                    "options": [
+                        {
+                            "value": "300",
+                            "label": "Light"
+                        },
+                        {
+                            "value": "400",
+                            "label": "Normal"
+                        },
+                        {
+                            "value": "500",
+                            "label": "Medium"
+                        },
+                        {
+                            "value": "600",
+                            "label": "Semibold"
+                        },
+                        {
+                            "value": "700",
+                            "label": "Bold"
+                        }
+                    ],
+                    "default": "400"
+                },
+                {
+                    "type": "select",
+                    "id": "mobile_font_size",
+                    "label": "Font size (mobile)",
+                    "options": [
+                        {
+                            "value": "12px",
+                            "label": "12px"
+                        },
+                        {
+                            "value": "14px",
+                            "label": "14px"
+                        },
+                        {
+                            "value": "16px",
+                            "label": "16px"
+                        },
+                        {
+                            "value": "18px",
+                            "label": "18px"
+                        },
+                        {
+                            "value": "20px",
+                            "label": "20px"
+                        }
+                    ],
+                    "default": "16px"
+                },
+                {
+                    "type": "select",
+                    "id": "desktop_font_size",
+                    "label": "Font size (desktop)",
+                    "options": [
+                        {
+                            "value": "14px",
+                            "label": "14px"
+                        },
+                        {
+                            "value": "16px",
+                            "label": "16px"
+                        },
+                        {
+                            "value": "18px",
+                            "label": "18px"
+                        },
+                        {
+                            "value": "20px",
+                            "label": "20px"
+                        },
+                        {
+                            "value": "24px",
+                            "label": "24px"
+                        }
+                    ],
+                    "default": "16px"
+                },
+                {
+                    "type": "select",
+                    "id": "margin_bottom",
+                    "label": "Margin bottom",
+                    "options": [
+                        {
+                            "value": "0px",
+                            "label": "None"
+                        },
+                        {
+                            "value": "8px",
+                            "label": "8px"
+                        },
+                        {
+                            "value": "14px",
+                            "label": "14px"
+                        },
+                        {
+                            "value": "20px",
+                            "label": "20px"
+                        },
+                        {
+                            "value": "28px",
+                            "label": "28px"
+                        },
+                        {
+                            "value": "40px",
+                            "label": "40px"
+                        }
+                    ],
+                    "default": "14px"
+                }
+            ]
+        }
+    ],
+    "presets": [
+        {
+            "name": "Richtext",
+            "blocks": [
+                {
+                    "type": "heading"
+                },
+                {
+                    "type": "text"
+                }
+            ]
+        }
+    ]
+}
+{% endschema %}

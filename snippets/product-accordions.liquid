@@ -1,0 +1,100 @@
+<div class="mt-10">
+    {% liquid
+        assign description_accordion_title = 'products.product.about_the_product' | t
+        assign details_accordion_title = 'products.product.product_details' | t
+
+        if product.selected_or_first_available_variant.metafields.custom.variant_description != blank
+            assign description_accordion_content = product.selected_or_first_available_variant.metafields.custom.variant_description
+        else
+            assign description_accordion_content = product.description
+        endif
+    %}
+
+    <div data-description>
+        {% render 'component.accordion',
+            title: description_accordion_title,
+            content: description_accordion_content,
+            content_class: 'font-light',
+            header_class: 'pt-4 mb-4 flex items-center border-t-1 border-surface-100',
+            class: 'block',
+            title_tag: 'h2',
+            title_class: 'text-xl md:text-2xl pt-4',
+            active: open_about
+        %}
+    </div>
+
+    {% capture details_accordion_content %}
+        {% assign styling_list = "flex justify-between md:grid md:grid-cols-2 w-full" %}
+        {% assign styling_list_item = 'text-body font-extralight text-end md:text-start' %}
+
+      <ul class="w-full flex flex-col gap-4">
+        {% if product.selected_or_first_available_variant.sku != blank %}
+        <li class="{{ styling_list }}">
+           <span class="font-medium">{{ 'products.product.product_sku' | t }}:</span> <span class="{{  styling_list_item }}"> {{ product.selected_or_first_available_variant.sku }}</span>
+        </li>
+        {% endif %}
+
+        {% if product.selected_or_first_available_variant.barcode != blank %}
+        <li class="{{ styling_list }}">
+           <span class="font-medium">{{ 'products.product.product_barcode' | t }}:</span> <a class="{{  styling_list_item }} underline" href="https://dpp.jollein.com/{{ product.selected_or_first_available_variant.barcode }}" target="_blank" rel="noopener noreferrer"> {{ product.selected_or_first_available_variant.barcode }}</a>
+        </li>
+        {% endif %}
+
+        {% if product.selected_or_first_available_variant.metafields.custom.usage_months_min_months != blank %}
+        <li class="{{ styling_list }}">
+           <span class="font-medium">{{ 'products.product.from_age_months' | t }}:</span> <span class="{{  styling_list_item }}"> {{ product.selected_or_first_available_variant.metafields.custom.usage_months_min_months }}</span>
+        </li>
+        {% endif %}
+
+        {% if product.selected_or_first_available_variant.metafields.custom.usage_months_max_months != blank %}
+        <li class="{{ styling_list }}">
+           <span class="font-medium">{{ 'products.product.max_age_months' | t }}:</span> <span class="{{  styling_list_item }}"> {{ product.selected_or_first_available_variant.metafields.custom.usage_months_max_months }}</span>
+        </li>
+        {% endif %}
+
+        {% if product.metafields.custom.tog_value != blank %}
+        <li class="{{ styling_list }}">
+           <span class="font-medium">{{ 'products.product.tog_value' | t }}:</span> <span class="{{  styling_list_item }}"> {{ product.metafields.custom.tog_value }}</span>
+        </li>        
+        {%  endif %}
+
+        {% if product.selected_or_first_available_variant.metafields.custom.product_height_cm != blank %}
+        <li class="{{ styling_list }}">
+           <span class="font-medium">{{ 'products.product.product_height' | t }}:</span> <span class="{{  styling_list_item }}"> {{ product.selected_or_first_available_variant.metafields.custom.product_height_cm }} cm</span>
+        </li>
+        {%  endif %}
+
+       {% if product.selected_or_first_available_variant.metafields.custom.product_width_cm != blank %}
+        <li class="{{ styling_list }}">
+           <span class="font-medium">{{ 'products.product.product_width' | t }}:</span> <span class="{{  styling_list_item }}"> {{ product.selected_or_first_available_variant.metafields.custom.product_width_cm }} cm</span>
+        </li>
+        {%  endif %}
+
+         {% if product.selected_or_first_available_variant.metafields.custom.product_length_cm != blank %}
+          <li class="{{ styling_list }}">
+           <span class="font-medium">{{ 'products.product.product_length' | t }}:</span> <span class="{{  styling_list_item }}"> {{ product.selected_or_first_available_variant.metafields.custom.product_length_cm }} cm</span>
+        </li>
+        {%  endif %}
+
+        {% if product.metafields.material.outside != blank %}
+            <li class="{{ styling_list }}">
+                <span class="font-medium">{{ 'products.product.material' | t }}:</span> <span class="{{  styling_list_item }}"> {{ product.metafields.material.outside }}</span>
+            </li>
+        {%  endif %}
+      </ul>
+    {% endcapture %}
+
+    {% if details_accordion_content != blank %}
+        <div data-product-details>
+            {% render 'component.accordion',
+                title: details_accordion_title,
+                content: details_accordion_content,
+                header_class: 'text-xl mb-4 flex items-center border-t-1 border-surface-100',
+                class: 'block',
+                title_tag: 'h2',
+                title_class: 'text-xl md:text-2xl pt-4',
+                active: open_washing
+            %}
+        </div>
+    {% endif %}
+</div>

@@ -1,0 +1,52 @@
+{
+    "include": [
+        "./src/**/*",
+        "./@types/*",
+        "./types/**/*.d.ts",
+        "./src/**/*.d.ts",
+        "src/elements/accordion-component.ts",
+        "src/elements/add-to-cart.ts",
+        "src/elements/cart-count.ts",
+        "src/elements/cart-form.ts",
+        "src/elements/filters-sort-form.ts",
+        "src/elements/main.js",
+        "src/elements/mega-menu-item.ts",
+        "src/elements/mega-menu.ts",
+        "src/elements/modal-toggle.ts",
+        "src/elements/predictive-search.ts",
+        "src/elements/product-card.ts",
+        "src/elements/product-grid.ts",
+        "src/elements/quantity-input.ts",
+        "src/elements/responsive-media.ts",
+        "src/elements/splide.ts",
+        "src/elements/stepper-input.ts",
+        "src/elements/modal-dialog.ts",
+        "src/elements/offcanvas-menu.ts",
+        "src/elements/product-form.ts",
+        "src/elements/add-to-cart-quantity-input.ts",
+        "src/elements/product-images.ts",
+        "src/elements/header.ts",
+        "src/elements/off-canvas-filters.ts",
+        "src/elements/sort-form.ts",
+        "src/elements/cart-discount.ts"
+    ],
+    "compilerOptions": {
+        "allowJs": true,
+        "noImplicitAny": true,
+        "target": "es2021",
+        "noUnusedLocals": true,
+        "noUnusedParameters": true,
+        "moduleResolution": "node",
+        "allowSyntheticDefaultImports": true,
+        "experimentalDecorators": true,
+        "useDefineForClassFields": false,
+        "module": "es2020",
+        "baseUrl": "./src",
+        "paths": {
+            "@sections/*": ["sections/*"],
+            "@global": ["global.js"],
+            "@graphql": ["GraphQlService"]
+        }
+    },
+    "exclude": ["**/node_modules"]
+}

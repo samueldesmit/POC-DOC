@@ -1,0 +1,70 @@
+@layer components {
+    .announcement-bar--overlay {
+        @apply absolute top-0 z-60;
+    }
+
+    /* Announcement bar - change background when menu is open (only when transparent/overlay) */
+    .announcement-bar {
+        transition: background-color 0.3s ease;
+
+        &.announcement-bar--overlay.menu-open,
+        &.announcement-bar--overlay.desktop-menu-open {
+            background-color: var(--header-menu-bg-color, #06061c) !important;
+        }
+    }
+
+    .section--header {
+        @apply z-50 w-full;
+
+        /* Smooth transitions for transform and background */
+        transition:
+            transform 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+            background-color 0.3s ease;
+        background-color: var(--header-bg-color, #06061c);
+
+        /* Default: relative positioning (normal document flow) */
+        @apply relative;
+
+        /* Overlay mode on homepage - absolute below announcement bar */
+        &.is-overlay-mode {
+            @apply absolute inset-x-0;
+            top: var(--announcement-height, 0px);
+        }
+
+        /* Sticky state - sticks to top when scrolling (for non-overlay pages like PLP) */
+        &.is-sticky {
+            @apply sticky top-0;
+        }
+
+        /* Fixed state - when scrolled past announcement bar */
+        &.is-fixed {
+            @apply fixed top-0 inset-x-0;
+        }
+
+        /* Hidden state - slide up off screen */
+        &.is-sticky.is-hidden,
+        &.is-fixed.is-hidden {
+            transform: translateY(-100%);
+        }
+
+        /* Has background - solid color when scrolling up (kept for consistency) */
+        &.has-bg {
+            background-color: var(--header-menu-bg-color, #06061c);
+        }
+
+        /* Desktop menu open - change background when mega menu is open */
+        &.desktop-menu-open {
+            background-color: var(--header-menu-bg-color, #06061c) !important;
+        }
+    }
+
+    /* Mobile header bar - change background when menu is open */
+    .mobile-header-bar {
+        transition: background-color 0.3s ease;
+
+        &.menu-open {
+            background-color: var(--header-menu-bg-color, #06061c) !important;
+        }
+    }
+
+}

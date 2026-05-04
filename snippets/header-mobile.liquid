@@ -1,0 +1,108 @@
+<div
+    class="mobile-header-bar grid grid-cols-3 py-5 lg:hidden px-4"
+    style="background-color: {{ header_background_color }}; color: {{ header_bar_text_color }};"
+>
+    <div class="flex items-center gap-5">
+        <modal-toggle
+            target="offcanvas-menu"
+            class="flex hamburger-toggle"
+        >
+            <button
+                type="button"
+                aria-label="{{ 'accessibility.open_mobile_menu' | t | default: 'Open menu' }}"
+                aria-haspopup="dialog"
+                class="hamburger w-6 h-6 flex flex-col justify-center gap-1.5"
+            >
+                <span class="hamburger-line"></span>
+                <span class="hamburger-line"></span>
+                <span class="hamburger-line"></span>
+            </button>
+        </modal-toggle>
+
+        <li class="{{ list_class }} flex lg:hidden">
+            <modal-toggle
+                target="search-results"
+                class="flex justify-center items-center delay-modal"
+                id="open-predictive-search-mobile"
+            >
+                <button
+                    type="button"
+                    aria-label="{{ 'general.search.placeholder_text' | t | default: 'Search' }}"
+                    class="flex items-center cursor-pointer"
+                >
+                    {% render 'component.icon',
+                        type: 'search',
+                        class: 'size-5 text-[{{ header_bar_text_color }}]'
+                    %}
+                </button>
+            </modal-toggle>
+        </li>
+    </div>
+
+    {%- liquid
+        assign logo_aria_label = 'accessibility.go_to_homepage' | t
+        assign logo_attributes = 'aria-label="' | append: logo_aria_label | append: '"'
+        assign is_premium_customer = false
+        if customer
+            if customer.tags contains 'premium-club'
+                assign is_premium_customer = true
+            endif
+        endif
+
+        assign mobile_logo_image = null
+        assign logo_width = header_logo_mobile_width | default: 80
+
+        if is_premium_customer
+            if header_logo_mobile_premium != blank
+                assign mobile_logo_image = header_logo_mobile_premium
+                assign logo_width = header_logo_mobile_premium_width | default: 80
+            elsif header_logo_premium != blank
+                assign mobile_logo_image = header_logo_premium
+                assign logo_width = header_logo_premium_width | default: 128
+            endif
+        endif
+
+        if mobile_logo_image == null
+            if header_logo_mobile != blank
+                assign mobile_logo_image = header_logo_mobile
+                assign logo_width = header_logo_mobile_width | default: 80
+            elsif header_logo != blank
+                assign mobile_logo_image = header_logo
+                assign logo_width = header_logo_width | default: 128
+            endif
+        endif
+    -%}
+    <a
+        {{ logo_attributes }}
+        href="{{ routes.root_url }}"
+        class="flex items-center justify-center"
+    >
+        {%- if mobile_logo_image -%}
+            <span class="block" style="width: {{ logo_width }}px;">
+                {{
+                    mobile_logo_image
+                    | image_url: width: logo_width
+                    | image_tag:
+                        loading: 'lazy',
+                        fetchpriority: 'high',
+                        class: 'h-auto w-full',
+                        alt: shop.name
+                }}
+            </span>
+        {%- else -%}
+            {%- render 'component.icon', type: 'logo', class: 'w-20 h-10' -%}
+        {%- endif -%}
+    </a>
+    {% render 'header-action-menu',
+        header_bar_text_color: header_bar_text_color
+    %}
+
+    {% render 'header-main-menu-mobile',
+        header_menu_background_color: header_menu_background_color,
+        header_menu_text_color: header_menu_text_color,
+        accent_color: accent_color,
+        premium_club_url: premium_club_url,
+        premium_club_label: premium_club_label,
+        premium_club_icon: premium_club_icon
+    %}
+</div>

@@ -1,0 +1,90 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "name": "Header group",
+  "type": "header",
+  "sections": {
+    "announcement_bar_PLaicM": {
+      "type": "announcement-bar",
+      "blocks": {
+        "announcement_fnRpxM": {
+          "type": "announcement",
+          "settings": {
+            "text": "Kopen, kopen , kopen hiero!",
+            "link": "shopify://collections/alle-wijnen"
+          }
+        },
+        "announcement_6RRzpJ": {
+          "type": "announcement",
+          "settings": {
+            "text": "Nu alles gratis!",
+            "link": ""
+          }
+        },
+        "announcement_KEcNht": {
+          "type": "announcement",
+          "settings": {
+            "text": "Nu ook levering op Ibiza..",
+            "link": ""
+          }
+        }
+      },
+      "block_order": [
+        "announcement_fnRpxM",
+        "announcement_6RRzpJ",
+        "announcement_KEcNht"
+      ],
+      "settings": {
+        "visibility_audience": "everyone",
+        "mobile_padding": "py-4",
+        "desktop_padding": "lg:py-4",
+        "background_home": "#0c0027",
+        "background": "#06061c",
+        "text_color_home": "#ffffff",
+        "text_color": "#ffffff"
+      }
+    },
+    "main": {
+      "type": "header",
+      "settings": {
+        "main_menu": "main-menu",
+        "main_menu_premium": "",
+        "customer_account_menu": "customer-account-main-menu",
+        "make_header_disappear_on_scroll": true,
+        "logo_settings": true,
+        "header_logo": "shopify://shop_images/logo-WineList-text-white.svg",
+        "header_logo_width": 168,
+        "header_logo_premium": "shopify://shop_images/logo-winelist-premium-club-diap-liggend.svg",
+        "header_logo_premium_width": 208,
+        "header_logo_mobile": "shopify://shop_images/logo-winelist-diap-cmyk.svg",
+        "header_logo_mobile_width": 80,
+        "header_logo_mobile_premium": "shopify://shop_images/logo-winelist-premium-club-diap-liggend.svg",
+        "header_logo_mobile_premium_width": 80,
+        "header_background_color_home": "rgba(0,0,0,0)",
+        "header_background_color": "#0c0027",
+        "header_menu_background_color": "#0c0027",
+        "header_bar_text_color": "#ffffff",
+        "header_menu_text_color": "#ffffff",
+        "accent_color": "#a08735",
+        "search_placeholder": "Wine, burgundy, champagne, etc.",
+        "search_initial_text": "Search for wine, burgundy, champagne, etc.",
+        "search_no_results_text": "No results found. Please try a different search.",
+        "search_show_collections": true,
+        "search_show_articles": true,
+        "premium_club_url": "shopify://pages/premium-club",
+        "premium_club_label": "Premium Club Member"
+      }
+    }
+  },
+  "order": [
+    "announcement_bar_PLaicM",
+    "main"
+  ]
+}

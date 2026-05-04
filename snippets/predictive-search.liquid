@@ -1,0 +1,223 @@
+{%- liquid
+    assign total_results = predictive_search.resources.queries.size | plus: predictive_search.resources.collections.size | plus: predictive_search.resources.pages.size | plus: predictive_search.resources.articles.size | plus: predictive_search.resources.products.size
+
+    if search_placeholder == blank
+        assign search_placeholder = 'general.search.placeholder_text' | t
+    endif
+    if search_initial_text == blank
+        assign search_initial_text = 'general.search.intial_search' | t
+    endif
+    if search_no_results_text == blank
+        assign search_no_results_text = 'general.search.no_results_description' | t
+    endif
+
+    assign resource_types = 'product'
+    if search_show_collections
+        assign resource_types = resource_types | append: ',collection'
+    endif
+    if search_show_articles
+        assign resource_types = resource_types | append: ',article'
+    endif
+-%}
+
+{% capture search_modal_content %}
+    <form
+        data-target="predictive-search.form"
+        action="{{- routes.search_url -}}"
+        class="flex p-4 lg:p-12 bg-white w-screen items-center gap-4 container"
+    >
+        <label class="flex w-full relative">
+            <input type="hidden" name="type" value="product">
+            <input
+                data-target="predictive-search.input"
+                name="q"
+                value=""
+                class="relative border-0 border-b border-b-surface-200 w-full pl-12 min-h-[3rem] focus:outline-none focus:ring-0 text-black lg:mr-[66px]"
+                placeholder="{{- search_placeholder -}}"
+                type="text"
+            >
+            <button
+                class="absolute left-4 top-0 bottom-1 w-fit"
+                type="submit"
+            >
+                {% render 'component.icon',
+                    type: 'search',
+                    class: 'size-5 text-surface-200'
+                %}
+            </button>
+            <modal-toggle
+                target="search-results"
+                class="block"
+            >
+                <button
+                    type="button"
+                    aria-label="{{ 'accessibility.close' | t | default: 'Close search' }}"
+                    class="p-2 absolute right-4 top-0 bottom-1 w-fit"
+                >
+                    {%- render 'component.icon', type: 'close', class: 'text-black w-5 h-5' -%}
+                </button>
+            </modal-toggle>
+        </label>
+    </form>
+    <div
+        class="w-screen bg-white predictive-search-results max-h-[calc(100dvh-5rem)] overflow-y-scroll scrollbar-none relative group"
+        data-scrollable-container
+    >
+        <div class="hidden group-data-[loading]:flex absolute inset-0 items-center justify-center bg-white/80 z-10">
+            <svg class="animate-spin size-8 text-black" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+            </svg>
+        </div>
+        {%- if predictive_search.performed and total_results >= 1 -%}
+            <div
+                class="w-full flex gap-10 bg-white overflow-y-scroll scrollbar-none text-black container pb-12"
+            >
+                {%- liquid
+                    assign has_articles = false
+                    if search_show_articles and predictive_search.resources.articles.size >= 1
+                        assign has_articles = true
+                    endif
+                    assign has_collections = false
+                    if search_show_collections and predictive_search.resources.collections.size >= 1
+                        assign has_collections = true
+                    endif
+                    assign has_products = false
+                    if predictive_search.resources.products.size >= 1
+                        assign has_products = true
+                    endif
+                    assign article_limit = 4
+                    unless has_products
+                        assign article_limit = 8
+                    endunless
+                -%}
+
+                {%- if has_articles or has_collections -%}
+                    <div class="flex flex-col shrink-0 {% if has_products %}lg:w-[240px]{% else %}w-full{% endif %}">
+                        {%- if has_articles -%}
+                            <h3 class="text-sm font-semibold uppercase tracking-wider text-primary mb-2">Wijnhuizen</h3>
+                            <ul class="{% if has_products %}flex flex-col{% else %}grid grid-cols-2 lg:grid-cols-4{% endif %} gap-2">
+                                {%- for article in predictive_search.resources.articles limit: article_limit -%}
+                                    {%- unless article.url contains '/blogs/wijnhuizen/' -%}
+                                        {%- continue -%}
+                                    {%- endunless -%}
+                                    {%- liquid
+                                        assign article_is_restricted = false
+                                        if article.metafields.custom.premium_club_exclusive.value == true
+                                            assign article_is_restricted = true
+                                            if customer and customer.tags contains 'premium-club'
+                                                assign article_is_restricted = false
+                                            endif
+                                        endif
+                                    -%}
+                                    {%- unless article_is_restricted -%}
+                                        <li>
+                                            <a href="{{ article.url }}" class="flex items-center gap-3 p-2 hover:bg-surface-50 rounded transition-colors">
+                                                {%- if article.image -%}
+                                                    <img
+                                                        src="{{ article.image | image_url: width: 80 }}"
+                                                        alt="{{ article.title | escape }}"
+                                                        width="40"
+                                                        height="40"
+                                                        class="w-10 h-10 object-cover"
+                                                        loading="lazy"
+                                                    >
+                                                {%- endif -%}
+                                                <span class="text-sm">{{ article.title }}</span>
+                                            </a>
+                                        </li>
+                                    {%- endunless -%}
+                                {%- endfor -%}
+                            </ul>
+                        {%- endif -%}
+
+                        {%- if has_collections -%}
+                            <h3 class="text-sm font-semibold uppercase tracking-wider text-primary mt-6 mb-2">{{ 'general.search.collections' | t }}</h3>
+                            <ul class="{% if has_products %}flex flex-col{% else %}grid grid-cols-2 lg:grid-cols-4{% endif %} gap-2">
+                                {%- for collection in predictive_search.resources.collections limit: 4 -%}
+                                    <li>
+                                        <a href="{{ collection.url }}" class="flex items-center gap-3 p-2 hover:bg-surface-50 rounded transition-colors">
+                                            {%- if collection.image -%}
+                                                <img
+                                                    src="{{ collection.image | image_url: width: 80 }}"
+                                                    alt="{{ collection.title | escape }}"
+                                                    width="40"
+                                                    height="40"
+                                                    class="w-10 h-10 object-cover"
+                                                    loading="lazy"
+                                                >
+                                            {%- endif -%}
+                                            <span class="text-sm">{{ collection.title }}</span>
+                                        </a>
+                                    </li>
+                                {%- endfor -%}
+                            </ul>
+                        {%- endif -%}
+                    </div>
+                {%- endif -%}
+
+                {%- if has_products -%}
+                    <ul class="grid-cols-2 lg:grid-cols-4 gap-3 [&_*]:!text-black w-full hidden lg:grid">
+                        {%- for product in predictive_search.resources.products limit: 4 -%}
+                            {% render 'component.product',
+                                product: product,
+                                eager: true,
+                                add_to_cart: false,
+                                product_link: true,
+                                current_variant: product.selected_or_first_available_variant,
+                                class: 'aspect-[198/214] md:aspect-[384/400]'
+                            %}
+                        {%- endfor -%}
+                    </ul>
+                    <ul class="grid grid-cols-1 gap-3 [&_*]:!text-black w-full lg:hidden">
+                        {%- for product in predictive_search.resources.products limit: 4 -%}
+                            {% render 'component.product-predictive-search-mobile',
+                                product: product,
+                                eager: true,
+                                add_to_cart: false,
+                                product_link: true,
+                                current_variant: product.selected_or_first_available_variant,
+                                class: 'aspect-[198/214] md:aspect-[384/400]'
+                            %}
+                        {%- endfor -%}
+                    </ul>
+                {%- endif -%}
+            </div>
+        {%- else -%}
+            <div class="flex flex-col items-center justify-center w-full h-full p-4 lg:p-12">
+                <p class="text-center text-black">
+                    {%- if predictive_search.performed -%}
+                        {{ search_no_results_text | replace: '*search_term', predictive_search.terms }}
+                    {%- else -%}
+                        {{ search_initial_text }}
+
+                    {%- endif -%}
+                </p>
+            </div>
+        {%- endif -%}
+    </div>
+{% endcapture %}
+
+<predictive-search
+    data-url="{{ routes.predictive_search_url }}"
+    data-section-id="{{ section.id }}"
+    data-resource-types="{{ resource_types }}"
+>
+    {%- render 'component.modal',
+        data_id: 'search-results',
+        open_button: '',
+        content: search_modal_content,
+        content_class: 'fixed top-[calc(var(--announcement-height,0px)_+_var(--header-height,80px))] lg:top-[var(--announcement-height,0px)] right-0 h-fit data-open:translate-y-0 data-open:opacity-100 opacity-0 data-leave:opacity-0 data-leave:duration-300 duration-300 ease-out transition-[translate,scale,opacity] lg:!transition-[translate,scale,opacity] pointer-events-auto bg-surface-600 mb-auto z-20',
+        is_popup: false,
+        is_drawer: false,
+        attributes: 'aria-label="Search results"',
+        open_button_class: 'flex items-center cursor-pointer',
+        drawer_from_right: false,
+        desktop_popup_mobile_drawer: false,
+        blur: true,
+        is_top_zero: true,
+        modal_dialog_class: 'z-40 lg:z-90',
+        backdrop_extra_class: 'top-[calc(var(--announcement-height,0px)_+_var(--header-height,80px))] lg:top-[var(--announcement-height,0px)] transition-opacity',
+        modal_group: 'header'
+    -%}
+</predictive-search>

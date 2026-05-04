@@ -1,0 +1,66 @@
+<script>
+    if (window.location.search.includes('q=') && !window.location.search.includes('type=')) {
+        const url = new URL(window.location);
+        url.searchParams.set('type', 'product');
+        window.location.replace(url.toString());
+    }
+</script>
+
+<div>
+    <div class="container">
+        <h1 class="text-[40px] lg:text-[52px] font-cormorant-garamond pb-8">
+            {% if search.performed and search.terms != blank %}
+                {{ 'general.search_page.results_for' | t: terms: search.terms }}
+            {% else %}
+                {{ 'general.search_page.search' | t }}
+            {% endif %}
+        </h1>
+        {% comment %}
+            <section class="p-6 container-small lg:p-8">
+                <form
+                    class="main-search-form mb-12 relative z-[5]"
+                    action="{{ routes.search_url }}"
+                    role="search"
+                >
+                    <fieldset class="flex flex-col lg:flex-row gap-1">
+                        {% render 'component.input',
+                            id: 'search',
+                            default_value: search_term,
+                            placeholder: search_placeholder,
+                            name: 'q',
+                            attributes: search_attributes,
+                            class: 'w-full appearance-none text-black  placeholder:text-surface-500 disabled:cursor-not-allowed disabled:bg-surface-100 disabled:text-surface-500 disabled:placeholder:text-surface-500'
+                        %}
+                        <input
+                            type="hidden"
+                            name="sort_by"
+                            value="price-ascending"
+                        >
+                        {% render 'component.button',
+                            variant: 'primary',
+                            type: 'submit',
+                            label: search_label,
+                            class: 'inline-block bg-surface-500 text-white hover:bg-primary-background hover:text-primary-foreground hover:border-primary-foreground text-center w-full lg:w-fit'
+                        %}
+                    </fieldset>
+                </form>
+            </section>
+        {% endcomment %}
+        {%- render 'products-listing-grid', products_per_page: 24, show_quick_add: section.settings.show_quick_add -%}
+    </div>
+</div>
+
+{% schema %}
+{
+    "name": "Main Search",
+    "settings": [
+        {
+            "type": "checkbox",
+            "id": "show_quick_add",
+            "label": "Show quick add to cart",
+            "default": false
+        }
+    ],
+    "blocks": []
+}
+{% endschema %}

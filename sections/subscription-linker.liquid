@@ -1,0 +1,454 @@
+{% liquid
+    assign s = section.settings
+    assign section_id = 'section-' | append: section.id
+    assign subscription = s.subscription
+
+    assign show_section = true
+
+    if s.visibility_audience == 'premium_only'
+        assign show_section = false
+        if customer
+            if customer.tags contains 'premium-club'
+                assign show_section = true
+            endif
+        endif
+    elsif s.visibility_audience == 'non_premium_only'
+        if customer
+            if customer.tags contains 'premium-club'
+                assign show_section = false
+            endif
+        endif
+    endif
+
+    if s.image_position == 'right'
+        assign image_order = 'lg:order-2'
+        assign content_order = 'lg:order-1'
+        if s.animation_style == 'split-sides'
+            assign image_animation = 'gsap-slide-from-right'
+            assign content_animation = 'gsap-slide-from-left'
+        else
+            assign image_animation = ''
+            assign content_animation = ''
+        endif
+    else
+        assign image_order = 'lg:order-1'
+        assign content_order = 'lg:order-2'
+        if s.animation_style == 'split-sides'
+            assign image_animation = 'gsap-slide-from-left'
+            assign content_animation = 'gsap-slide-from-right'
+        else
+            assign image_animation = ''
+            assign content_animation = ''
+        endif
+    endif
+%}
+
+{% if show_section %}
+<div
+    id="{{ section_id }}"
+    class="{{ s.mobile_margin }} {{ s.desktop_margin }} bg-background"
+>
+    {% render 'section-colors', current_section: section %}
+    <div class="container {{ s.desktop_padding }} {{ s.mobile_padding }}">
+        {% if s.animation_style != blank and s.animation_style != 'none' and s.animation_style != 'split-sides' -%}
+            <gsap-section data-animation="{{ s.animation_style }}">
+        {%- endif %}
+        {% if s.animation_style == 'split-sides' %}<gsap-elements>{% endif %}
+        <div
+            class="flex flex-col lg:flex-row items-center gap-5 lg:gap-12"
+        >
+            {%- comment -%} Image {%- endcomment -%}
+            <div class="{{ image_order }} {{ image_animation }} w-full lg:w-[361px] lg:flex-shrink-0">
+                <responsive-media class="w-full aspect-[354/286] lg:aspect-[361/300] overflow-hidden">
+                    {% if s.image != blank %}
+                        {{
+                            s.image
+                            | image_url: width: 722
+                            | image_tag:
+                                class: 'w-full h-full object-cover',
+                                loading: 'lazy'
+                        }}
+                    {% else %}
+                        {{
+                            'image'
+                            | placeholder_svg_tag: 'w-full h-full bg-gray-100'
+                        }}
+                    {% endif %}
+                </responsive-media>
+            </div>
+
+            {%- comment -%} Content {%- endcomment -%}
+            <div class="{{ content_order }} {{ content_animation }} flex flex-col gap-5 lg:gap-10 w-full">
+                <div class="flex flex-col gap-3">
+                    {%- comment -%} Subheading & Heading {%- endcomment -%}
+                    <div class="flex flex-col gap-1">
+                        {% if s.subheading != blank %}
+                            <span class="font-cormorant-garamond font-semibold text-[17px] lg:text-[20px] leading-[1.3] text-primary">
+                                {{ s.subheading }}
+                            </span>
+                        {% endif %}
+                        {% if s.heading != blank %}
+                            <h2 class="font-cormorant-garamond font-semibold text-[30px] leading-[1.3] text-primary">
+                                {{ s.heading }}
+                            </h2>
+                        {% endif %}
+                    </div>
+
+                    {%- comment -%} Description {%- endcomment -%}
+                    {% if s.description != blank %}
+                        <div class="font-inter text-[15px] leading-[1.3] text-primary rte">
+                            {{ s.description }}
+                        </div>
+                    {% endif %}
+                </div>
+
+                {%- comment -%} Button {%- endcomment -%}
+                {% if s.button_text != blank %}
+                    {% liquid
+                        if subscription != blank
+                            assign button_url = subscription.system.url
+                        else
+                            assign button_url = s.button_url
+                        endif
+                    %}
+                    {% render 'component.button',
+                        label: s.button_text,
+                        href: button_url,
+                        class: 'w-full lg:w-[244px] justify-center',
+                        style: s.button_style
+                    %}
+                {% endif %}
+            </div>
+        </div>
+        {% if s.animation_style == 'split-sides' %}</gsap-elements>{% endif %}
+        {% if s.animation_style != blank and s.animation_style != 'none' and s.animation_style != 'split-sides' -%}
+            </gsap-section>
+        {%- endif %}
+    </div>
+</div>
+{% endif %}
+
+{% schema %}
+{
+    "name": "Subscription Linker",
+    "tag": "section",
+    "class": "section",
+    "disabled_on": {
+        "groups": ["header", "footer"]
+    },
+    "settings": [
+        {
+            "type": "header",
+            "content": "Visibility"
+        },
+        {
+            "type": "select",
+            "id": "visibility_audience",
+            "label": "Visibility (audience)",
+            "options": [
+                {
+                    "value": "everyone",
+                    "label": "Everyone"
+                },
+                {
+                    "value": "premium_only",
+                    "label": "Only premium-club customers"
+                },
+                {
+                    "value": "non_premium_only",
+                    "label": "Only non premium-club customers"
+                }
+            ],
+            "default": "everyone"
+        },
+        {
+            "type": "header",
+            "content": "Documentation for this section",
+            "info": "Click [here](https://strix-net.atlassian.net/wiki/x/JID68Q) for more information."
+        },
+        {
+            "type": "header",
+            "content": "Subscription"
+        },
+        {
+            "type": "metaobject",
+            "id": "subscription",
+            "label": "Subscription",
+            "metaobject_type": "subscription",
+            "info": "Select the subscription metaobject. The button will link to this subscription's page."
+        },
+        {
+            "type": "header",
+            "content": "Image"
+        },
+        {
+            "type": "image_picker",
+            "id": "image",
+            "label": "Image"
+        },
+        {
+            "type": "select",
+            "id": "image_position",
+            "label": "Image position (Desktop)",
+            "options": [
+                { "value": "left", "label": "Left" },
+                { "value": "right", "label": "Right" }
+            ],
+            "default": "left"
+        },
+        {
+            "type": "header",
+            "content": "Content"
+        },
+        {
+            "type": "text",
+            "id": "subheading",
+            "label": "Subheading",
+            "default": "99 points for the 2022 year"
+        },
+        {
+            "type": "text",
+            "id": "heading",
+            "label": "Heading",
+            "default": "Registration Clos Apalta"
+        },
+        {
+            "type": "richtext",
+            "id": "description",
+            "label": "Description"
+        },
+        {
+            "type": "header",
+            "content": "Button"
+        },
+        {
+            "type": "text",
+            "id": "button_text",
+            "label": "Button text",
+            "default": "Shop Now"
+        },
+        {
+            "type": "select",
+            "id": "button_style",
+            "label": "Button style",
+            "options": [
+                {
+                    "value": "primary",
+                    "label": "Primary"
+                },
+                {
+                    "value": "secondary",
+                    "label": "Secondary"
+                }
+            ],
+            "default": "primary"
+        },
+        {
+            "type": "url",
+            "id": "button_url",
+            "label": "Button URL (fallback)",
+            "info": "Used only if no subscription is selected"
+        },
+        {
+            "type": "header",
+            "content": "Section Styling"
+        },
+        {
+            "type": "checkbox",
+            "id": "section_styling",
+            "label": "Add styling to section",
+            "info": "If enabled this shows the settings to set the color scheme, spacing, and margin for the section.",
+            "default": false
+        },
+        {
+            "type": "header",
+            "content": "Section Spacing",
+            "visible_if": "{{ section.settings.section_styling == true }}"
+        },
+        {
+            "type": "select",
+            "id": "mobile_padding",
+            "label": "Mobile padding",
+            "visible_if": "{{ section.settings.section_styling == true }}",
+            "options": [
+                {
+                    "value": "py-0",
+                    "label": "None"
+                },
+                {
+                    "value": "py-2",
+                    "label": "S - 8px"
+                },
+                {
+                    "value": "py-4",
+                    "label": "M - 16px"
+                },
+                {
+                    "value": "py-6",
+                    "label": "L - 24px"
+                },
+                {
+                    "value": "py-8",
+                    "label": "XL - 32px"
+                },
+                {
+                    "value": "py-10",
+                    "label": "2XL - 40px"
+                },
+                {
+                    "value": "py-12",
+                    "label": "3XL - 48px"
+                },
+                {
+                    "value": "py-16",
+                    "label": "4XL - 64px"
+                }
+            ],
+            "default": "py-0"
+        },
+        {
+            "type": "select",
+            "id": "desktop_padding",
+            "label": "Desktop padding",
+            "visible_if": "{{ section.settings.section_styling == true }}",
+            "options": [
+                {
+                    "value": "lg:py-0",
+                    "label": "None"
+                },
+                {
+                    "value": "lg:py-2",
+                    "label": "S - 8px"
+                },
+                {
+                    "value": "lg:py-4",
+                    "label": "M - 16px"
+                },
+                {
+                    "value": "lg:py-6",
+                    "label": "L - 24px"
+                },
+                {
+                    "value": "lg:py-8",
+                    "label": "XL - 32px"
+                },
+                {
+                    "value": "lg:py-10",
+                    "label": "2XL - 40px"
+                },
+                {
+                    "value": "lg:py-12",
+                    "label": "3XL - 48px"
+                },
+                {
+                    "value": "lg:py-16",
+                    "label": "4XL - 64px"
+                }
+            ],
+            "default": "lg:py-0"
+        },
+        {
+            "type": "header",
+            "content": "Section Margin",
+            "visible_if": "{{ section.settings.section_styling == true }}"
+        },
+        {
+            "type": "select",
+            "id": "mobile_margin",
+            "label": "Mobile Section margin",
+            "visible_if": "{{ section.settings.section_styling == true }}",
+            "options": [
+                { "value": "mb-0", "label": "None" },
+                { "value": "mb-4", "label": "Small - 16px" },
+                { "value": "mb-8", "label": "Medium - 32px" },
+                { "value": "mb-12", "label": "Large - 48px" }
+            ],
+            "default": "mb-0"
+        },
+        {
+            "type": "select",
+            "id": "desktop_margin",
+            "label": "Desktop Section margin",
+            "visible_if": "{{ section.settings.section_styling == true }}",
+            "options": [
+                { "value": "lg:mb-0", "label": "None" },
+                { "value": "lg:mb-8", "label": "Small - 32px" },
+                { "value": "lg:mb-12", "label": "Medium - 48px" },
+                { "value": "lg:mb-16", "label": "Large - 64px" }
+            ],
+            "default": "lg:mb-0"
+        },
+        {
+            "type": "header",
+            "content": "Colors",
+            "visible_if": "{{ section.settings.section_styling == true }}"
+        },
+        {
+            "type": "color",
+            "id": "background",
+            "label": "Section background color",
+            "default": "#FFFFFF",
+            "visible_if": "{{ section.settings.section_styling == true }}"
+        },
+        {
+            "type": "color",
+            "id": "primary_text_color",
+            "label": "Primary text color",
+            "default": "#000000",
+            "visible_if": "{{ section.settings.section_styling == true }}"
+        },
+        {
+            "type": "color",
+            "id": "primary_button_color",
+            "label": "Button background color",
+            "default": "#06061C",
+            "visible_if": "{{ section.settings.section_styling == true }}"
+        },
+        {
+            "type": "color",
+            "id": "primary_button_text_color",
+            "label": "Button text color",
+            "default": "#FFFFFF",
+            "visible_if": "{{ section.settings.section_styling == true }}"
+        },
+        {
+            "type": "color",
+            "id": "secondary_button_color",
+            "label": "Secondary button background color",
+            "default": "#000000",
+            "visible_if": "{{ section.settings.section_styling == true }}"
+        },
+        {
+            "type": "color",
+            "id": "secondary_button_text_color",
+            "label": "Secondary button text color",
+            "default": "#FFFFFF",
+            "visible_if": "{{ section.settings.section_styling == true }}"
+        },
+        {
+            "type": "header",
+            "content": "Animation"
+        },
+        {
+            "type": "select",
+            "id": "animation_style",
+            "label": "Scroll animation",
+            "info": "Adds a subtle entrance animation when the section scrolls into view.",
+            "options": [
+                { "value": "none", "label": "None" },
+                { "value": "fade-up", "label": "Fade up" },
+                { "value": "fade-in", "label": "Fade in" },
+                { "value": "slide-in-left", "label": "Slide in from left" },
+                { "value": "slide-in-right", "label": "Slide in from right" },
+                { "value": "split-sides", "label": "Split sides (image & text from opposite sides)" }
+            ],
+            "default": "none"
+        }
+    ],
+    "presets": [
+        {
+            "name": "Subscription Linker"
+        }
+    ]
+}
+{% endschema %}

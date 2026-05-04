@@ -1,0 +1,105 @@
+{% doc %}
+    Renders a promotional card for collection grids.
+    Used with metaobject "collection_promo_card" referenced via collection metafields.
+
+    Metaobject fields:
+    - title: Card title
+    - description: Card description
+    - button_text: Button label
+    - button_url: Button link
+    - image: Background image
+    - text_color: Text color (default: #ffffff)
+    - button_background_color: Button background color (default: transparent)
+    - button_text_color: Button text color (default: #ffffff)
+    - button_position: "top" or "bottom" (default: top)
+
+    @param {object} promo_card - The promo card metaobject
+
+    @example
+    {%- render 'component.collection.promo-card',
+        promo_card: promo_card_metaobject
+    -%}
+{% enddoc %}
+
+{%- liquid
+    assign title = promo_card.title
+    assign description = promo_card.description
+    assign button_text = promo_card.button_text
+    assign button_url = promo_card.button_url
+    assign image = promo_card.image
+    assign text_color = promo_card.text_color | default: '#ffffff'
+    assign button_color = promo_card.button_text_color | default: '#ffffff'
+    assign button_position = promo_card.button_position | default: 'top'
+-%}
+
+<style>
+    .promo-card__button:hover {
+        border-color: currentColor !important;
+    }
+</style>
+
+<div
+    class="relative flex flex-col justify-between h-full min-h-[420px] overflow-hidden p-6 lg:p-4"
+    style="color: {{ text_color }};"
+>
+    {%- if image -%}
+        <div class="absolute inset-0 z-0">
+            {{-
+                image
+                | image_url: width: 800
+                | image_tag:
+                    class: 'w-full h-full object-cover',
+                    loading: 'lazy'
+            -}}
+            <div
+                class="absolute inset-0"
+            ></div>
+        </div>
+    {%- endif -%}
+
+    <div class="relative z-10 flex flex-col h-full {% if button_position == 'bottom' %}justify-between{% endif %} gap-4">
+        <div class="flex flex-col gap-2">
+            {%- if title != blank -%}
+                <h3 class="font-cormorant-garamond text-[30px] font-medium leading-tight">
+                    {{- title | newline_to_br -}}
+                </h3>
+            {%- endif -%}
+
+            {%- if description != blank -%}
+                <p class="font-inter text-15px] font-normal leading-tight">
+                    {{- description | newline_to_br -}}
+                </p>
+            {%- endif -%}
+
+            {%- if button_text != blank
+                and button_url != blank
+                and button_position == 'top'
+            -%}
+                <div class="mt-4">
+                    <a
+                        href="{{ button_url }}"
+                        class="promo-card__button inline-flex items-center justify-center px-6 py-2 text-[14px] font-normal transition-colors duration-300 w-max cursor-pointer font-inter"
+                        style="color: {{ button_color }}; border: 1px solid color-mix(in srgb, {{ button_color }} 15%, transparent);"
+                    >
+                        {{- button_text -}}
+                    </a>
+                </div>
+            {%- endif -%}
+        </div>
+
+        {%- if button_text != blank
+            and button_url != blank
+            and button_position == 'bottom'
+        -%}
+            <div>
+                <a
+                    href="{{ button_url }}"
+                    class="promo-card__button inline-flex items-center justify-center px-6 py-2 text-[14px] font-normal transition-colors duration-300 w-max cursor-pointer font-inter"
+                    style="color: {{ button_color }}; border: 1px solid color-mix(in srgb, {{ button_color }} 15%, transparent);"
+                >
+                    {{- button_text -}}
+                </a>
+            </div>
+        {%- endif -%}
+    </div>
+</div>

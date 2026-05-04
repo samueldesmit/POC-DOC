@@ -1,0 +1,73 @@
+{% doc %}
+    Renders footer contact information (address, email, phone).
+
+    @param {string} address - Contact address
+    @param {string} address_url - Optional Google Maps link for the address
+    @param {string} email - Contact email
+    @param {string} phone - Contact phone number
+    @param {string} phone_hours - Phone hours text (optional)
+    @param {boolean} is_desktop - Desktop styling with Inter font (default: false)
+{% enddoc %}
+
+{% liquid
+    assign text_class = 'text-sm'
+    if is_desktop
+        assign text_class = 'text-sm font-inter font-normal'
+    endif
+%}
+
+{% if address != blank %}
+    <div class="flex gap-1 items-center text-primary">
+        {% render 'component.icon',
+            type: 'location',
+            class: 'size-5 mt-0.5 flex-shrink-0'
+        %}
+        {% if address_url != blank %}
+            <a
+                href="{{ address_url }}"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="{{ text_class }} hover:text-primary/50"
+            >
+                {{ address }}
+            </a>
+        {% else %}
+            <p class="{{ text_class }}">{{ address }}</p>
+        {% endif %}
+    </div>
+{% endif %}
+
+{% if email != blank %}
+    <div class="flex gap-1 items-center text-primary">
+        {% render 'component.icon',
+            type: 'email',
+            class: 'size-5 flex-shrink-0'
+        %}
+        <a
+            href="mailto:{{ email }}"
+            class="{{ text_class }} hover:text-primary/50"
+        >
+            {{ email }}
+        </a>
+    </div>
+{% endif %}
+
+{% if phone != blank %}
+    <div class="flex gap-1 items-start text-primary">
+        {% render 'component.icon',
+            type: 'phone',
+            class: 'size-5 flex-shrink-0'
+        %}
+        <div class="{{ text_class }}">
+            <a
+                href="tel:{{ phone | replace: ' ', '' }}"
+                class="hover:text-primary/50"
+            >
+                {{ phone }}
+            </a>
+            {% if phone_hours != blank %}
+                <p class="text-sm mt-1">({{ phone_hours }})</p>
+            {% endif %}
+        </div>
+    </div>
+{% endif %}

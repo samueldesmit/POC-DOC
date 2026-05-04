@@ -1,0 +1,73 @@
+{%- if settings.newsletter_klaviyo_list_id != blank -%}
+    <back-in-stock-form>
+        <form
+            data-out-of-stock-form
+            class="{% if current_variant.available %} hidden {% endif %} max-w-[464px] w-full mb-6"
+            action="https://a.klaviyo.com/client/back-in-stock-subscriptions/?company_id={{- settings.klaviyo_public_key -}}"
+            method="post"
+            novalidate
+        >
+            <input
+                type="hidden"
+                name="a"
+                value="{{- settings.klaviyo_public_key -}}"
+            >
+            <input
+                type="hidden"
+                name="platform"
+                value="shopify"
+            >
+            <input
+                data-sold-out-variant
+                type="hidden"
+                name="variant"
+                value="{{- variant.id -}}"
+            >
+            <input
+                type="hidden"
+                name="product"
+                value="{{- product.id -}}"
+            >
+
+            <div class="relative">
+                {% comment %} Form content wrapper {% endcomment %}
+                <div class="flex flex-col items-start justify-start">
+                    <h6 class="text-base leading-6 text-magenta">
+                        {{- 'products.product.out_of_stock_form.title' | t -}}
+                    </h6>
+                    <p class="text-xs text-black mt-3">
+                        {{-
+                            'products.product.out_of_stock_form.subtitle'
+                            | t
+                        -}}
+                    </p>
+
+                    <div class="relative w-full mt-3">
+                        <input
+                            class="w-full text-xs text-black placeholder:text-surface-500 py-3.5 px-4 rounded-md bg-white focus:outline-none focus:ring-0 focus:border-surface-500"
+                            name="email"
+                            type="email"
+                            data-input
+                            placeholder="{{- 'products.product.out_of_stock_form.placeholder' | t -}}"
+                        >
+                        <button
+                            aria-label="submit"
+                            type="submit"
+                            class="absolute top-0 right-0 h-full w-11 flex justify-center items-center "
+                        >
+                            <span class="sr-only">Submit</span>
+                            {%- render 'component.icon',
+                                type: 'chevron',
+                                class: 'h-4 w-4 text-magenta'
+                            -%}
+                        </button>
+                    </div>
+                    <p
+                        data-message
+                        class="text-xs mt-2 text-[#AD9D8E]"
+                    ></p>
+                </div>
+            </div>
+        </form>
+    </back-in-stock-form>
+{%- endif -%}

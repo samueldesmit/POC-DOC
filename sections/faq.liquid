@@ -1,0 +1,772 @@
+{% liquid
+    assign s = section.settings
+    assign section_id = 'section-' | append: section.id
+    assign selected_metaobject = s.metaobject
+    assign faq_categories = shop.metaobjects.faq[selected_metaobject].categories_lists.value
+
+    assign show_section = true
+
+    if s.visibility_audience == 'premium_only'
+        assign show_section = false
+        if customer
+            if customer.tags contains 'premium-club'
+                assign show_section = true
+            endif
+        endif
+    elsif s.visibility_audience == 'non_premium_only'
+        if customer
+            if customer.tags contains 'premium-club'
+                assign show_section = false
+            endif
+        endif
+    endif
+%}
+
+{% if show_section %}
+<style>
+    #{{ section_id }} .faq-accordion-item:has([aria-expanded="true"]) {
+        border-bottom-color: transparent !important;
+    }
+</style>
+<div
+    id="{{ section_id }}"
+    class="{{ s.mobile_margin }} {{ s.desktop_margin }} bg-background text-primary"
+>
+    {% render 'section-colors', current_section: section %}
+
+    {% if s.animation_style != blank and s.animation_style != 'none' -%}
+        <gsap-section data-animation="{{ s.animation_style }}">
+    {%- endif %}
+    {%- comment -%} Mobile select - full width, outside container {%- endcomment -%}
+    <div class="lg:hidden relative border-b" style="border-color: {{ s.sidebar_border_color }};">
+        <select
+            class="w-full appearance-none px-4 py-3 pr-10 font-inter text-[15px] font-normal bg-transparent cursor-pointer"
+            style="color: {{ s.sidebar_text_color }};"
+            onchange="if(this.value) window.location.href = this.value"
+        >
+            {% for category in faq_categories %}
+                <option
+                    value="{{ category.system.url }}"
+                    {% if category.system.url == request.path %}selected{% endif %}
+                >
+                    {{ category.title }}
+                </option>
+            {% endfor %}
+            {% for block in section.blocks %}
+                {% if block.settings.page != blank %}
+                    <option
+                        value="{{ block.settings.page.url }}"
+                        {% if block.settings.page.url == request.path %}selected{% endif %}
+                    >
+                        {{ block.settings.title }}
+                    </option>
+                {% endif %}
+            {% endfor %}
+        </select>
+        <svg class="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 w-2 h-[5px]" viewBox="0 0 8 5" fill="{{ s.sidebar_text_color }}" xmlns="http://www.w3.org/2000/svg">
+            <path d="M4 5L0 0h8L4 5z"/>
+        </svg>
+    </div>
+
+    <div class="container {{ s.mobile_padding }} {{ s.desktop_padding }} py-14">
+        <div class="flex flex-col lg:flex-row">
+            {%- comment -%} Desktop sidebar navigation {%- endcomment -%}
+            <nav class="hidden lg:block lg:w-[233px] shrink-0 pl-12 self-start">
+                <ul class="flex flex-col gap-4 border-r pr-8" style="border-color: {{ s.sidebar_active_color }};">
+                    {% for category in faq_categories %}
+                        {% assign is_current = false %}
+                        {% if category.system.url == request.path %}
+                            {% assign is_current = true %}
+                        {% endif %}
+                        <li>
+                            <a
+                                href="{{ category.system.url }}"
+                                class="font-inter text-[15px] transition-colors hover:opacity-70 {% if is_current %}font-bold{% else %}font-normal{% endif %}"
+                                style="color: {% if is_current %}{{ s.sidebar_active_color }}{% else %}{{ s.sidebar_text_color }}{% endif %};"
+                                {% if is_current %}aria-current="page"{% endif %}
+                            >
+                                {{ category.title }}
+                            </a>
+                        </li>
+                    {% endfor %}
+                    {% for block in section.blocks %}
+                        {% if block.settings.page != blank %}
+                            {% assign is_current = false %}
+                            {% if block.settings.page.url == request.path %}
+                                {% assign is_current = true %}
+                            {% endif %}
+                            <li>
+                                <a
+                                    href="{{ block.settings.page.url }}"
+                                    class="font-inter text-[15px] transition-colors hover:opacity-70 {% if is_current %}font-bold{% else %}font-normal{% endif %}"
+                                    style="color: {% if is_current %}{{ s.sidebar_active_color }}{% else %}{{ s.sidebar_text_color }}{% endif %};"
+                                    {% if is_current %}aria-current="page"{% endif %}
+                                >
+                                    {{ block.settings.title }}
+                                </a>
+                            </li>
+                        {% endif %}
+                    {% endfor %}
+                </ul>
+            </nav>
+
+            {%- comment -%} Main content {%- endcomment -%}
+            <div class="flex-1 lg:pl-14 lg:pr-12">
+                {%- liquid
+                    assign active_category = nil
+                    assign active_block = nil
+
+                    for category in faq_categories
+                        if category.system.url == request.path
+                            assign active_category = category
+                            break
+                        endif
+                    endfor
+
+                    if active_category == nil
+                        for block in section.blocks
+                            if block.settings.page != blank
+                                if block.settings.page.url == request.path
+                                    assign active_block = block
+                                    break
+                                endif
+                            endif
+                        endfor
+                    endif
+                -%}
+
+                {% if active_block %}
+                    {%- assign b = active_block.settings -%}
+                    <h1 class="font-cormorant-garamond font-semibold text-[20px] lg:text-[30px] mb-8 lg:mb-10"
+                        style="color: {{ s.sidebar_text_color }};"
+                    >
+                        {{ b.title }}
+                    </h1>
+
+                    {% if active_block.type == 'page_content' %}
+                        {% if b.content != blank %}
+                            <div class="font-inter text-[14px] leading-[1.7] [&_a]:underline [&_h2]:font-cormorant-garamond [&_h2]:font-semibold [&_h2]:text-[20px] [&_h2]:lg:text-[24px] [&_h2]:mb-4 [&_h2]:mt-8 [&_p+p]:mt-4"
+                                style="color: {{ s.sidebar_text_color }};"
+                            >
+                                {{ b.content }}
+                            </div>
+                        {% endif %}
+
+                    {% elsif active_block.type == 'contact_block' %}
+                        <div class="flex flex-col lg:flex-row gap-8 lg:gap-36 mb-10 lg:mb-14">
+                            {% if b.address_title != blank or b.address_content != blank or b.business_address_title != blank or b.business_address_content != blank %}
+                                <div class="flex flex-col gap-10">
+                                    {% if b.address_title != blank or b.address_content != blank %}
+                                        <div>
+                                            {% if b.address_title != blank %}
+                                                <h3 class="font-cormorant-garamond font-semibold text-[20px] mb-4"
+                                                    style="color: {{ s.sidebar_text_color }};"
+                                                >
+                                                    {{ b.address_title }}
+                                                </h3>
+                                            {% endif %}
+                                            {% if b.address_content != blank %}
+                                                <div class="font-inter text-[14px] leading-[1.5] [&_a]:underline"
+                                                    style="color: {{ s.sidebar_text_color }};"
+                                                >
+                                                    {{ b.address_content }}
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                    {% endif %}
+                                    {% if b.business_address_title != blank or b.business_address_content != blank %}
+                                        <div>
+                                            {% if b.business_address_title != blank %}
+                                                <h3 class="font-cormorant-garamond font-semibold text-[20px] mb-4"
+                                                    style="color: {{ s.sidebar_text_color }};"
+                                                >
+                                                    {{ b.business_address_title }}
+                                                </h3>
+                                            {% endif %}
+                                            {% if b.business_address_content != blank %}
+                                                <div class="font-inter text-[14px] leading-[1.5]"
+                                                    style="color: {{ s.sidebar_text_color }};"
+                                                >
+                                                    {{ b.business_address_content }}
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            {% endif %}
+
+                            {% if b.numbers_title != blank or b.numbers_content != blank %}
+                                <div>
+                                    {% if b.numbers_title != blank %}
+                                        <h3 class="font-cormorant-garamond font-semibold text-[20px] mb-4"
+                                            style="color: {{ s.sidebar_text_color }};"
+                                        >
+                                            {{ b.numbers_title }}
+                                        </h3>
+                                    {% endif %}
+                                    {% if b.numbers_content != blank %}
+                                        <div class="font-inter text-[14px] leading-[1.5]"
+                                            style="color: {{ s.sidebar_text_color }};"
+                                        >
+                                            {{ b.numbers_content }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        {% if b.show_contact_form %}
+                        {% form 'contact', class: 'max-w-[800px]' %}
+                            {% if form.posted_successfully? %}
+                                <p class="font-inter text-[14px] mb-4 text-green-700">
+                                    {{ 'sections.faq.contact_form.success' | t }}
+                                </p>
+                            {% endif %}
+                            {% if form.errors %}
+                                <div class="mb-4">
+                                    {{ form.errors | default_errors }}
+                                </div>
+                            {% endif %}
+
+                            <div class="flex flex-col gap-3.5">
+                                <div class="grid grid-cols-1 lg:grid-cols-2 gap-3.5">
+                                    <input
+                                        type="text"
+                                        name="contact[{{ 'sections.faq.contact_form.name' | t }}]"
+                                        placeholder="{{ 'sections.faq.contact_form.name' | t }}"
+                                        class="w-full border px-3 py-3.5 font-inter text-[14px] outline-none focus:border-current"
+                                        style="border-color: #dedede;"
+                                    >
+                                    <input
+                                        type="email"
+                                        name="contact[email]"
+                                        placeholder="{{ 'sections.faq.contact_form.email' | t }}"
+                                        required
+                                        class="w-full border px-3 py-3.5 font-inter text-[14px] outline-none focus:border-current"
+                                        style="border-color: #dedede;"
+                                    >
+                                </div>
+                                <div class="grid grid-cols-1 lg:grid-cols-2 gap-3.5">
+                                    <input
+                                        type="text"
+                                        name="contact[{{ 'sections.faq.contact_form.subject' | t }}]"
+                                        placeholder="{{ 'sections.faq.contact_form.subject' | t }}"
+                                        class="w-full border px-3 py-3.5 font-inter text-[14px] outline-none focus:border-current"
+                                        style="border-color: #dedede;"
+                                    >
+                                    <input
+                                        type="tel"
+                                        name="contact[{{ 'sections.faq.contact_form.phone' | t }}]"
+                                        placeholder="{{ 'sections.faq.contact_form.phone' | t }} ({{ 'sections.faq.contact_form.optional' | t }})"
+                                        class="w-full border px-3 py-3.5 font-inter text-[14px] outline-none focus:border-current"
+                                        style="border-color: #dedede;"
+                                    >
+                                </div>
+                                <textarea
+                                    name="contact[{{ 'sections.faq.contact_form.message' | t }}]"
+                                    placeholder="{{ 'sections.faq.contact_form.message' | t }}"
+                                    rows="5"
+                                    class="w-full border px-3 py-3.5 font-inter text-[14px] outline-none focus:border-current resize-none"
+                                    style="border-color: #dedede;"
+                                ></textarea>
+                                <div>
+                                    <button
+                                        type="submit"
+                                        class="px-8 py-3.5 font-inter text-[14px] text-white transition-opacity hover:opacity-80"
+                                        style="background-color: {{ s.sidebar_text_color }};"
+                                    >
+                                        {{ 'sections.faq.contact_form.send' | t }}
+                                    </button>
+                                </div>
+                            </div>
+                        {% endform %}
+                        {% endif %}
+                    {% endif %}
+
+                {% elsif active_category %}
+                    <h1 class="font-cormorant-garamond font-semibold text-[20px] lg:text-[30px] mb-5 lg:mb-10"
+                        style="color: {{ s.sidebar_text_color }};"
+                    >
+                        {{ active_category.title }}
+                    </h1>
+
+                    {% render 'schema.faq', category: active_category %}
+
+                    <ul class="flex flex-col">
+                        {% for question in active_category.items.value %}
+                            <li
+                                class="faq-accordion-item{% unless forloop.last %} border-b{% endunless %}"
+                                style="border-color: {{ s.accordion_divider_color }};"
+                            >
+                                {% assign content = question.description
+                                    | metafield_text
+                                %}
+                                {% render 'component.accordion',
+                                    title: question.title.value,
+                                    title_class: 'w-full font-cormorant-garamond font-semibold text-[17px] lg:text-[20px]',
+                                    header_class: 'py-0',
+                                    content: content,
+                                    content_class: 'text-primary font-inter font-normal text-[14px] leading-[1.5]',
+                                    styled_content: true,
+                                    icon_style: 'plus-minus',
+                                    faq_style: true,
+                                    faq_accordion_bg: s.accordion_bg_color
+                                %}
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    {% if s.title != blank %}
+                        <h1 class="font-cormorant-garamond font-semibold text-[20px] lg:text-[30px] mb-5 lg:mb-10"
+                            style="color: {{ s.sidebar_text_color }};"
+                        >
+                            {{ s.title | strip_html }}
+                        </h1>
+                    {% endif %}
+
+                    <ul class="flex flex-col gap-6 lg:gap-8">
+                        {% for category in faq_categories %}
+                            <li
+                                id="{{ category.title | handleize }}"
+                                class="h-fit"
+                            >
+                                {% render 'schema.faq', category: category %}
+
+                                <h2 class="font-cormorant-garamond font-semibold text-[24px] lg:text-[30px] tracking-[-0.88px] mb-5"
+                                    style="color: {{ s.sidebar_text_color }};"
+                                >
+                                    {{ category.title }}
+                                </h2>
+
+                                <ul class="flex flex-col">
+                                    {% for question in category.items.value %}
+                                        <li
+                                            class="faq-accordion-item px-4 lg:px-8 py-3 lg:py-5 transition-colors{% unless forloop.last %} border-b{% endunless %}"
+                                            style="background-color: {{ s.accordion_bg_color }}; border-color: {{ s.accordion_divider_color }};"
+                                        >
+                                            {% assign content = question.description
+                                                | metafield_text
+                                            %}
+                                            {% render 'component.accordion',
+                                                title: question.title.value,
+                                                title_class: 'w-full font-cormorant-garamond font-semibold text-[17px] lg:text-[20px]',
+                                                header_class: 'py-0',
+                                                content: content,
+                                                content_class: 'text-primary font-inter font-normal text-[14px] leading-[1.5]',
+                                                styled_content: true,
+                                                icon_style: 'plus-minus',
+                                                faq_style: true,
+                                                faq_accordion_bg: s.accordion_bg_color
+                                            %}
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    {% if s.animation_style != blank and s.animation_style != 'none' -%}
+        </gsap-section>
+    {%- endif %}
+</div>
+{% endif %}
+
+{% schema %}
+{
+    "name": "FAQ",
+    "tag": "section",
+    "class": "section_faq",
+    "settings": [
+        {
+            "type": "header",
+            "content": "Visibility"
+        },
+        {
+            "type": "select",
+            "id": "visibility_audience",
+            "label": "Visibility (audience)",
+            "options": [
+                {
+                    "value": "everyone",
+                    "label": "Everyone"
+                },
+                {
+                    "value": "premium_only",
+                    "label": "Only premium-club customers"
+                },
+                {
+                    "value": "non_premium_only",
+                    "label": "Only non premium-club customers"
+                }
+            ],
+            "default": "everyone"
+        },
+        {
+            "type": "header",
+            "content": "Documentation for this section",
+            "info": "Click [here](https://strix-net.atlassian.net/wiki/x/DgD68Q) for more information."
+        },
+        {
+            "type": "header",
+            "content": "Section Styling"
+        },
+        {
+            "type": "checkbox",
+            "id": "section_styling",
+            "label": "Add styling to section",
+            "info": "If enabled this shows the settings to set the color scheme, spacing, and margin for the section.",
+            "default": false
+        },
+        {
+            "type": "header",
+            "content": "Section Spacing",
+            "visible_if": "{{ section.settings.section_styling == true }}"
+        },
+        {
+            "type": "select",
+            "id": "mobile_padding",
+            "label": "Mobile padding",
+            "visible_if": "{{ section.settings.section_styling == true }}",
+            "options": [
+                {
+                    "value": "py-0",
+                    "label": "None"
+                },
+                {
+                    "value": "py-2",
+                    "label": "S - 8px"
+                },
+                {
+                    "value": "py-4",
+                    "label": "M - 16px"
+                },
+                {
+                    "value": "py-6",
+                    "label": "L - 24px"
+                },
+                {
+                    "value": "py-8",
+                    "label": "XL - 32px"
+                },
+                {
+                    "value": "py-10",
+                    "label": "2XL - 40px"
+                },
+                {
+                    "value": "py-12",
+                    "label": "3XL - 48px"
+                },
+                {
+                    "value": "py-16",
+                    "label": "4XL - 64px"
+                }
+            ],
+            "default": "py-0"
+        },
+        {
+            "type": "select",
+            "id": "desktop_padding",
+            "label": "Desktop padding",
+            "visible_if": "{{ section.settings.section_styling == true }}",
+            "options": [
+                {
+                    "value": "lg:py-0",
+                    "label": "None"
+                },
+                {
+                    "value": "lg:py-2",
+                    "label": "S - 8px"
+                },
+                {
+                    "value": "lg:py-4",
+                    "label": "M - 16px"
+                },
+                {
+                    "value": "lg:py-6",
+                    "label": "L - 24px"
+                },
+                {
+                    "value": "lg:py-8",
+                    "label": "XL - 32px"
+                },
+                {
+                    "value": "lg:py-10",
+                    "label": "2XL - 40px"
+                },
+                {
+                    "value": "lg:py-12",
+                    "label": "3XL - 48px"
+                },
+                {
+                    "value": "lg:py-16",
+                    "label": "4XL - 64px"
+                }
+            ],
+            "default": "lg:py-0"
+        },
+        {
+            "type": "header",
+            "content": "Section Margin",
+            "visible_if": "{{ section.settings.section_styling == true }}"
+        },
+        {
+            "type": "select",
+            "id": "mobile_margin",
+            "label": "Mobile Section margin",
+            "visible_if": "{{ section.settings.section_styling == true }}",
+            "options": [
+                {
+                    "value": "mb-0",
+                    "label": "None"
+                },
+                {
+                    "value": "mb-4",
+                    "label": "Small - 16px"
+                },
+                {
+                    "value": "mb-8",
+                    "label": "Medium - 32px"
+                },
+                {
+                    "value": "mb-12",
+                    "label": "Large - 48px"
+                }
+            ],
+            "default": "mb-0"
+        },
+        {
+            "type": "select",
+            "id": "desktop_margin",
+            "label": "Desktop Section margin",
+            "visible_if": "{{ section.settings.section_styling == true }}",
+            "options": [
+                {
+                    "value": "lg:mb-0",
+                    "label": "None"
+                },
+                {
+                    "value": "lg:mb-8",
+                    "label": "Small - 32px"
+                },
+                {
+                    "value": "lg:mb-12",
+                    "label": "Medium - 48px"
+                },
+                {
+                    "value": "lg:mb-16",
+                    "label": "Large - 64px"
+                }
+            ],
+            "default": "lg:mb-0"
+        },
+        {
+            "type": "header",
+            "content": "Colors",
+            "visible_if": "{{ section.settings.section_styling == true }}"
+        },
+        {
+            "type": "color",
+            "id": "background",
+            "label": "Section background color",
+            "default": "#FFFFFF",
+            "visible_if": "{{ section.settings.section_styling == true }}"
+        },
+        {
+            "type": "color",
+            "id": "primary_text_color",
+            "label": "Primary text color",
+            "default": "#000000",
+            "visible_if": "{{ section.settings.section_styling == true }}"
+        },
+        {
+            "type": "color",
+            "id": "border_color",
+            "label": "Border color",
+            "default": "#B19E5E",
+            "visible_if": "{{ section.settings.section_styling == true }}"
+        },
+        {
+            "type": "header",
+            "content": "FAQ Header"
+        },
+        {
+            "type": "richtext",
+            "id": "title",
+            "label": "FAQ Title"
+        },
+        {
+            "type": "metaobject",
+            "id": "metaobject",
+            "label": "Metaobject",
+            "metaobject_type": "faq"
+        },
+        {
+            "type": "header",
+            "content": "FAQ Colors"
+        },
+        {
+            "type": "color",
+            "id": "accordion_bg_color",
+            "label": "Accordion item background",
+            "default": "#f8f6f1"
+        },
+        {
+            "type": "color",
+            "id": "accordion_content_bg_color",
+            "label": "Accordion open content background",
+            "default": "#ffffff"
+        },
+        {
+            "type": "color",
+            "id": "accordion_divider_color",
+            "label": "Accordion divider color",
+            "default": "#a08735"
+        },
+        {
+            "type": "color",
+            "id": "sidebar_active_color",
+            "label": "Sidebar active / border color",
+            "default": "#a08735"
+        },
+        {
+            "type": "color",
+            "id": "sidebar_text_color",
+            "label": "Sidebar text color",
+            "default": "#06061c"
+        },
+        {
+            "type": "color",
+            "id": "sidebar_border_color",
+            "label": "Sidebar border color (mobile)",
+            "default": "#b19e5e"
+        },
+        {
+            "type": "header",
+            "content": "Animation"
+        },
+        {
+            "type": "select",
+            "id": "animation_style",
+            "label": "Scroll animation",
+            "info": "Adds a subtle entrance animation when the section scrolls into view.",
+            "options": [
+                { "value": "none", "label": "None" },
+                { "value": "fade-up", "label": "Fade up" },
+                { "value": "fade-in", "label": "Fade in" },
+                { "value": "slide-in-left", "label": "Slide in from left" },
+                { "value": "slide-in-right", "label": "Slide in from right" }
+            ],
+            "default": "none"
+        }
+    ],
+
+    "blocks": [
+        {
+            "type": "contact_block",
+            "name": "Contact",
+            "settings": [
+                {
+                    "type": "text",
+                    "id": "title",
+                    "label": "Title",
+                    "default": "Contact Us"
+                },
+                {
+                    "type": "page",
+                    "id": "page",
+                    "label": "Page",
+                    "info": "Link this contact block to a page. The content will only show when visiting that page."
+                },
+                {
+                    "type": "header",
+                    "content": "Address"
+                },
+                {
+                    "type": "text",
+                    "id": "address_title",
+                    "label": "Address title",
+                    "default": "Address:"
+                },
+                {
+                    "type": "richtext",
+                    "id": "address_content",
+                    "label": "Address content"
+                },
+                {
+                    "type": "header",
+                    "content": "Business Address"
+                },
+                {
+                    "type": "text",
+                    "id": "business_address_title",
+                    "label": "Business address title",
+                    "default": "Business address:"
+                },
+                {
+                    "type": "richtext",
+                    "id": "business_address_content",
+                    "label": "Business address content"
+                },
+                {
+                    "type": "header",
+                    "content": "Additional Info"
+                },
+                {
+                    "type": "text",
+                    "id": "numbers_title",
+                    "label": "Additional info title",
+                    "default": "Useful numbers:"
+                },
+                {
+                    "type": "richtext",
+                    "id": "numbers_content",
+                    "label": "Additional info content"
+                },
+                {
+                    "type": "header",
+                    "content": "Contact Form"
+                },
+                {
+                    "type": "checkbox",
+                    "id": "show_contact_form",
+                    "label": "Show contact form",
+                    "default": true
+                }
+            ]
+        },
+        {
+            "type": "page_content",
+            "name": "Page content",
+            "settings": [
+                {
+                    "type": "text",
+                    "id": "title",
+                    "label": "Title",
+                    "default": "Terms & Conditions"
+                },
+                {
+                    "type": "page",
+                    "id": "page",
+                    "label": "Page",
+                    "info": "Link this block to a page. The content will only show when visiting that page."
+                },
+                {
+                    "type": "richtext",
+                    "id": "content",
+                    "label": "Content"
+                }
+            ]
+        }
+    ],
+
+    "presets": [
+        {
+            "category": "Section",
+            "name": "FAQ"
+        }
+    ]
+}
+{% endschema %}

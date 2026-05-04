@@ -1,0 +1,7 @@
+{%- if settings.hero_banner_first_video != blank -%}
+    {{
+        settings.hero_banner_first_video.preview_image
+        | image_url: width: 2800
+        | preload_tag: as: 'image', fetchpriority: 'high'
+    }}
+{%- endif -%}

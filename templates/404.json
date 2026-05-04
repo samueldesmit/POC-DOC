@@ -1,0 +1,33 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "main": {
+      "type": "main-404",
+      "settings": {
+        "image": "shopify://shop_images/12148541_3840_2160_25fps_1_1_1.png",
+        "enable_overlay": true,
+        "mobile_gradient": "linear-gradient(180deg, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.4) 100%)",
+        "desktop_gradient": "linear-gradient(180deg, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.4) 100%)",
+        "primary_text_color": "#ffffff",
+        "secondary_text_color": "#ffffff",
+        "secondary_button_color": "rgba(0,0,0,0)",
+        "secondary_button_text_color": "#ffffff",
+        "title": "Pagina niet gevonden",
+        "text": "Sorry, de pagina die je zocht bestaat niet of is verplaatst.",
+        "button_text": "Terug naar homepagina",
+        "button_style": "secondary"
+      }
+    }
+  },
+  "order": [
+    "main"
+  ]
+}

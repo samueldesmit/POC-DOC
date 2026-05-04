@@ -1,0 +1,203 @@
+{%- comment -%}
+  Expected behaviour: Displays wines from metaobjects organized by subscription and subcategory.
+  About: Section for wine selection flow (Step 1 of subscription signup).
+         Uses metaobject-driven subscription hierarchy with selectable wine cards.
+  Usage: Add via theme customizer to any page template.
+{%- endcomment -%}
+
+{%- liquid
+  assign s = section.settings
+  assign section_id = 'section-' | append: section.id
+  assign title = s.title
+  assign subscription_handle = s.subscription_handle
+
+  assign show_section = true
+
+  if s.visibility_audience == 'premium_only'
+      assign show_section = false
+      if customer
+          if customer.tags contains 'premium-club'
+              assign show_section = true
+          endif
+      endif
+  elsif s.visibility_audience == 'non_premium_only'
+      if customer
+          if customer.tags contains 'premium-club'
+              assign show_section = false
+          endif
+      endif
+  endif
+-%}
+
+{% if show_section %}
+<div
+  class="{{ s.mobile_margin }} {{ s.desktop_margin }} bg-background"
+  id="{{ section_id }}"
+>
+  {% if s.animation_style != blank and s.animation_style != 'none' -%}
+    <gsap-section data-animation="{{ s.animation_style }}">
+  {%- endif %}
+  <div class="{{ s.mobile_padding }} {{ s.desktop_padding }} container">
+    {%- if title != blank -%}
+      <h1 class="text-3xl font-bold text-primary mb-6 text-center">{{ title }}</h1>
+    {%- endif -%}
+
+    <wine-selection data-section-id="{{ section_id }}">
+      <!-- Wine Subscription Data from Metaobjects -->
+      {%- if subscription_handle != blank -%}
+        {% render 'wine-subscription-data',
+          subscription_handle: subscription_handle,
+          content_for: 'wine-selection-content'
+        %}
+      {%- else -%}
+        {% render 'wine-subscription-data',
+          content_for: 'wine-selection-content'
+        %}
+      {%- endif -%}
+      <!-- End Wine Subscription Data -->
+    </wine-selection>
+  </div>
+  {% if s.animation_style != blank and s.animation_style != 'none' -%}
+    </gsap-section>
+  {%- endif %}
+</div>
+{% endif %}
+
+{% schema %}
+{
+  "name": "Wine Selection",
+  "tag": "section",
+  "class": "wine-selection-section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Visibility"
+    },
+    {
+      "type": "select",
+      "id": "visibility_audience",
+      "label": "Visibility (audience)",
+      "options": [
+        {
+          "value": "everyone",
+          "label": "Everyone"
+        },
+        {
+          "value": "premium_only",
+          "label": "Only premium-club customers"
+        },
+        {
+          "value": "non_premium_only",
+          "label": "Only non premium-club customers"
+        }
+      ],
+      "default": "everyone"
+    },
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Section Title",
+      "default": "Select Your Wines",
+      "info": "Optional title. Leave blank to hide."
+    },
+    {
+      "type": "text",
+      "id": "subscription_handle",
+      "label": "Subscription Handle",
+      "info": "Optional. Filter to specific subscription by metaobject handle (e.g., 'clos-apalta'). Leave blank to show all subscriptions."
+    },
+    {
+      "type": "header",
+      "content": "Section Spacing"
+    },
+    {
+      "type": "select",
+      "id": "mobile_padding",
+      "label": "Mobile padding",
+      "options": [
+        { "value": "py-0", "label": "None" },
+        { "value": "py-2", "label": "S - 8px" },
+        { "value": "py-4", "label": "M - 16px" },
+        { "value": "py-6", "label": "L - 24px" },
+        { "value": "py-8", "label": "XL - 32px" },
+        { "value": "py-10", "label": "2XL - 40px" },
+        { "value": "py-12", "label": "3XL - 48px" },
+        { "value": "py-16", "label": "4XL - 64px" }
+      ],
+      "default": "py-0"
+    },
+    {
+      "type": "select",
+      "id": "desktop_padding",
+      "label": "Desktop padding",
+      "options": [
+        { "value": "lg:py-0", "label": "None" },
+        { "value": "lg:py-2", "label": "S - 8px" },
+        { "value": "lg:py-4", "label": "M - 16px" },
+        { "value": "lg:py-6", "label": "L - 24px" },
+        { "value": "lg:py-8", "label": "XL - 32px" },
+        { "value": "lg:py-10", "label": "2XL - 40px" },
+        { "value": "lg:py-12", "label": "3XL - 48px" },
+        { "value": "lg:py-16", "label": "4XL - 64px" }
+      ],
+      "default": "lg:py-0"
+    },
+    {
+      "type": "header",
+      "content": "Section Margin"
+    },
+    {
+      "type": "select",
+      "id": "mobile_margin",
+      "label": "Mobile margin",
+      "options": [
+        { "value": "mb-0", "label": "None" },
+        { "value": "mb-4", "label": "Small - 16px" },
+        { "value": "mb-8", "label": "Medium - 32px" },
+        { "value": "mb-12", "label": "Large - 48px" }
+      ],
+      "default": "mb-0"
+    },
+    {
+      "type": "select",
+      "id": "desktop_margin",
+      "label": "Desktop margin",
+      "options": [
+        { "value": "lg:mb-0", "label": "None" },
+        { "value": "lg:mb-8", "label": "Small - 32px" },
+        { "value": "lg:mb-12", "label": "Medium - 48px" },
+        { "value": "lg:mb-16", "label": "Large - 64px" }
+      ],
+      "default": "lg:mb-0"
+    },
+    {
+      "type": "header",
+      "content": "Animation"
+    },
+    {
+      "type": "select",
+      "id": "animation_style",
+      "label": "Scroll animation",
+      "info": "Adds a subtle entrance animation when the section scrolls into view.",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "fade-up", "label": "Fade up" },
+        { "value": "fade-in", "label": "Fade in" },
+        { "value": "slide-in-left", "label": "Slide in from left" },
+        { "value": "slide-in-right", "label": "Slide in from right" }
+      ],
+      "default": "none"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Wine Selection",
+      "category": "Wine"
+    }
+  ]
+}
+{% endschema %}

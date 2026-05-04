@@ -1,0 +1,536 @@
+{%- liquid
+    assign total_active_values = 0
+
+    if template contains 'collection'
+        assign listing_type = 'collection'
+        assign listing = collection
+    else
+        assign listing_type = 'search'
+        assign listing = search
+    endif
+
+    capture total_active_values
+        render 'component.collection.active-filters-counter', collection: listing
+    endcapture
+
+    assign total_active_values = total_active_values | plus: 0
+    assign results = listing
+    assign sort_by = results.sort_by | default: results.default_sort_by
+    if results.url
+        if sort_by != results.default_sort_by
+            assign results_url = results.url | append: '?sort_by=' | append: sort_by
+        else
+            assign results_url = results.url
+        endif
+    else
+        assign terms = results.terms | escape
+        assign results_url = '?q=' | append: terms | append: '&options%5Bprefix%5D=last&sort_by=' | append: sort_by
+    endif
+
+    if listing.results_count and listing_type == 'search'
+        assign total_count = search.results | where: 'object_type', 'product' | size
+    elsif listing.products_count
+        assign total_count = listing.products_count
+    endif
+-%}
+
+{% if total_count == 0 and listing_type == 'search' %}
+    {% if terms != blank %}
+        <div class="container">
+            <p class="text-lg font-bold text-center py-8">
+                {{ 'general.search_page.no_results' | t: query: terms }}
+            </p>
+        </div>
+    {% endif %}
+{% else %}
+    <product-collection
+        class="block"
+        data-section-id="{{ section.id }}"
+    >
+        <filters-form
+            data-desktop
+            class="hidden lg:block transition-colors duration-300 ease-out group/filters-form data-loading:pointer-events-none relative z-20"
+        >
+            <form>
+                <div class="grid grid-cols-5 gap-5">
+                    {%- for filter in listing.filters -%}
+                        {%- case filter.type -%}
+                            {%- when 'list' -%}
+                                {%- liquid
+                                    assign sorted_values = filter.values
+                                    if filter.operator == 'AND'
+                                        assign active_filter_values = filter.values | where: 'active', true
+                                        assign inactive_filter_values = filter.values | where: 'active', false
+                                        assign sorted_values = active_filter_values | concat: inactive_filter_values
+                                    endif
+                                    assign active_count = filter.active_values | size
+                                -%}
+                                <div class="relative z-10 has-[button[aria-expanded=true]]:z-20">
+                                    <accordion-component
+                                        class="block"
+                                        data-group="plp-filters"
+                                        data-filter-param="{{ filter.param_name }}"
+                                    >
+                                        <button
+                                            type="button"
+                                            class="group/button peer w-full flex items-center justify-between px-[30px] py-3 text-sm font-normal text-primary bg-white cursor-pointer border border-brand-400/50 aria-expanded:rounded-b-none aria-expanded:border-b-0 after:content-[''] after:absolute after:bottom-0 after:left-4 after:right-4 after:h-px after:bg-brand-400/50 after:opacity-0 aria-expanded:after:opacity-100 after:z-[1] relative"
+                                            data-target="accordion-component.button"
+                                            aria-expanded="false"
+                                            aria-controls="filter-panel-{{ filter.param_name | handle }}"
+                                        >
+                                            <span data-target="filters-form.filter-title">
+                                                {{ filter.label }}
+                                                {%- if active_count > 0 -%}
+                                                    <span class="text-surface-400"
+                                                        >(
+                                                        {{- active_count -}}
+                                                        )</span
+                                                    >
+                                                {%- endif -%}
+                                            </span>
+                                            {% render 'component.icon',
+                                                type: 'chevron',
+                                                class: 'size-3 rotate-90 transition-transform duration-200 group-aria-[expanded=true]/button:rotate-270'
+                                            %}
+                                        </button>
+                                        <div
+                                            id="filter-panel-{{ filter.param_name | handle }}"
+                                            class="absolute left-0 right-0 -mt-px bg-white border border-brand-400/50 border-t-0 grid grid-rows-[0fr] peer-aria-[expanded=true]:grid-rows-[1fr] transition-[grid-template-rows] duration-200 invisible peer-aria-[expanded=true]:visible"
+                                        >
+                                            <div class="overflow-hidden">
+                                                {%- assign values_count = sorted_values
+                                                    | size
+                                                -%}
+                                                {%- if values_count > 10 -%}
+                                                    <div class="p-3 pb-0 border-b border-brand-400/50">
+                                                        <div class="relative mb-3">
+                                                            {% render 'component.icon',
+                                                                type: 'search',
+                                                                class: 'size-5 absolute left-2 top-1/2 -translate-y-1/2 text-surface-200 pointer-events-none'
+                                                            %}
+                                                            <input
+                                                                type="text"
+                                                                data-filter-search
+                                                                aria-label="{{ filter.label }}"
+                                                                placeholder="{{ 'collection.filters.search_type_placeholder' | t }}"
+                                                                class="w-full pl-9 pr-3 py-2 font-inter text-sm font-normal leading-tight border-b border-brand-400/50 focus:border-primary focus:outline-none bg-transparent placeholder:text-surface-200"
+                                                            >
+                                                        </div>
+                                                    </div>
+                                                {%- endif -%}
+                                                <div
+                                                    class="p-3 flex flex-col gap-1 max-h-64 overflow-y-auto"
+                                                    data-filter-options-container
+                                                >
+                                                    {%- for value in sorted_values -%}
+                                                        {%- liquid
+                                                            assign input_id = 'HorizontalFilter-' | append: value.param_name | escape | append: '-' | append: forloop.index
+                                                            assign swatch_value = null
+                                                            if value.swatch.image
+                                                                assign image_url = value.swatch.image | image_url: width: 50
+                                                                assign swatch_value = 'url(' | append: image_url | append: ')'
+                                                                assign swatch_focal_point = value.swatch.image.presentation.focal_point
+                                                            elsif value.swatch.color
+                                                                assign swatch_value = 'rgb(' | append: value.swatch.color.rgb | append: ')'
+                                                            endif
+                                                            if swatch_value
+                                                                assign input_class = 'peer appearance-none border-0 checked:border border-foreground h-5 w-[22px] relative disabled:opacity-40 after:transition after:duration-100 after:ease-in-out'
+                                                            else
+                                                                assign input_class = 'peer appearance-none border border-foreground h-5 w-[22px] relative after:absolute after:left-1.5 after:top-0.5 after:w-[6px] after:h-[11px] after:border-r-2 after:border-b-2 after:border-foreground disabled:opacity-40 after:rotate-45 after:opacity-0 checked:after:opacity-100 after:transition after:duration-100 after:ease-in-out'
+                                                            endif
+                                                        -%}
+                                                        <label
+                                                            for="{{ input_id }}"
+                                                            class="flex items-start gap-3 cursor-pointer hover:bg-brand-400/10 has-[:checked]:bg-brand-400/10 p-2 rounded transition-colors duration-150"
+                                                            data-filter-option
+                                                        >
+                                                            <input
+                                                                data-target="filters-form.input"
+                                                                {% if swatch_value %}
+                                                                    style="background: {{ swatch_value }}; background-position: {{ swatch_focal_point }}; background-size: cover;"
+                                                                {% endif %}
+                                                                id="{{ input_id }}"
+                                                                type="checkbox"
+                                                                name="{{ value.param_name }}"
+                                                                value="{{ value.value }}"
+                                                                {% if value.active %}
+                                                                    checked
+                                                                {% endif %}
+                                                                {% if value.count
+                                                                        == 0
+                                                                    and value.active
+                                                                        == false
+                                                                %}
+                                                                    disabled
+                                                                {% endif %}
+                                                                class="{{ input_class }}"
+                                                            >
+                                                            <span class="text-sm cursor-pointer peer-disabled:cursor-default peer-disabled:opacity-40 {% if value.count == 0 and value.active == false %}text-surface-400{% else %}text-primary{% endif %}">
+                                                                {{ value.label }}
+                                                                <span
+                                                                    class="text-surface-400"
+                                                                    data-filter-count
+                                                                    >(
+                                                                    {{- value.count -}}
+                                                                    )</span
+                                                                >
+                                                            </span>
+                                                        </label>
+                                                    {%- endfor -%}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </accordion-component>
+                                </div>
+                            {%- when 'price_range' -%}
+                                <div class="relative z-10 has-[button[aria-expanded=true]]:z-20">
+                                    <accordion-component
+                                        class="block"
+                                        data-group="plp-filters"
+                                        data-filter-param="{{ filter.param_name }}"
+                                    >
+                                        <button
+                                            type="button"
+                                            class="group/button peer w-full flex items-center justify-between px-[30px] py-3 text-sm font-normal text-primary bg-white cursor-pointer rounded-sm border border-brand-400/50 aria-expanded:rounded-b-none aria-expanded:border-b-0 after:content-[''] after:absolute after:bottom-0 after:left-4 after:right-4 after:h-px after:bg-brand-400/50 after:opacity-0 aria-expanded:after:opacity-100 after:z-[1] relative"
+                                            data-target="accordion-component.button"
+                                            aria-expanded="false"
+                                            aria-controls="filter-panel-{{ filter.param_name | handle }}"
+                                        >
+                                            <span data-target="filters-form.filter-title">
+                                                {{ filter.label }}
+                                            </span>
+                                            {% render 'component.icon',
+                                                type: 'chevron',
+                                                class: 'size-3 rotate-90 transition-transform duration-200 group-aria-[expanded=true]/button:rotate-270'
+                                            %}
+                                        </button>
+                                        <div
+                                            id="filter-panel-{{ filter.param_name | handle }}"
+                                            class="absolute left-0 right-0 -mt-px bg-white border border-brand-400/50 border-t-0 rounded-b-sm grid grid-rows-[0fr] peer-aria-[expanded=true]:grid-rows-[1fr] transition-[grid-template-rows] duration-200 invisible peer-aria-[expanded=true]:visible"
+                                        >
+                                            <div class="overflow-hidden">
+                                                <div
+                                                    class="p-4 pt-[2.5rem]"
+                                                    data-target="filters-form.price-range-inputs"
+                                                >
+                                                    {%- render 'component.collection.filter-price-range-values',
+                                                        filter: filter
+                                                    -%}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </accordion-component>
+                                </div>
+                        {%- endcase -%}
+                    {%- endfor -%}
+                </div>
+            </form>
+        </filters-form>
+
+        <div class="flex gap-[1.25rem] lg:hidden">
+            <div class="w-1/2 px-5 py-3 border border-brand-400/50">
+                <modal-toggle
+                    target="off-canvas-filters"
+                    class="flex justify-center gap-x-3 text-surface-500 w-max h-full"
+                >
+                    <button
+                        type="button"
+                        aria-label="{{ 'collection.filters.filters' | t }}"
+                        class="flex justify-center items-center gap-x-3 text-surface-500 w-full"
+                    >
+                        {% render 'component.icon',
+                            type: 'filter_mobile_icon',
+                            class: 'size-5'
+                        %}
+                        <span class="text-sm">
+                            {{- 'collection.filters.filters' | t -}}
+                        </span>
+                        {%- if total_active_values > 0 -%}
+                            <span class="text-sm"
+                                >({{ total_active_values }})</span
+                            >
+                        {%- endif -%}
+                    </button>
+                </modal-toggle>
+            </div>
+            <div class="w-1/2 px-5 py-3 flex items-center justify-between border border-brand-400/50">
+                {% render 'component.collection.sort-form',
+                    collection: listing
+                %}
+            </div>
+        </div>
+
+        <filters-form
+            data-mobile
+            class="lg:hidden transition-colors duration-300 ease-out group/filters-form data-loading:pointer-events-none"
+        >
+            <form>
+                <div
+                    data-target="filters-form.active-filters"
+                    class="px-4 py-3 data-disabled:hidden"
+                    {% if total_active_values == 0 %}
+                        data-disabled
+                    {% endif %}
+                ></div>
+                {% render 'component.collection.off-canvas-filters',
+                    products: listing,
+                    results_url: results_url
+                %}
+            </form>
+        </filters-form>
+
+        <div class="flex items-center mt-[1rem] justify-between text-sm font-light border-b border-brand-400/50 pb-2 lg:pb-4">
+            <product-count
+                data-text
+                class="text-primary"
+                role="status"
+                aria-live="polite"
+            >
+                {%- liquid
+                    if listing.results_count
+                        assign count = listing.results_count
+                    else
+                        assign count = listing.products_count
+                    endif
+                -%}
+                {%- if count == 1 -%}
+                    {{ 'collection.pagination.one_product' | t }}
+                {%- else -%}
+                    {{
+                        'collection.pagination.other_products'
+                        | t: count: count
+                    }}
+                {%- endif -%}
+            </product-count>
+            <div class="hidden lg:flex items-center gap-2">
+                <span class="text-black text-[0.9375rem]">
+                    {{- 'collection.filters.sort_by_label' | t -}}
+                </span>
+                {% render 'component.collection.sort-form',
+                    collection: listing
+                %}
+            </div>
+        </div>
+
+        {%- comment -%} Product Grid {%- endcomment -%}
+        {%- if listing_type == 'collection' -%}
+            {%- paginate collection.products by products_per_page -%}
+                <product-grid
+                    class="group/grid flex flex-col gap-y-9 relative overflow-hidden pt-[1.875rem] pb-[3rem] lg:pt-[3.125rem] lg:pb-[3.5rem]"
+                    data-current-page="{{ paginate.current_page }}"
+                >
+                    {%- if paginate.current_page != 1 -%}
+                        <div class="flex items-center justify-center">
+                            {% render 'component.button',
+                                label: 'collection.pagination.load_previous',
+                                attributes: 'data-load-more="prev"',
+                                type: 'button',
+                                style: 'primary',
+                                translate: true
+                            %}
+                        </div>
+                    {%- endif -%}
+
+                    <filter-loading-desktop
+                        class="absolute inset-0 pt-[1.875rem] lg:pt-[3.125rem] grid grid-cols-2 gap-x-[1.125rem] gap-y-[1.25rem] lg:gap-x-4 lg:gap-y-12 lg:grid-cols-4 transition-opacity duration-200 ease-out opacity-0 pointer-events-none z-10 bg-white group-data-[loading]/grid:opacity-100 group-data-[loading]/grid:pointer-events-auto"
+                    >
+                        {%- for i in (1..8) -%}
+                            <div class="flex flex-col w-full animate-pulse">
+                                <div
+                                    class="bg-surface-100 aspect-[312/259] w-full"
+                                ></div>
+                                <div class="flex flex-col justify-center items-center text-center w-full mt-4 gap-2">
+                                    <div
+                                        class="w-16 h-3 bg-surface-100 rounded"
+                                    ></div>
+                                    <div
+                                        class="w-32 h-5 bg-surface-100 rounded"
+                                    ></div>
+                                    <div
+                                        class="w-20 h-4 bg-surface-100 rounded"
+                                    ></div>
+                                </div>
+                            </div>
+                        {%- endfor -%}
+                    </filter-loading-desktop>
+
+                    <div
+                        data-products-grid
+                        class="grid grid-cols-2 grid-flow-dense gap-x-[1.125rem] gap-y-[1.25rem] lg:gap-x-4 lg:gap-y-12 lg:grid-cols-4 lg:grid-flow-row transition-opacity duration-200 ease-out relative z-0 group-data-[loading]/grid:opacity-0"
+                        data-target="product-grid.grid"
+                    >
+                        {%- liquid
+                            assign product_index = 0
+                        -%}
+
+                        {%- for product in collection.products
+                            limit: products_per_page
+                        -%}
+                            {%- liquid
+                                assign product_index = product_index | plus: 1
+                                assign absolute_index = paginate.current_page | minus: 1 | times: paginate.page_size | plus: product_index
+                            -%}
+
+                            {%- comment -%} Check if we should insert a promo card at this position {%- endcomment -%}
+                            {%- if promo_cards != blank
+                                and promo_positions != blank
+                            -%}
+                                {%- for promo_card in promo_cards -%}
+                                    {%- assign promo_pos_index = forloop.index0 -%}
+                                    {%- for pos in promo_positions -%}
+                                        {%- if forloop.index0 == promo_pos_index
+                                        -%}
+                                            {%- assign pos_num = pos
+                                                | plus: 0
+                                            -%}
+                                            {%- if pos_num == absolute_index -%}
+                                                <div
+                                                    data-promo-card
+                                                    class="col-span-2 lg:col-span-1 transition duration-500"
+                                                >
+                                                    {% render 'component.collection.promo-card',
+                                                        promo_card: promo_card
+                                                    %}
+                                                </div>
+                                            {%- endif -%}
+                                            {%- break -%}
+                                        {%- endif -%}
+                                    {%- endfor -%}
+                                {%- endfor -%}
+                            {%- endif -%}
+
+                            <div
+                                data-product-card-container
+                                class="transition duration-500 data-[loading]:opacity-50 data-[loading]:cursor-not-allowed data-[loading]:pointer-events-none"
+                            >
+                                {% render 'component.product',
+                                    product: product,
+                                    add_to_cart: show_quick_add,
+                                    product_link: true,
+                                    class: 'aspect-[312/259] mix-blend-multiply',
+                                    eager: false
+                                %}
+                            </div>
+                        {%- endfor -%}
+                    </div>
+
+                    {%- if paginate.pages > 1 and paginate.current_page < paginate.pages -%}
+                        {% assign prods_shown = paginate.page_size
+                            | times: paginate.current_page
+                        %}
+                        <div class="flex flex-col items-center justify-center gap-4">
+                            <p
+                                class="text-sm text-primary"
+                                data-viewed-count
+                                data-page-size="{{ paginate.page_size }}"
+                                data-total="{{ paginate.items }}"
+                                data-template="{{ 'collection.pagination.viewed_of' | t: viewed: 'VIEWED_PLACEHOLDER', total: 'TOTAL_PLACEHOLDER' }}"
+                            >
+                                {{
+                                    'collection.pagination.viewed_of'
+                                    | t:
+                                        viewed: prods_shown,
+                                        total: paginate.items
+                                }}
+                            </p>
+                            <button
+                                type="button"
+                                data-load-next
+                                data-load-more="next"
+                                class="w-[216px] py-3 border border-primary text-primary text-sm text-center hover:bg-black hover:text-white hover:border-black transition-colors cursor-pointer"
+                            >
+                                {{ 'collection.pagination.load_more' | t }}
+                            </button>
+                        </div>
+                    {%- endif -%}
+                </product-grid>
+            {%- endpaginate -%}
+        {%- else -%}
+            {%- paginate search.results by products_per_page -%}
+                <product-grid
+                    class="group/grid flex flex-col gap-y-9 relative overflow-hidden pt-[1.875rem] pb-[3rem] lg:pt-[3.125rem] lg:pb-[3.5rem]"
+                    data-current-page="{{ paginate.current_page }}"
+                >
+                    {%- if paginate.current_page != 1 -%}
+                        <div class="flex items-center justify-center mb-2">
+                            {% render 'component.button',
+                                label: 'collection.pagination.load_previous',
+                                attributes: 'data-load-more="prev"',
+                                type: 'button',
+                                style: 'primary',
+                                translate: true
+                            %}
+                        </div>
+                    {%- endif -%}
+
+                    <filter-loading-desktop
+                        class="absolute inset-0 pt-[1.875rem] lg:pt-[3.125rem] grid grid-cols-2 gap-x-[1.125rem] gap-y-[1.25rem] lg:gap-x-4 lg:gap-y-12 lg:grid-cols-4 transition-opacity duration-200 ease-out opacity-0 pointer-events-none z-10 bg-white group-data-[loading]/grid:opacity-100 group-data-[loading]/grid:pointer-events-auto"
+                    >
+                        {%- for i in (1..8) -%}
+                            <div class="flex flex-col w-full animate-pulse">
+                                <div
+                                    class="bg-surface-100 aspect-[312/259] w-full"
+                                ></div>
+                                <div class="flex flex-col justify-center items-center text-center w-full mt-4 gap-2">
+                                    <div
+                                        class="w-16 h-3 bg-surface-100 rounded"
+                                    ></div>
+                                    <div
+                                        class="w-32 h-5 bg-surface-100 rounded"
+                                    ></div>
+                                    <div
+                                        class="w-20 h-4 bg-surface-100 rounded"
+                                    ></div>
+                                </div>
+                            </div>
+                        {%- endfor -%}
+                    </filter-loading-desktop>
+
+                    <div
+                        data-products-grid
+                        class="grid grid-cols-2 gap-x-[1.125rem] gap-y-[1.25rem] lg:gap-x-4 lg:gap-y-12 lg:grid-cols-4 transition-opacity duration-200 ease-out relative z-0 group-data-[loading]/grid:opacity-0"
+                        data-target="product-grid.grid"
+                    >
+                        {%- for product in search.results -%}
+                            {% if product.object_type == 'product' %}
+                                <div
+                                    data-product-card-container
+                                    class="transition duration-500 data-[loading]:opacity-50 data-[loading]:cursor-not-allowed data-[loading]:pointer-events-none"
+                                >
+                                    {% render 'component.product',
+                                        product: product,
+                                        add_to_cart: show_quick_add,
+                                        product_link: true,
+                                        class: 'aspect-[312/259] mix-blend-multiply',
+                                        eager: false
+                                    %}
+                                </div>
+                            {% endif %}
+                        {%- endfor -%}
+                    </div>
+
+                    {%- if paginate.pages > 1 and paginate.current_page < paginate.pages -%}
+                        <div class="flex items-center justify-center mb-2">
+                            {% render 'component.button',
+                                label: 'collection.pagination.load_more',
+                                attributes: 'data-load-next data-load-more="next"',
+                                type: 'button',
+                                style: 'primary',
+                                icon: 'spinner',
+                                icon_position: 'right',
+                                icon_class: 'w-4 h-4 animate-spin hidden lg:flex',
+                                translate: true
+                            %}
+                        </div>
+                    {%- endif -%}
+                </product-grid>
+            {%- endpaginate -%}
+        {%- endif -%}
+
+        {%- if collection_description != blank -%}
+            <div class="mt-5 marker:[&_ol]:text-xl [&_:is(h1,h2,h3,h4,h5,h6)]:text-xl [&_li]:text-body [&_p]:text-base [&_p]:font-light [&>*:first-child]:mt-0 [&>*:first-child]:pt-0 [&>*:last-child]:mb-0 [&>*:last-child]:pb-0 [&_a]:underline lg:hover:[&_a]:opacity-100 [&_b]:font-bold [&_:is(h1,h2,h3,h4,h5,h6)]:mb-6 [&_ol]:list-decimal [&_ol]:py-[1em] [&_ol]:pl-[1em] [&_p:empty]:hidden [&_p]:mb-4 [&_strong]:font-bold [&_ul]:list-disc [&_ul]:py-[1em] [&_ul]:pl-[1em]">
+                {{- collection_description -}}
+            </div>
+        {%- endif -%}
+    </product-collection>
+{% endif %}

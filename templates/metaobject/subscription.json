@@ -1,0 +1,187 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "breadcrumbs_sub": {
+      "type": "breadcrumbs",
+      "settings": {
+        "visibility_audience": "everyone",
+        "custom_parent_url": "/pages/intekeningen",
+        "custom_parent_title": "Intekeningen",
+        "custom_current_title": "",
+        "section_styling": true,
+        "mobile_padding": "py-4",
+        "desktop_padding": "lg:py-4",
+        "mobile_margin": "mb-0",
+        "desktop_margin": "lg:mb-0",
+        "background": "#ffffff",
+        "primary_text_color": "#525252"
+      }
+    },
+    "richtext_NkyKAP": {
+      "type": "richtext",
+      "blocks": {
+        "text_KFhEYK": {
+          "type": "text",
+          "settings": {
+            "text": "<p>{{ metaobject.sub_title.value }}</p>",
+            "font_family": "font-cormorant-garamond",
+            "font_weight": "400",
+            "mobile_font_size": "18px",
+            "desktop_font_size": "20px",
+            "margin_bottom": "0px"
+          }
+        },
+        "heading_EJQEXW": {
+          "type": "heading",
+          "settings": {
+            "heading": "{{ metaobject.subscription_name.value }}",
+            "font_family": "font-cormorant-garamond",
+            "font_weight": "600",
+            "mobile_font_size": "40px",
+            "desktop_font_size": "52px",
+            "margin_bottom": "14px"
+          }
+        }
+      },
+      "block_order": [
+        "text_KFhEYK",
+        "heading_EJQEXW"
+      ],
+      "name": "Richtext",
+      "settings": {
+        "visibility_audience": "everyone",
+        "section_styling": true,
+        "container": true,
+        "content_alignment": "text-center",
+        "mobile_padding": "py-0",
+        "desktop_padding": "lg:py-4",
+        "mobile_margin": "mb-0",
+        "desktop_margin": "lg:mb-0",
+        "background": "#ffffff",
+        "primary_text_color": "#06061c",
+        "secondary_text_color": "#06061c",
+        "animation_style": "fade-in"
+      }
+    },
+    "hero_j3CpJc": {
+      "type": "hero",
+      "blocks": {
+        "hero_slide_kJmPA6": {
+          "type": "hero_slide",
+          "settings": {
+            "block_styling": false,
+            "primary_text_color": "#282828",
+            "secondary_text_color": "#282828",
+            "primary_button_color": "#ffffff",
+            "primary_button_text_color": "#282828",
+            "secondary_button_color": "#000000",
+            "secondary_button_text_color": "#ffffff",
+            "image": "{{ metaobject.hero_image.value }}",
+            "enable_overlay": false,
+            "overlay_type": "gradient",
+            "mobile_gradient": "linear-gradient(180deg, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.3) 100%)",
+            "desktop_gradient": "linear-gradient(180deg, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.3) 100%)",
+            "overlay_opacity": 30,
+            "text": "",
+            "title": "",
+            "button_text": "",
+            "button_url": "/home",
+            "button_style": "primary"
+          }
+        }
+      },
+      "block_order": [
+        "hero_slide_kJmPA6"
+      ],
+      "name": "Hero",
+      "settings": {
+        "visibility_audience": "everyone",
+        "section_styling": true,
+        "mobile_margin": "mb-8",
+        "desktop_margin": "lg:mb-12",
+        "full_width_mobile": true,
+        "full_width_desktop": true,
+        "aspect_ratio_desktop": "lg:aspect-[1440/450]",
+        "aspect_ratio_mobile": "aspect-[375/350]",
+        "enable_autoplay": true,
+        "autoplay_interval": 5000,
+        "animation_style": "image-zoom"
+      }
+    },
+    "richtext_efKLFM": {
+      "type": "richtext",
+      "blocks": {
+        "text_rm9J6j": {
+          "type": "text",
+          "settings": {
+            "text": "<p>{{ metaobject.description | metafield_tag }}</p>",
+            "font_family": "font-inter",
+            "font_weight": "400",
+            "mobile_font_size": "16px",
+            "desktop_font_size": "16px",
+            "margin_bottom": "14px"
+          }
+        }
+      },
+      "block_order": [
+        "text_rm9J6j"
+      ],
+      "name": "Richtext",
+      "settings": {
+        "visibility_audience": "everyone",
+        "section_styling": true,
+        "container": true,
+        "content_alignment": "text-left",
+        "mobile_padding": "py-0",
+        "desktop_padding": "lg:py-0",
+        "mobile_margin": "mb-4",
+        "desktop_margin": "lg:mb-0",
+        "background": "#ffffff",
+        "primary_text_color": "#000000",
+        "secondary_text_color": "#000000",
+        "animation_style": "fade-in"
+      }
+    },
+    "wine_subscription_flow_yLTjLq": {
+      "type": "wine-subscription-flow",
+      "name": "Wine Subscription Flow",
+      "settings": {
+        "visibility_audience": "everyone",
+        "subscription": "{{ metaobject }}",
+        "draft_order_tag": "subscription",
+        "step1_title": "Kies uw wijn",
+        "step1_subtitle": "",
+        "step1_back_url": "",
+        "step2_title": "Uw gegevens",
+        "step3_title": "Bevestig uw inschrijving",
+        "section_styling": true,
+        "mobile_padding": "py-4",
+        "desktop_padding": "lg:py-6",
+        "mobile_margin": "mb-0",
+        "desktop_margin": "lg:mb-0",
+        "background": "#ffffff",
+        "primary_text_color": "#000000",
+        "secondary_text_color": "#a08735",
+        "primary_button_color": "#06061c",
+        "primary_button_text_color": "#ffffff",
+        "secondary_button_color": "#000000",
+        "secondary_button_text_color": "#000000"
+      }
+    }
+  },
+  "order": [
+    "breadcrumbs_sub",
+    "richtext_NkyKAP",
+    "hero_j3CpJc",
+    "richtext_efKLFM",
+    "wine_subscription_flow_yLTjLq"
+  ]
+}

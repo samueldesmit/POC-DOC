@@ -1,0 +1,63 @@
+{%- liquid
+    assign s = section.settings
+
+    assign show_section = true
+
+    if s.visibility_audience == 'premium_only'
+        assign show_section = false
+        if customer
+            if customer.tags contains 'premium-club'
+                assign show_section = true
+            endif
+        endif
+    elsif s.visibility_audience == 'non_premium_only'
+        if customer
+            if customer.tags contains 'premium-club'
+                assign show_section = false
+            endif
+        endif
+    endif
+-%}
+
+{% if show_section %}
+{% render 'component.product',
+    product: product,
+    product_link: true,
+    add_to_cart: true,
+    class: 'aspect-[198/214] md:aspect-[384/400] mix-blend-multiply',
+    eager: false,
+    current_variant: product.selected_or_first_available_variant
+%}
+{% endif %}
+
+{% schema %}
+{
+    "name": "Product Card",
+    "settings": [
+        {
+            "type": "header",
+            "content": "Visibility"
+        },
+        {
+            "type": "select",
+            "id": "visibility_audience",
+            "label": "Visibility (audience)",
+            "options": [
+                {
+                    "value": "everyone",
+                    "label": "Everyone"
+                },
+                {
+                    "value": "premium_only",
+                    "label": "Only premium-club customers"
+                },
+                {
+                    "value": "non_premium_only",
+                    "label": "Only non premium-club customers"
+                }
+            ],
+            "default": "everyone"
+        }
+    ]
+}
+{% endschema %}

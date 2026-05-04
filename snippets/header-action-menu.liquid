@@ -1,0 +1,88 @@
+{% liquid
+    assign list_class = 'items-center justify-center hover:opacity-70 transition-all duration-300'
+    assign button_class = 'hover:cursor-pointer'
+%}
+
+<ul class="flex justify-end items-center space-x-7 lg:space-x-5">
+    <li class="{{ list_class }} hidden lg:flex">
+        <modal-toggle
+            target="search-results"
+            class="flex justify-center items-center delay-modal"
+            id="open-predictive-search-mobile"
+        >
+            <button
+                type="button"
+                aria-label="{{ 'general.search.placeholder_text' | t | default: 'Search' }}"
+                class="flex items-center cursor-pointer"
+            >
+                <span class="search-icon-wrapper">
+                    {% render 'component.icon',
+                        type: 'search',
+                        class: 'size-[18px]'
+                    %}
+                </span>
+            </button>
+        </modal-toggle>
+    </li>
+    <li class="{{ list_class }} flex mr-5">
+        {% if shop.customer_accounts_enabled %}
+            <shopify-account
+                menu="{{ section.settings.customer_account_menu | default: 'customer-account-main-menu' }}"
+                style="--shopify-account-signed-in-avatar-color-background: #A08735;"
+            >
+                <div slot="signed-out-avatar">
+                    {%- render 'component.icon',
+                        type: 'account',
+                        class: 'size-[18px]'
+                    -%}
+                </div>
+            </shopify-account>
+        {% else %}
+            {%- liquid
+                assign account_aria_label = 'accessibility.open_user_account' | t
+                assign account_attributes = 'aria-label="' | append: account_aria_label | append: '"'
+
+                if customer
+                    assign account_link = routes.account_url
+                else
+                    assign account_link = routes.account_login_url
+                endif
+            -%}
+            <a
+                {{ account_attributes }}
+                href="{{- account_link -}}"
+            >
+                {%- render 'component.icon',
+                    type: 'account',
+                    class: 'size-[18px]'
+                -%}
+            </a>
+        {% endif %}
+    </li>
+    <li>
+        {%- liquid
+            assign cart_aria_label = 'accessibility.open_cart' | t | default: 'Open cart'
+        -%}
+        <modal-toggle
+            target="cart-drawer"
+            class=" {{ list_class }} flex"
+        >
+            <button
+                type="button"
+                aria-label="{{ cart_aria_label }}"
+                class="relative {{ button_class }}"
+            >
+                <cart-count
+                    class="hidden data-[active]:flex absolute -top-1 -right-1 bg-surface-200 text-white size-4 rounded-full justify-center items-center text-[0.5rem]"
+                    aria-hidden="true"
+                >
+                    {{- cart.item_count -}}
+                </cart-count>
+                {%- render 'component.icon',
+                    type: 'cart_drawer',
+                    class: 'size-[18px] text-[{{ header_bar_text_color }}]'
+                -%}
+            </button>
+        </modal-toggle>
+    </li>
+</ul>

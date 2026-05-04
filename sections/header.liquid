@@ -1,0 +1,322 @@
+{% liquid
+    assign s = section.settings
+
+    assign menu_handle = s.main_menu
+
+    if customer and s.main_menu_premium != blank
+        if customer.tags contains 'premium-club'
+            assign menu_handle = s.main_menu_premium
+        endif
+    endif
+
+    assign menu = linklists[menu_handle].links
+    assign header_predictive_search_id = 'header-predictive-search'
+    assign header_cart_drawer_id = 'cart-drawer'
+%}
+
+<style>
+    .section--header {
+        {%- if request.page_type == 'index' -%}
+            --header-bg-color: {{ s.header_background_color_home }};
+        {%- else -%}
+            --header-bg-color: {{ s.header_background_color }};
+        {%- endif -%}
+        --header-menu-bg-color: {{ s.header_menu_background_color }};
+        --accent-color: {{ s.accent_color }};
+    }
+</style>
+
+<header-nav
+    id="main-header-nav"
+    role="navigation"
+    aria-label="{{- 'accessibility.header_main_navigation' | t -}}"
+    data-make-header-disappear-on-scroll="{{ s.make_header_disappear_on_scroll }}"
+    data-is-home-page="{% if request.page_type == 'index' %}true{% else %}false{% endif %}"
+    style="color: {{ s.header_bar_text_color }};"
+>
+    {%- liquid
+        if request.page_type == 'index'
+            assign mobile_header_bg_color = s.header_background_color_home
+        else
+            assign mobile_header_bg_color = s.header_background_color
+        endif
+    -%}
+    {%- render 'header-mobile',
+        header_predictive_search_id: header_predictive_search_id,
+        header_cart_drawer_id: header_cart_drawer_id,
+        header_background_color: mobile_header_bg_color,
+        header_menu_background_color: s.header_menu_background_color,
+        header_bar_text_color: s.header_bar_text_color,
+        header_menu_text_color: s.header_menu_text_color,
+        accent_color: s.accent_color,
+        header_logo: s.header_logo,
+        header_logo_width: s.header_logo_width,
+        header_logo_premium: s.header_logo_premium,
+        header_logo_premium_width: s.header_logo_premium_width,
+        header_logo_mobile: s.header_logo_mobile,
+        header_logo_mobile_width: s.header_logo_mobile_width,
+        header_logo_mobile_premium: s.header_logo_mobile_premium,
+        header_logo_mobile_premium_width: s.header_logo_mobile_premium_width,
+        premium_club_url: s.premium_club_url,
+        premium_club_label: s.premium_club_label,
+        premium_club_icon: s.premium_club_icon
+    -%}
+    {%- render 'header-desktop',
+        header_predictive_search_id: header_predictive_search_id,
+        header_cart_drawer_id: header_cart_drawer_id,
+        menu: menu,
+        header_background_color: s.header_background_color,
+        header_menu_background_color: s.header_menu_background_color,
+        header_bar_text_color: s.header_bar_text_color,
+        header_menu_text_color: s.header_menu_text_color,
+        header_logo: s.header_logo,
+        header_logo_width: s.header_logo_width,
+        header_logo_premium: s.header_logo_premium,
+        header_logo_premium_width: s.header_logo_premium_width,
+        premium_club_url: s.premium_club_url,
+        premium_club_label: s.premium_club_label,
+        premium_club_icon: s.premium_club_icon,
+        accent_color: s.accent_color
+    -%}
+    {% render 'predictive-search',
+        search_placeholder: s.search_placeholder,
+        search_initial_text: s.search_initial_text,
+        search_no_results_text: s.search_no_results_text,
+        search_show_collections: s.search_show_collections,
+        search_show_articles: s.search_show_articles
+    %}
+</header-nav>
+
+{% schema %}
+{
+    "name": "Header",
+    "tag": "header",
+    "class": "section--header",
+    "limit": 1,
+    "settings": [
+        {
+            "type": "header",
+            "content": "Documentation for this section",
+            "info": "Click [here](https://strix-net.atlassian.net/wiki/spaces/TWL/pages/4044128270/Header+Desktop+Mobile) for more information."
+        },
+        {
+            "type": "header",
+            "content": "Menu"
+        },
+        {
+            "type": "link_list",
+            "id": "main_menu",
+            "label": "Main Menu",
+            "default": "main-menu"
+        },
+        {
+            "type": "link_list",
+            "id": "main_menu_premium",
+            "label": "Main Menu for premium-club customers",
+            "info": "Optional: if set, this menu will be used for logged-in customers with the premium-club tag."
+        },
+        {
+            "type": "link_list",
+            "id": "customer_account_menu",
+            "label": "Customer account menu",
+            "default": "customer-account-main-menu"
+        },
+        {
+            "type": "checkbox",
+            "id": "make_header_disappear_on_scroll",
+            "label": "Enable sticky header",
+            "default": true
+        },
+        {
+            "type": "checkbox",
+            "id": "logo_settings",
+            "label": "Logo settings",
+            "info": "If enabled this shows the settings to upload and configure logos.",
+            "default": false
+        },
+        {
+            "visible_if": "{{ section.settings.logo_settings == true }}",
+            "type": "header",
+            "content": "Logo"
+        },
+        {
+            "visible_if": "{{ section.settings.logo_settings == true }}",
+            "type": "image_picker",
+            "id": "header_logo",
+            "label": "Header logo"
+        },
+        {
+            "visible_if": "{{ section.settings.logo_settings == true }}",
+            "type": "range",
+            "id": "header_logo_width",
+            "label": "Header logo width",
+            "min": 40,
+            "max": 260,
+            "step": 4,
+            "unit": "px",
+            "default": 128
+        },
+        {
+            "visible_if": "{{ section.settings.logo_settings == true }}",
+            "type": "image_picker",
+            "id": "header_logo_premium",
+            "label": "Header logo for premium customers"
+        },
+        {
+            "visible_if": "{{ section.settings.logo_settings == true }}",
+            "type": "range",
+            "id": "header_logo_premium_width",
+            "label": "Header logo width (premium)",
+            "min": 40,
+            "max": 260,
+            "step": 4,
+            "unit": "px",
+            "default": 128
+        },
+        {
+            "visible_if": "{{ section.settings.logo_settings == true }}",
+            "type": "image_picker",
+            "id": "header_logo_mobile",
+            "label": "Header logo (mobile)",
+            "info": "Optional: if not set, the desktop logo will be used on mobile."
+        },
+        {
+            "visible_if": "{{ section.settings.logo_settings == true }}",
+            "type": "range",
+            "id": "header_logo_mobile_width",
+            "label": "Header logo width (mobile)",
+            "min": 40,
+            "max": 260,
+            "step": 4,
+            "unit": "px",
+            "default": 80
+        },
+        {
+            "visible_if": "{{ section.settings.logo_settings == true }}",
+            "type": "image_picker",
+            "id": "header_logo_mobile_premium",
+            "label": "Header logo for premium customers (mobile)",
+            "info": "Optional: if not set, the desktop premium logo will be used on mobile."
+        },
+        {
+            "visible_if": "{{ section.settings.logo_settings == true }}",
+            "type": "range",
+            "id": "header_logo_mobile_premium_width",
+            "label": "Header logo width (mobile premium)",
+            "min": 40,
+            "max": 260,
+            "step": 4,
+            "unit": "px",
+            "default": 80
+        },
+        {
+            "type": "header",
+            "content": "Header Colors"
+        },
+        {
+            "type": "color",
+            "id": "header_background_color_home",
+            "label": "Header Background Color homepage",
+            "info": "This color will be used for the homepage, leave blank for transparent",
+            "default": "#00000000"
+        },
+        {
+            "type": "color",
+            "id": "header_background_color",
+            "label": "Header Background Color regular pages",
+            "info": "This color will be used for regular pages, not the homepage",
+            "default": "#06061C"
+        },
+        {
+            "type": "color",
+            "id": "header_menu_background_color",
+            "label": "Header Menu Background Color",
+            "default": "#06061C"
+        },
+        {
+            "type": "color",
+            "id": "header_bar_text_color",
+            "label": "Header Bar Text Color",
+            "default": "#FFFFFF"
+        },
+        {
+            "type": "color",
+            "id": "header_menu_text_color",
+            "label": "Header Menu Text Color",
+            "default": "#FFFFFF"
+        },
+        {
+            "type": "color",
+            "id": "accent_color",
+            "label": "Accent Color",
+            "default": "#A08735"
+        },
+        {
+            "type": "header",
+            "content": "Search"
+        },
+        {
+            "type": "text",
+            "id": "search_placeholder",
+            "label": "Search placeholder text",
+            "default": "Wine, burgundy, champagne, etc."
+        },
+        {
+            "type": "text",
+            "id": "search_initial_text",
+            "label": "Initial search text",
+            "info": "Shown before the user starts typing.",
+            "default": "Search for wine, burgundy, champagne, etc."
+        },
+        {
+            "type": "text",
+            "id": "search_no_results_text",
+            "label": "No results text",
+            "default": "No results found for \"*search_term\". Please try a different search.",
+            "info": "Use *search_term to display what the customer searched for."
+        },
+        {
+            "type": "checkbox",
+            "id": "search_show_collections",
+            "label": "Show collections in search results",
+            "default": false
+        },
+        {
+            "type": "checkbox",
+            "id": "search_show_articles",
+            "label": "Show articles in search results",
+            "default": false
+        },
+        {
+            "type": "header",
+            "content": "Premium Club"
+        },
+        {
+            "type": "url",
+            "id": "premium_club_url",
+            "label": "Premium Club page URL",
+            "info": "Link shown to logged-in customers with the premium-club tag."
+        },
+        {
+            "type": "text",
+            "id": "premium_club_label",
+            "label": "Premium Club link label",
+            "default": "Premium Club Member"
+        },
+        {
+            "type": "image_picker",
+            "id": "premium_club_icon",
+            "label": "Premium Club icon",
+            "info": "Small icon displayed next to the Premium Club label (recommended: 24x24px)."
+        }
+    ],
+    "enabled_on": {
+        "groups": ["header"]
+    },
+    "presets": [
+        {
+            "name": "Header"
+        }
+    ]
+}
+{% endschema %}

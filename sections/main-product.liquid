@@ -1,0 +1,534 @@
+{% liquid
+    assign s = section.settings
+%}
+
+{%- render 'product-head', product: product -%}
+
+<div
+    class="{{ s.mobile_margin }} {{ s.desktop_margin }} bg-background text-primary"
+    id="section-{{ section.id }}"
+>
+    {% render 'section-colors', current_section: section %}
+    <div
+        class=" container {{ s.mobile_padding }} {{ s.desktop_padding }} p-0"
+    >
+        <product-form
+            data-url="{{ product.url }}"
+            data-section="{{ section.id }}"
+        >
+            <div class="grid grid-cols-1 lg:grid-cols-[minmax(10px,_1fr)_505px]">
+                <div class="relative lg:border-r border-primary-background/50 w-full lg:max-h-[80dvh]">
+                    {%- render 'component.product-media' -%}
+                    {%- if product.tags contains 'exclusive-collection' -%}
+                        <div class="absolute top-4 right-4 z-11">
+                            {% render 'component.badge' %}
+                        </div>
+                    {%- endif -%}
+                    <div class="absolute top-4 left-4 z-11">
+                        {% render 'component.awards',
+                            awards_metafield: product.metafields.custom.awards.value
+                        %}
+                    </div>
+                </div>
+                <gsap-elements class="lg:max-w-[505px] w-full p-4 lg:p-10 lg:sticky lg:top-0 lg:self-start">
+                    <ul class="flex flex-col gap-y-4 lg:pl-2 pt-7 lg:pt-5 pb-5 w-full gsap-element-full-opacity">
+                        {% liquid
+                            assign current_variant = product.selected_or_first_available_variant
+                        %}
+
+                        {% for block in section.blocks %}
+                            {% case block.type %}
+                                {% when 'product_title' %}
+                                    <li>
+                                        {% if product.metafields.custom.winery
+                                                != blank
+                                        %}
+                                            <span class="text-sm text-primary uppercase">
+                                                {{
+                                                    product.metafields.custom.winery.value.title
+                                                    | escape
+                                                }}
+                                            </span>
+                                        {% endif %}
+                                        <h1 class="text-[30px] lg:text-[40px] font-cormorant-garamond font-semibold leading-[130%] tracking-[0.0em]">
+                                            {{ product.title }}
+                                        </h1>
+                                    </li>
+
+                                {% when 'product_variants' %}
+                                    {%- assign other_years = product.metafields.custom.other_years.value -%}
+                                    {%- if other_years.size > 0 -%}
+                                        {%- capture year_options -%}
+                                            <ul class="flex flex-col gap-1">
+                                                {%- for related_product in other_years -%}
+                                                    {%- if related_product.id == product.id or related_product.metafields.custom.year == blank -%}
+                                                        {%- continue -%}
+                                                    {%- endif -%}
+                                                    <li>
+                                                        <a href="{{ related_product.url }}" class="hover:underline">
+                                                            {{ related_product.metafields.custom.year }}
+                                                        </a>
+                                                    </li>
+                                                {%- endfor -%}
+                                            </ul>
+                                        {%- endcapture -%}
+                                        {%- if product.metafields.custom.year
+                                                != blank
+                                        -%}
+                                            {%- assign year_title = product.metafields.custom.year -%}
+                                        {%- else -%}
+                                            {%- assign year_title = 'main_product.year_selection'
+                                                | t
+                                            -%}
+                                        {%- endif -%}
+                                        <li>
+                                            {% render 'component.accordion',
+                                                title: year_title,
+                                                content: year_options,
+                                                title_tag: 'span',
+                                                title_class: 'text-sm text-primary',
+                                                header_class: 'py-1 !space-x-2',
+                                                content_class: 'text-sm text-primary',
+                                                class: 'block w-fit',
+                                                section: section
+                                            %}
+                                        </li>
+                                    {%- endif -%}
+                                {% when 'product_usps' %}
+                                    <li>
+                                        {% render 'product-usps',
+                                            product: product
+                                        %}
+                                    </li>
+                                {% when 'product_info' %}
+                                    <li class="font-inter font-normal text-[14px] leading-[130%] tracking-[0em] text-primary/80">
+                                        {{ product.description | strip_html }}
+                                    </li>
+                                {% when 'product_price' %}
+                                    <li>
+                                        <span class=" flex gap-2 items-center py-1">
+                                            {%- render 'pdp-product-price',
+                                                current_variant: current_variant,
+                                                classes: 'text-primary'
+                                            -%}
+                                            {% if product.metafields.custom.bottle_contens
+                                                    != blank
+                                            %}
+                                                <span class="text-[13px] lg:text-[14px] text-primary font-normal leading-[130%] tracking-[-0.022em]">
+                                                    |
+                                                    {{
+                                                        product.metafields.custom.bottle_contens
+                                                        | escape
+                                                    -}}
+                                                    l
+                                                </span>
+                                            {% endif %}
+                                        </span>
+                                    </li>
+                                {% when 'product_form' %}
+                                    <li class="flex flex-col gap-2">
+                                        {%- render 'add-to-cart-box' -%}
+                                        {% if product.available != false %}
+                                            <p class="text-[11px] text-primary">
+                                                {{
+                                                    'main_product.delivery_message'
+                                                    | t
+                                                }}
+                                            </p>
+                                        {% endif %}
+                                    </li>
+                                {% when 'product_border' %}
+                                    <li
+                                        class="{{ block.settings.border_padding_top }} {{ block.settings.border_padding_bottom }}"
+                                    >
+                                        <div
+                                            class="border-t border-primary-background opacity-50"
+                                        ></div>
+                                    </li>
+                                {% when 'store_usps' %}
+                                    <li>
+                                        {% render 'store-usps', block: block %}
+                                    </li>
+                            {% endcase %}
+                        {% endfor %}
+                    </ul>
+                </gsap-elements>
+            </div>
+        </product-form>
+    </div>
+</div>
+
+{% schema %}
+{
+    "name": "Main Product",
+    "settings": [
+        {
+            "type": "header",
+            "content": "Documentation for this section",
+            "info": "Click [here](https://strix-net.atlassian.net/wiki/spaces/TWL/pages/3722969116/Main+Product) for more information."
+        },
+        {
+            "type": "header",
+            "content": "Section Styling"
+        },
+        {
+            "type": "checkbox",
+            "id": "section_styling",
+            "label": "Add styling to section",
+            "info": "If enabled this shows the settings to set the color scheme, spacing, and margin for the section.",
+            "default": false
+        },
+        {
+            "type": "header",
+            "content": "Section Color Scheme",
+            "visible_if": "{{ section.settings.section_styling == true }}"
+        },
+        {
+            "type": "header",
+            "content": "Section Spacing",
+            "visible_if": "{{ section.settings.section_styling == true }}"
+        },
+        {
+            "type": "select",
+            "id": "mobile_padding",
+            "label": "Mobile padding",
+            "visible_if": "{{ section.settings.section_styling == true }}",
+            "options": [
+                {
+                    "value": "py-0",
+                    "label": "None"
+                },
+                {
+                    "value": "py-2",
+                    "label": "S - 8px"
+                },
+                {
+                    "value": "py-4",
+                    "label": "M - 16px"
+                },
+                {
+                    "value": "py-6",
+                    "label": "L - 24px"
+                },
+                {
+                    "value": "py-8",
+                    "label": "XL - 32px"
+                },
+                {
+                    "value": "py-10",
+                    "label": "2XL - 40px"
+                },
+                {
+                    "value": "py-12",
+                    "label": "3XL - 48px"
+                },
+                {
+                    "value": "py-16",
+                    "label": "4XL - 64px"
+                }
+            ],
+            "default": "py-0"
+        },
+        {
+            "type": "select",
+            "id": "desktop_padding",
+            "label": "Desktop padding",
+            "visible_if": "{{ section.settings.section_styling == true }}",
+            "options": [
+                {
+                    "value": "lg:py-0",
+                    "label": "None"
+                },
+                {
+                    "value": "lg:py-2",
+                    "label": "S - 8px"
+                },
+                {
+                    "value": "lg:py-4",
+                    "label": "M - 16px"
+                },
+                {
+                    "value": "lg:py-6",
+                    "label": "L - 24px"
+                },
+                {
+                    "value": "lg:py-8",
+                    "label": "XL - 32px"
+                },
+                {
+                    "value": "lg:py-10",
+                    "label": "2XL - 40px"
+                },
+                {
+                    "value": "lg:py-12",
+                    "label": "3XL - 48px"
+                },
+                {
+                    "value": "lg:py-16",
+                    "label": "4XL - 64px"
+                }
+            ],
+            "default": "lg:py-0"
+        },
+        {
+            "type": "header",
+            "content": "Section Margin",
+            "visible_if": "{{ section.settings.section_styling == true }}"
+        },
+        {
+            "type": "select",
+            "id": "mobile_margin",
+            "label": "Mobile Section margin",
+            "visible_if": "{{ section.settings.section_styling == true }}",
+            "options": [
+                {
+                    "value": "mb-0",
+                    "label": "None"
+                },
+                {
+                    "value": "mb-4",
+                    "label": "Small - 16px"
+                },
+                {
+                    "value": "mb-8",
+                    "label": "Medium - 32px"
+                },
+                {
+                    "value": "mb-12",
+                    "label": "Large - 48px"
+                }
+            ],
+            "default": "mb-0"
+        },
+        {
+            "type": "select",
+            "id": "desktop_margin",
+            "label": "Desktop Section margin",
+            "visible_if": "{{ section.settings.section_styling == true }}",
+            "options": [
+                {
+                    "value": "lg:mb-0",
+                    "label": "None"
+                },
+                {
+                    "value": "lg:mb-8",
+                    "label": "Small - 32px"
+                },
+                {
+                    "value": "lg:mb-12",
+                    "label": "Medium - 48px"
+                },
+                {
+                    "value": "lg:mb-16",
+                    "label": "Large - 64px"
+                }
+            ],
+            "default": "lg:mb-0"
+        },
+        {
+            "type": "header",
+            "content": "Colors",
+            "visible_if": "{{ section.settings.section_styling == true }}"
+        },
+        {
+            "type": "color",
+            "id": "background",
+            "label": "Section background color",
+            "default": "#FFFFFF",
+            "visible_if": "{{ section.settings.section_styling == true }}"
+        },
+        {
+            "type": "color",
+            "id": "primary_text_color",
+            "label": "Primary text color",
+            "default": "#06061C",
+            "visible_if": "{{ section.settings.section_styling == true }}"
+        },
+        {
+            "type": "color",
+            "id": "secondary_text_color",
+            "label": "Secondary text color",
+            "default": "#A08735",
+            "visible_if": "{{ section.settings.section_styling == true }}"
+        },
+        {
+            "type": "color",
+            "id": "primary_button_color",
+            "label": "Primary button background color",
+            "default": "#A08735",
+            "visible_if": "{{ section.settings.section_styling == true }}"
+        },
+        {
+            "type": "color",
+            "id": "primary_button_text_color",
+            "label": "Primary button text color",
+            "default": "#FFFFFF",
+            "visible_if": "{{ section.settings.section_styling == true }}"
+        }
+    ],
+    "blocks": [
+        {
+            "type": "product_title",
+            "name": "Product title",
+            "limit": 1,
+            "settings": []
+        },
+        {
+            "type": "product_price",
+            "name": "Product price",
+            "limit": 1,
+            "settings": []
+        },
+        {
+            "type": "product_variants",
+            "name": "Product variants",
+            "limit": 1,
+            "settings": []
+        },
+        {
+            "type": "product_info",
+            "name": "Product info",
+            "limit": 1,
+            "settings": []
+        },
+        {
+            "type": "product_form",
+            "name": "Product form",
+            "limit": 1,
+            "settings": []
+        },
+        {
+            "type": "product_usps",
+            "name": "Product usps",
+            "limit": 1,
+            "settings": []
+        },
+        {
+            "type": "store_usps",
+            "name": "Store usps",
+            "limit": 1,
+            "settings": [
+                {
+                    "type": "text",
+                    "id": "usps_1",
+                    "label": "USPS one",
+                    "default": "✓ Secure payment"
+                },
+                {
+                    "type": "text",
+                    "id": "usps_2",
+                    "label": "USPS two",
+                    "default": "✓ Taste guarantee"
+                },
+                {
+                    "type": "text",
+                    "id": "usps_3",
+                    "label": "USPS three",
+                    "default": "✓ Rated 9.3"
+                },
+                {
+                    "type": "richtext",
+                    "id": "usps_contact",
+                    "label": "Contact us text",
+                    "default": "<p><strong>Need help?</strong><br> Our experts are just a call away <strong>0887120100</strong></p>"
+                },
+                {
+                    "type": "checkbox",
+                    "id": "usps_contact_show_icon",
+                    "label": "Show contact icon",
+                    "default": true
+                }
+            ]
+        },
+        {
+            "type": "product_border",
+            "name": "Border",
+            "settings": [
+                {
+                    "type": "select",
+                    "id": "border_padding_top",
+                    "label": "Border padding top",
+                    "options": [
+                        {
+                            "value": "pt-0",
+                            "label": "None"
+                        },
+                        {
+                            "value": "pt-1",
+                            "label": "Small - 4px"
+                        },
+                        {
+                            "value": "pt-2",
+                            "label": "Medium - 8px"
+                        },
+                        {
+                            "value": "pt-4",
+                            "label": "Large - 16px"
+                        }
+                    ],
+                    "default": "pt-1"
+                },
+                {
+                    "type": "select",
+                    "id": "border_padding_bottom",
+                    "label": "Border padding bottom",
+                    "options": [
+                        {
+                            "value": "pb-0",
+                            "label": "None"
+                        },
+                        {
+                            "value": "pb-1",
+                            "label": "Small - 4px"
+                        },
+                        {
+                            "value": "pb-2",
+                            "label": "Medium - 8px"
+                        },
+                        {
+                            "value": "pb-4",
+                            "label": "Large - 16px"
+                        }
+                    ],
+                    "default": "pb-1"
+                }
+            ]
+        }
+    ],
+    "enabled_on": {
+        "templates": ["product"]
+    },
+    "presets": [
+        {
+            "category": "Product page",
+            "name": "Main Product",
+            "blocks": [
+                {
+                    "type": "product_title"
+                },
+                {
+                    "type": "product_variants"
+                },
+
+                {
+                    "type": "product_usps"
+                },
+
+                {
+                    "type": "product_info"
+                },
+                {
+                    "type": "product_price"
+                },
+                {
+                    "type": "product_form"
+                },
+
+                {
+                    "type": "store_usps"
+                }
+            ]
+        }
+    ]
+}
+{% endschema %}

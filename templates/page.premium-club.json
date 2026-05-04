@@ -1,0 +1,161 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "main": {
+      "type": "main-page",
+      "disabled": true,
+      "settings": {}
+    },
+    "premium_club_dUzTEr": {
+      "type": "premium-club",
+      "name": "Premium Club",
+      "settings": {
+        "visibility_audience": "premium_only",
+        "section_styling": true,
+        "mobile_padding": "py-4",
+        "desktop_padding": "lg:py-8",
+        "mobile_margin": "mb-0",
+        "desktop_margin": "lg:mb-0",
+        "background": "#ffffff",
+        "primary_text_color": "#000000",
+        "secondary_text_color": "#06061c",
+        "welcome_text": "Welkom",
+        "description": "Welkom in uw Premium Club Member account. Hier vind u een verzicht van de Premium Club Events, de release data van icoon wijnen, exclusieve intekeningen.",
+        "logo": "shopify://shop_images/Asset_1Logo-winelist-1.png",
+        "store_credit_title": "Uw shoptegoed",
+        "store_credit_link_text": "Bekijk uw account",
+        "login_text": "Log in om uw Premium Club account te bekijken",
+        "login_button_text": "Inloggen",
+        "animation_style": "fade-in"
+      }
+    },
+    "hero_YLPqEC": {
+      "type": "hero",
+      "blocks": {
+        "hero_slide_dQgbec": {
+          "type": "hero_slide",
+          "settings": {
+            "block_styling": false,
+            "primary_text_color": "#ffffff",
+            "secondary_text_color": "#ffffff",
+            "primary_button_color": "#ffffff",
+            "primary_button_text_color": "#282828",
+            "secondary_button_color": "#000000",
+            "secondary_button_text_color": "#ffffff",
+            "image": "shopify://shop_images/12148541_3840_2160_25fps_1_1_1.png",
+            "enable_overlay": false,
+            "overlay_type": "gradient",
+            "mobile_gradient": "linear-gradient(180deg, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.3) 100%)",
+            "desktop_gradient": "linear-gradient(180deg, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.3) 100%)",
+            "overlay_opacity": 30,
+            "text": "Welkom in uw Premium Club Member account. Hier vindt u een overzicht van de Premium Club.",
+            "title": "<h2>Ontdek Prunotto | Marchesi Anttinore</h2>",
+            "button_text": "Shop Now",
+            "button_url": "/home",
+            "button_style": "primary"
+          }
+        }
+      },
+      "block_order": [
+        "hero_slide_dQgbec"
+      ],
+      "name": "Hero",
+      "settings": {
+        "visibility_audience": "premium_only",
+        "section_styling": false,
+        "mobile_margin": "mb-0",
+        "desktop_margin": "lg:mb-0",
+        "aspect_ratio_desktop": "lg:aspect-[1440/450]",
+        "aspect_ratio_mobile": "aspect-[375/350]",
+        "enable_autoplay": true,
+        "autoplay_interval": 5000,
+        "animation_style": "fade-in"
+      }
+    },
+    "blog_posts_highlight_knhYkb": {
+      "type": "blog-posts-highlight",
+      "name": "Blog Slider",
+      "settings": {
+        "visibility_audience": "premium_only",
+        "section_styling": true,
+        "mobile_padding": "py-6",
+        "desktop_padding": "lg:py-6",
+        "mobile_margin": "mb-0",
+        "desktop_margin": "lg:mb-0",
+        "background": "#ffffff",
+        "primary_button_color": "#cfdadd",
+        "primary_button_text_color": "#282828",
+        "secondary_button_color": "#000000",
+        "secondary_button_text_color": "#ffffff",
+        "blog": "wijnhuis-bezoeken",
+        "title": "Premium Club Events",
+        "button_text": "Read all articles",
+        "button_url": "",
+        "button_style": "primary",
+        "animation_style": "fade-in"
+      }
+    },
+    "image_tiles_TV4kjB": {
+      "type": "image-tiles",
+      "blocks": {
+        "tile_hEQTJe": {
+          "type": "tile",
+          "settings": {
+            "image": "shopify://shop_images/hero_banner.png",
+            "title": "Kelderschattenlijst",
+            "description": "With personalized advice and the service of our wine experts, we help you enjoy the world's finest wines even more."
+          }
+        },
+        "tile_yncLwG": {
+          "type": "tile",
+          "settings": {
+            "image": "shopify://shop_images/hero_banner.png",
+            "title": "Kelderschattenlijst",
+            "description": "With personalized advice and the service of our wine experts, we help you enjoy the world's finest wines even more."
+          }
+        },
+        "tile_nMyrrp": {
+          "type": "tile",
+          "settings": {
+            "image": "shopify://shop_images/hero_banner.png",
+            "title": "Kelderschattenlijst",
+            "description": "With personalized advice and the service of our wine experts, we help you enjoy the world's finest wines even more."
+          }
+        }
+      },
+      "block_order": [
+        "tile_hEQTJe",
+        "tile_yncLwG",
+        "tile_nMyrrp"
+      ],
+      "name": "Image Tiles",
+      "settings": {
+        "visibility_audience": "premium_only",
+        "section_styling": true,
+        "mobile_padding": "py-6",
+        "desktop_padding": "lg:py-6",
+        "mobile_margin": "mb-0",
+        "desktop_margin": "lg:mb-0",
+        "background": "#ffffff",
+        "primary_text_color": "#525252",
+        "secondary_text_color": "#525252",
+        "animation_style": "fade-in"
+      }
+    }
+  },
+  "order": [
+    "main",
+    "premium_club_dUzTEr",
+    "hero_YLPqEC",
+    "blog_posts_highlight_knhYkb",
+    "image_tiles_TV4kjB"
+  ]
+}

@@ -1,0 +1,71 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "breadcrumbs_k9ftpR": {
+      "type": "breadcrumbs",
+      "name": "Breadcrumbs",
+      "settings": {
+        "visibility_audience": "everyone",
+        "custom_parent_url": "",
+        "custom_parent_title": "",
+        "custom_current_title": "",
+        "section_styling": true,
+        "mobile_padding": "py-4",
+        "desktop_padding": "lg:py-4",
+        "mobile_margin": "mb-0",
+        "desktop_margin": "lg:mb-0",
+        "background": "#ffffff",
+        "primary_text_color": "#525252"
+      }
+    },
+    "main": {
+      "type": "main-collection",
+      "settings": {
+        "products_per_page": 15,
+        "show_quick_add": false
+      }
+    },
+    "sign_up_GNaAcy": {
+      "type": "sign-up",
+      "name": "Sign Up",
+      "settings": {
+        "visibility_audience": "everyone",
+        "section_styling": true,
+        "mobile_padding": "py-10",
+        "desktop_padding": "lg:py-10",
+        "mobile_margin": "mb-0",
+        "desktop_margin": "lg:mb-0",
+        "background": "#ffffff",
+        "primary_text_color": "#000000",
+        "border_color": "#b19e5e",
+        "primary_button_color": "#000000",
+        "primary_button_text_color": "#ffffff",
+        "secondary_button_color": "#000000",
+        "secondary_button_text_color": "#ffffff",
+        "title": "Direct access to the world of fine wine",
+        "description": "<p>Get insider updates on the world’s most exceptional wines, before anyone else.</p>",
+        "placeholder": "Email Address",
+        "privacy_text": "We respect your data and privacy. Unsubscribe anytime.",
+        "button_text": "Sign Up",
+        "button_style": "primary",
+        "grid_of_two": false,
+        "border_top": false,
+        "border_bottom": false,
+        "animation_style": "fade-in"
+      }
+    }
+  },
+  "order": [
+    "breadcrumbs_k9ftpR",
+    "main",
+    "sign_up_GNaAcy"
+  ]
+}

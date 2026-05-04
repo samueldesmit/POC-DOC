@@ -1,0 +1,306 @@
+{%- liquid
+    assign current_collection = collection.handle
+    assign logo_aria_label = 'accessibility.go_to_homepage' | t
+    assign logo_attributes = 'aria-label="' | append: logo_aria_label | append: '"'
+
+    assign is_premium_customer = false
+
+    if customer
+        if customer.tags contains 'premium-club'
+            assign is_premium_customer = true
+        endif
+    endif
+
+    assign logo_image = null
+    assign logo_width = header_logo_width | default: 128
+
+    if is_premium_customer and header_logo_premium != blank
+        assign logo_image = header_logo_premium
+        assign logo_width = header_logo_premium_width | default: 128
+    elsif header_logo != blank
+        assign logo_image = header_logo
+    endif
+-%}
+<a
+    {{ logo_attributes }}
+    href="{{ routes.root_url }}"
+    class="flex items-center mr-10 2xl:mr-16 py-4"
+>
+    {%- if logo_image -%}
+        <span
+            class="block"
+            style="width: {{ logo_width }}px;"
+        >
+            {{
+                logo_image
+                | image_url: width: logo_width
+                | image_tag:
+                    loading: 'lazy',
+                    fetchpriority: 'high',
+                    class: 'h-auto w-full',
+                    alt: shop.name
+            }}
+        </span>
+    {%- else -%}
+        {%- render 'component.icon', type: 'logo', class: 'w-32 h-14' -%}
+    {%- endif -%}
+</a>
+
+<mega-menu
+    id="mega-menu"
+    class="z-20 group/mega-menu flex items-center max-w-[80vw]"
+>
+    <div
+        aria-hidden="true"
+        data-close-menu
+        class="mega-menu-curtain absolute left-1/2 w-screen -translate-x-1/2 top-header-height h-lvh w-full pointer-events-none group-data-[open]/mega-menu:pointer-events-auto bg-surface-200/30 opacity-0 group-data-[open]/mega-menu:opacity-100 group-data-[leave]/mega-menu:duration-75 group-data-[open]/mega-menu:duration-150 backdrop-blur-sm cursor-pointer"
+    ></div>
+    <nav class="h-full">
+        <ul class="flex flex-wrap h-full">
+            {%- # Links (Level 1) -%}
+            {%- for link in menu -%}
+                {% liquid
+                    assign mega_menu_item_tag = 'p'
+                    assign mega_menu_item_class = 'cursor-pointer'
+                    if link.url != blank and link.url != '#'
+                        assign mega_menu_item_tag = 'a'
+                        assign mega_menu_item_class = ''
+                    endif
+                %}
+                {%- # Used in <mega-menu> -%}
+                <mega-menu-item
+                    role="listitem"
+                    class="flex justify-center px-5 py-4 group/item  hover:text-surface-200 transition-colors duration-200 text-xs 2xl:text-sm"
+                    aria-label="{{- 'accessibility.header_menu_navigation' | t -}}"
+                    {%- # Enable dropdown menu toggle -%}
+                    {% if link.levels > 0 -%}
+                        data-dropdown
+                    {%- endif -%}
+                >
+                    <{{ mega_menu_item_tag }}
+                        href="{{- link.url -}}"
+                        class="inline-flex items-center {{ mega_menu_item_class }} space-x-[10px] text-[14px] font-inter"
+                    >
+                        <span class="">
+                            {{- link.title -}}
+                        </span>
+                        {%- if link.levels > 0 -%}
+                            {% render 'component.icon',
+                                type: 'chevron',
+                                class: 'size-2.5 rotate-90 text-surface-200 group-data-[open]/item:-rotate-90 transition-transform duration-300 ease-out'
+                            %}
+                        {%- endif -%}
+                    </{{ mega_menu_item_tag }}>
+                    {%- # Dropdown -%}
+                    {%- if link.levels > 0 -%}
+                        <div
+                            class="pointer-events-none absolute left-1/2 w-screen -translate-x-1/2 top-header-height group-data-[leaving]/item:pointer-events-none group-data-[open]/item:pointer-events-auto"
+                        >
+                            <div
+                                data-target="mega-menu-item.dropdown"
+                                class="relative w-full opacity-0 group-data-[open]/item:opacity-100 border-t border-surface-200"
+                                style="background-color: {{ header_menu_background_color }}; color: {{ header_menu_text_color }};"
+                            >
+                                <div class="container py-14 pl-[259px]">
+                                    <div class="grid grid-cols-12 gap-4">
+                                        {%- # Left side: Menu links -%}
+                                        <div class="col-span-3 border-r border-surface-200 pr-5 pt-4">
+                                            <ul class="flex flex-col">
+                                                {%- for child_link in link.links -%}
+                                                    {%- liquid
+                                                        assign child_index = forloop.index
+                                                    -%}
+                                                    <li
+                                                        class="group/link"
+                                                        data-submenu-trigger="{{ child_index }}"
+                                                    >
+                                                        <a
+                                                            href="{{- child_link.url -}}"
+                                                            class="flex items-center justify-between pb-6 text-sm transition-colors duration-200 hover:text-surface-200"
+                                                        >
+                                                            <span>
+                                                                {{- child_link.title -}}
+                                                            </span>
+
+                                                            {%- if child_link.links.size
+                                                                    > 0
+                                                            -%}
+                                                                {% render 'component.icon',
+                                                                    type: 'full_long_arrow',
+                                                                    class: 'size-3 group-hover/link:text-brand-200 group-hover/link:translate-x-1 transition-all duration-200'
+                                                                %}
+                                                            {%- endif -%}
+                                                        </a>
+                                                    </li>
+                                                {%- endfor -%}
+                                            </ul>
+                                        </div>
+
+                                        {%- # Middle: Child links (shown on hover) -%}
+                                        <div class="col-span-3 relative pr-5 pt-4">
+                                            {%- for child_link in link.links -%}
+                                                {% liquid
+                                                    assign child_index = forloop.index
+                                                    assign is_first = forloop.first
+                                                %}
+                                                {%- if child_link.links.size > 0
+                                                -%}
+                                                    <ul
+                                                        class="flex flex-col absolute top-4 left-0 transition-opacity duration-200 {% if is_first %}opacity-100 pointer-events-auto{% else %}opacity-0 pointer-events-none{% endif %}"
+                                                        data-submenu-content="{{ child_index }}"
+                                                    >
+                                                        {%- for sublink in child_link.links -%}
+                                                            {% liquid
+                                                                assign grandchild_collection_handleized = sublink.title | handleize
+                                                            %}
+                                                            <li>
+                                                                <a
+                                                                    href="{{- sublink.url -}}"
+                                                                    class="flex items-center text-sm hover:text-brand-200 transition-colors duration-200 {% if current_collection == grandchild_collection_handleized %}text-brand-200{% endif %}"
+                                                                >
+                                                                    {{- sublink.title -}}
+                                                                </a>
+                                                            </li>
+                                                        {%- endfor -%}
+                                                    </ul>
+                                                {%- endif -%}
+                                            {%- endfor -%}
+                                        </div>
+
+                                        {%- # Right side: Promotional cards (one per child link, shown on hover) -%}
+                                        <div class="col-span-4 relative">
+                                            {%- for child_link in link.links -%}
+                                                {%- liquid
+                                                    assign child_index = forloop.index
+                                                    assign is_first_card = forloop.first
+                                                    assign child_metaobject = null
+
+                                                    # Get the link object ID and URL for comparison
+                                                    if child_link.object
+                                                        assign link_object_id = child_link.object.id
+                                                    endif
+                                                    assign link_url = child_link.url
+
+                                                    # Skip matching for homepage/placeholder links to avoid false matches
+                                                    unless link_url == '/' or link_url == blank or link_url == '#'
+                                                        # Loop through all header_image_tiles metaobjects to find a match
+                                                        for metaobject_entry in shop.metaobjects.header_image_tiles.values
+                                                            # Check if this metaobject matches the current link's object (collection, product, page, blog) or URL
+                                                            assign is_match = false
+
+                                                            # Match by resource reference (collection, product, page, blog)
+                                                            if metaobject_entry.collection.value.id == link_object_id
+                                                                assign is_match = true
+                                                            endif
+
+                                                            if metaobject_entry.product.value.id == link_object_id
+                                                                assign is_match = true
+                                                            endif
+
+                                                            if metaobject_entry.page.value.id == link_object_id
+                                                                assign is_match = true
+                                                            endif
+
+                                                            if metaobject_entry.blog.value.id == link_object_id
+                                                                assign is_match = true
+                                                            endif
+
+                                                            # Match by custom URL (for blogs and other custom links)
+                                                            # Handle both relative and absolute URLs
+                                                            if metaobject_entry.link.value == link_url
+                                                                assign is_match = true
+                                                            endif
+
+                                                            # Also check if metaobject URL ends with the link URL (for absolute vs relative URLs)
+                                                            if metaobject_entry.link.value contains link_url
+                                                                assign is_match = true
+                                                            endif
+
+                                                            if is_match
+                                                                assign child_metaobject = metaobject_entry
+                                                                break
+                                                            endif
+                                                        endfor
+                                                    endunless
+                                                -%}
+                                                {%- comment %} First card is relative to establish height, others are absolute {%- endcomment %}
+                                                <div
+                                                    class="{% if is_first_card %} relative {% else %} absolute inset-0 {% endif %} transition-opacity duration-200 {% if is_first_card %}opacity-100{% else %}opacity-0{% endif %} pointer-events-none"
+                                                    data-submenu-card="{{ child_index }}"
+                                                >
+                                                    <div class="relative overflow-hidden h-auto min-h-[240px]">
+                                                        {%- if child_metaobject.image
+                                                                != blank
+                                                        -%}
+                                                            <responsive-media
+                                                                data-target="mega-menu-item.card-image"
+                                                                class="absolute inset-0 w-full h-auto"
+                                                            >
+                                                                {{-
+                                                                    child_metaobject.image
+                                                                    | image_url:
+                                                                        width: 600
+                                                                    | image_tag:
+                                                                        loading: 'lazy',
+                                                                        fetchpriority: 'low',
+                                                                        class: 'h-full w-full object-cover'
+                                                                -}}
+                                                            </responsive-media>
+                                                            <div
+                                                                class="absolute inset-0 bg-gradient-to-r from-black/60 to-transparent"
+                                                            ></div>
+                                                        {%- endif -%}
+                                                        <div class="relative z-10 pt-5 pl-5 pb-7 flex flex-col justify-center h-full text-white min-h-[240px]">
+                                                            <h3 class="text-xl font-bold mb-3 leading-tight max-w-28 font-cormorant-garamond">
+                                                                {{ child_metaobject.title }}
+                                                            </h3>
+                                                            {% if child_metaobject.subtitle
+                                                                    != blank
+                                                            %}
+                                                                <div class="text-sm text-white/80 mb-4 max-w-[160px]">
+                                                                    {{
+                                                                        child_metaobject.subtitle
+                                                                        | metafield_tag
+                                                                    }}
+                                                                </div>
+                                                            {% endif %}
+                                                            {% if child_metaobject.button_text
+                                                                    != blank
+                                                            %}
+                                                                {% render 'component.button',
+                                                                    label: child_metaobject.button_text,
+                                                                    title: child_metaobject.button_text,
+                                                                    href: child_link.url,
+                                                                    class: 'w-fit border border-white hover:bg-white hover:text-black transition-colors duration-200 py-3 px-9 text-sm',
+                                                                    id: child_metaobject.button_text,
+                                                                    attributes: '',
+                                                                    type: 'button',
+                                                                    name: child_metaobject.button_text,
+                                                                    aria_label: b.button_text,
+                                                                    aria_describedby: child_metaobject.button_text,
+                                                                    style: 'custom',
+                                                                    size: '',
+                                                                    icon: '',
+                                                                    icon_position: '',
+                                                                    icon_class: '',
+                                                                    css_variables: '',
+                                                                    disabled: false,
+                                                                    loading: false,
+                                                                    translate: false
+                                                                %}
+                                                            {% endif %}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            {%- endfor -%}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {%- endif -%}
+                </mega-menu-item>
+            {%- endfor -%}
+        </ul>
+    </nav>
+</mega-menu>

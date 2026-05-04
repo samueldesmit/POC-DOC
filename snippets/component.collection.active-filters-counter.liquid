@@ -1,0 +1,17 @@
+{% liquid
+    assign total_active_values = 0
+
+    for filter in collection.filters
+        assign total_active_values = total_active_values | plus: filter.active_values.size
+    endfor
+
+    for filter in collection.filters
+        if filter.type == 'price_range'
+            if filter.min_value.value != null or filter.max_value.value != null
+                assign total_active_values = total_active_values | plus: 1
+            endif
+        endif
+    endfor
+
+    echo total_active_values
+%}
