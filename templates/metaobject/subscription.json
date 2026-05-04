@@ -122,7 +122,7 @@
         "text_rm9J6j": {
           "type": "text",
           "settings": {
-            "text": "<p>{{ metaobject.description | metafield_tag }}</p>",
+            "text": "",
             "font_family": "font-inter",
             "font_weight": "400",
             "mobile_font_size": "16px",

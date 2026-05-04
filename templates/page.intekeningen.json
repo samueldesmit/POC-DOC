@@ -40,7 +40,7 @@
         "image": "shopify://shop_images/Chateau_Corton_C.-logo.jpg",
         "image_position": "left",
         "subheading": "99 points for the 2022 year",
-        "heading": "{{ section.settings.subscription.sub_title.value }}",
+        "heading": "",
         "description": "",
         "button_text": "Shop Now",
         "button_style": "primary",

@@ -109,7 +109,7 @@
         "winery_9FrCPq": {
           "type": "winery",
           "settings": {
-            "article": "{{ product.metafields.custom.winery.value }}",
+            "article": "",
             "show_winery_video": true,
             "show_winery_logo": true,
             "show_winery_name": true,
@@ -172,7 +172,7 @@
         "primary_button_text_color": "#000000",
         "secondary_button_color": "#000000",
         "secondary_button_text_color": "#ffffff",
-        "winery_article": "{{ product.metafields.custom.winery.value }}",
+        "winery_article": "",
         "image": "shopify://shop_images/Rectangle_46_2.png",
         "image_aspect_ratio": "aspect-671/789",
         "image_position": "left",

@@ -173,7 +173,7 @@
         "button_style": "primary",
         "arrow_border_color": "#a08735",
         "show_border": true,
-        "product_list": "{{ article.metafields.custom.show_case_products.value }}",
+        "product_list": "",
         "animation_style": "none"
       }
     },
